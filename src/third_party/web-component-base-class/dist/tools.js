@@ -1,0 +1,2 @@
+export function dashesToCamelCase(a){return a.replace(/-([a-z0-9A-Z])/g,a=>a[1].toUpperCase()).replace(/-$/g,"")}export function camelCaseToDashes(a){return a.replace(/[a-z]?[A-Z]/g,a=>1<a.length?`${a[0]}-${a[1].toLowerCase()}`:`-${a[0].toLowerCase()}`)}export function createQuickAccess(a,b){return Array.from(a.querySelectorAll(`[${b}]`)).reduce((a,c)=>(a[dashesToCamelCase(c.getAttribute(b))]=c,a),{})}
+//@ sourceMappingURL=tools.js.map
