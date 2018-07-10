@@ -7,19 +7,38 @@
     <script src="../node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js"></script>
     <script src="../node_modules/@webcomponents/html-imports/html-imports.min.js"></script>
     <link rel="import" href="./vicowa-string/vicowa-string.html">
+
+	<style>
+		body[lang="en_US"] #english,
+		body[lang="nl_NL"] #dutch {
+			background-color: blue;
+			color: white;
+		}
+	</style>
 </head>
 
-<body>
-<button id="removeElement">remove</button>
-<button id="addElement">add</button>
-<div id="elements">
-    <my-element></my-element>
-</div>
-<script>
-	const elementContainer = document.querySelector('#elements');
-	document.querySelector('#removeElement').addEventListener('click', () => { elementContainer.removeChild(elementContainer.querySelector('my-element')); });
-	document.querySelector('#addElement').addEventListener('click', () => { const elem = document.createElement('my-element'); elementContainer.appendChild(elem);  });
-</script>
+<body lang="en_US">
+	<div id="translations">
+		<button id="english">English</button>
+		<button id="dutch">Nederlands</button>
+	</div>
+	<ul>
+		<li><vicowa-string string="test string 1"></vicowa-string></li>
+		<li><vicowa-string string="test string 2 %1$s element" plural-number=1 arguments='["1"]'></vicowa-string></li>
+		<li><vicowa-string string="test string 2 %1$s element" plural-number=2 arguments='["2"]'></vicowa-string></li>
+		<li><vicowa-string string="test string %2$s %1$s %3$s" arguments='["first", "second", "third"]'></vicowa-string></li>
+	</ul>
+	<script type="module">
+		import translator from './utilities/translate.js';
+		translator.addTranslationLocation('./resources/translations');
+		translator.addTranslationUpdatedObserver((p_Translator) => {
+			document.body.setAttribute('lang', p_Translator.language);
+		}, null);
+		translator.language = document.body.getAttribute('lang');
+
+		document.querySelector('#english').addEventListener('click', () => { translator.language = 'en_US'; });
+		document.querySelector('#dutch').addEventListener('click', () => { translator.language = 'nl_NL'; });
+	</script>
 </body>
 
 </html>

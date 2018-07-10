@@ -1,0 +1,9 @@
+{
+	"locale_data": {
+		"strings": {
+			"test string 1": { "translations": ["test tekst 1"], "description": "Just a test string" },
+			"test string 2 %1$s element": { "translations": ["test tekst 2 %1$s element", "test tekst 2 %1$s elementen"], "description": "Just a test string" },
+			"test string %2$s %1$s %3$s": { "translations": ["test text %1$s %2$s %3$s"], "description": "Just a test string" }
+		}
+	}
+}

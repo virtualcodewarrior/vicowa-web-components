@@ -19,7 +19,7 @@
   ],
   "_resolved": "git+https://git@github.com/webcomponents/html-imports.git#a83cc7065a719a6059ad13917e8205c01ad2c413",
   "_spec": "git+https://git@github.com/webcomponents/html-imports.git",
-  "_where": "/home/rodney/prj/webcomponents/vicowa-web-components",
+  "_where": "/home/rodney/prj/vicowa-web-components",
   "author": {
     "name": "The Polymer Authors",
     "url": "https://polymer.github.io/AUTHORS.txt"

@@ -6,6 +6,7 @@ window.customElements.define(componentName, class extends webComponentBaseClass 
 	static get is() { return componentName; }
 	constructor() {
 		super();
+		this._activeTranslator = null;
 	}
 
 	static get properties() {
@@ -14,21 +15,36 @@ window.customElements.define(componentName, class extends webComponentBaseClass 
 				type: String,
 				value: '',
 				reflectToAttribute: true,
-				observer: '_stringChanged',
+				observer: 'updateTranslation',
+			},
+			arguments: {
+				type: Array,
+				value: [],
+				observer: 'updateTranslation',
+			},
+			pluralNumber: {
+				type: Number,
+				value: 1,
+				observer: 'updateTranslation',
 			},
 		};
 	}
 
-	attached() {
+	updateTranslation() {
+		this.$.string.textContent = (this._activeTranslator && this.string) ? this._activeTranslator.translate(this.string).ifPlural(this.pluralNumber || 1).fetch(this.arguments) : this.string;
 	}
+
+	get displayString() { return this.$.string.textContent; }
 
 	detached() {
+		translator.removeTranslationUpdatedObserverOwner(this);
 	}
 
-	_stringChanged(p_NewValue, p_OldValue) {
-		this.$.string.textContent = p_NewValue;
-		translator.addTranslationAvailableHandler((p_Translator) => {
-			this.$.string.textContent = p_Translator.translate(p_NewValue);
-		});
+	attached() {
+		this.$.string.textContent = this.string;
+		translator.addTranslationUpdatedObserver((p_Translator) => {
+			this._activeTranslator = p_Translator;
+			this.updateTranslation();
+		}, this);
 	}
 });

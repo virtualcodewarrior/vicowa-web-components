@@ -1,36 +1,39 @@
 {
-  "_from": "@webcomponents/webcomponentsjs@^2.0.2",
+  "_args": [
+    [
+      "@webcomponents/webcomponentsjs@2.0.2",
+      "/home/rodney/prj/vicowa-web-components"
+    ]
+  ],
+  "_from": "@webcomponents/webcomponentsjs@2.0.2",
   "_id": "@webcomponents/webcomponentsjs@2.0.2",
   "_inBundle": false,
   "_integrity": "sha512-+3515t7jnWsx+mNRECwXbjXBM0DLCNB4uH4DSIbu7akIJn0tO2GZuLvZeBhXbRFQLfohN+2ZTWT44A6EtPhVqA==",
   "_location": "/@webcomponents/webcomponentsjs",
   "_phantomChildren": {},
   "_requested": {
-    "type": "range",
+    "type": "version",
     "registry": true,
-    "raw": "@webcomponents/webcomponentsjs@^2.0.2",
+    "raw": "@webcomponents/webcomponentsjs@2.0.2",
     "name": "@webcomponents/webcomponentsjs",
     "escapedName": "@webcomponents%2fwebcomponentsjs",
     "scope": "@webcomponents",
-    "rawSpec": "^2.0.2",
+    "rawSpec": "2.0.2",
     "saveSpec": null,
-    "fetchSpec": "^2.0.2"
+    "fetchSpec": "2.0.2"
   },
   "_requiredBy": [
     "/"
   ],
   "_resolved": "https://registry.npmjs.org/@webcomponents/webcomponentsjs/-/webcomponentsjs-2.0.2.tgz",
-  "_shasum": "35272bcedfab0cba6778707e76f0191d12deb9f6",
-  "_spec": "@webcomponents/webcomponentsjs@^2.0.2",
-  "_where": "/home/rodney/prj/webcomponents/vicowa-web-components",
+  "_spec": "2.0.2",
+  "_where": "/home/rodney/prj/vicowa-web-components",
   "author": {
     "name": "The Polymer Authors"
   },
   "bugs": {
     "url": "https://github.com/webcomponents/webcomponentsjs/issues"
   },
-  "bundleDependencies": false,
-  "deprecated": false,
   "description": "Web Components Polyfills",
   "devDependencies": {
     "@webcomponents/custom-elements": "^1.1.2",
