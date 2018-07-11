@@ -34,14 +34,14 @@ window.customElements.define(componentName, class extends webComponentBaseClass 
 		this.$.string.textContent = (this._activeTranslator && this.string) ? this._activeTranslator.translate(this.string).ifPlural(this.pluralNumber || 1).fetch(this.arguments) : this.string;
 	}
 
-	get displayString() { return this.$.string.textContent; }
+	get displayString() { return this.$.string.innerHTML; }
 
 	detached() {
 		translator.removeTranslationUpdatedObserverOwner(this);
 	}
 
 	attached() {
-		this.$.string.textContent = this.string;
+		this.$.string.innerHTML = this.string;
 		translator.addTranslationUpdatedObserver((p_Translator) => {
 			this._activeTranslator = p_Translator;
 			this.updateTranslation();

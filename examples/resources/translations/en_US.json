@@ -1,6 +1,10 @@
 {
 	"locale_data": {
 		"strings": {
+			"input 1": { "translations": ["input 1"], "description": "input label" },
+			"input 2": { "translations": ["input 2"], "description": "input label" },
+			"input 3": { "translations": ["input 3"], "description": "input label" },
+			"input 4": { "translations": ["input 4"], "description": "input label" },
 			"test string 1": { "translations": ["test string 1"], "description": "Just a test string" },
 			"test string 2 %1$s element": { "translations": ["test string 2 %1$s element", "test string 2 %1$s elements"], "description": "Just a test string" },
 			"test string %2$s %1$s %3$s": { "translations": ["test string %2$s %1$s %3$s"], "description": "Just a test string" }

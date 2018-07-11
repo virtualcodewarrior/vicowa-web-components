@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>ViCoWa Web Components - icons</title>
+    <script src="../../node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js"></script>
+    <script src="../../node_modules/@webcomponents/html-imports/html-imports.min.js"></script>
+	<link rel="import" href="test-icons.html">
+    <link rel="import" href="../../src/vicowa-icon/vicowa-icon.html">
+
+	<style>
+		vicowa-icon {
+			position: relative;
+			width: 48px;
+			height: 48px;
+		}
+
+		vicowa-icon.big {
+			width: 96px;
+			height: 96px;
+		}
+
+		vicowa-icon.small {
+			width: 24px;
+			height: 24px;
+		}
+
+		vicowa-icon[icon] {
+			--vicowa-icon-line-color: none;
+			--vicowa-icon-fill-color: blue;
+		}
+		vicowa-icon[icon$="error"] {
+			--vicowa-icon-fill-color: red;
+		}
+		vicowa-icon[icon$="warning"] {
+			--vicowa-icon-fill-color: orange;
+		}
+	</style>
+</head>
+
+<body>
+	<test-icons></test-icons>
+	<vicowa-icon icon="general:cog"></vicowa-icon>
+	<vicowa-icon icon="general:file"></vicowa-icon>
+	<vicowa-icon icon="errors:error"></vicowa-icon>
+	<vicowa-icon icon="errors:warning"></vicowa-icon>
+	<vicowa-icon class="big" icon="general:cog"></vicowa-icon>
+	<vicowa-icon class="big" icon="general:file"></vicowa-icon>
+	<vicowa-icon class="big" icon="errors:error"></vicowa-icon>
+	<vicowa-icon class="big" icon="errors:warning"></vicowa-icon>
+	<vicowa-icon class="small" icon="general:cog"></vicowa-icon>
+	<vicowa-icon class="small" icon="general:file"></vicowa-icon>
+	<vicowa-icon class="small" icon="errors:error"></vicowa-icon>
+	<vicowa-icon class="small" icon="errors:warning"></vicowa-icon>
+</body>
+
+</html>

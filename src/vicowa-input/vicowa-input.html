@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<link rel="import" href="../vicowa-string/vicowa-string.html">
+<div>
+    <template id="vicowa-input">
+        <style>
+			:host[hide-label] #label {
+				display: none;
+			}
+
+			#control-container {
+				display: flex;
+				flex-direction: row;
+			}
+        </style>
+        <div id="control-container">
+            <vicowa-string id="label"></vicowa-string>
+            <input id="input">
+            <vicowa-string id="error"></vicowa-string>
+        </div>
+    </template>
+    <script>
+		(function storeTemplate() {
+			const template = document.currentScript.parentNode.querySelector('template');
+			window.webComponentTemplates = window.webComponentTemplates || new Map();
+			window.webComponentTemplates.set(template.getAttribute('id'), template);
+		})();
+    </script>
+    <script type="module" src="./vicowa-input.js"></script>
+</div>

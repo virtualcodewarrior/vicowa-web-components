@@ -3,10 +3,10 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>ViCoWa Web Components</title>
-    <script src="../node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js"></script>
-    <script src="../node_modules/@webcomponents/html-imports/html-imports.min.js"></script>
-    <link rel="import" href="./vicowa-string/vicowa-string.html">
+    <title>ViCoWa Web Components - vicowa-string</title>
+    <script src="../../node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js"></script>
+    <script src="../../node_modules/@webcomponents/html-imports/html-imports.min.js"></script>
+    <link rel="import" href="../../src/vicowa-string/vicowa-string.html">
 
 	<style>
 		body[lang="en_US"] #english,
@@ -29,8 +29,10 @@
 		<li><vicowa-string string="test string %2$s %1$s %3$s" arguments='["first", "second", "third"]'></vicowa-string></li>
 	</ul>
 	<script type="module">
-		import translator from './utilities/translate.js';
-		translator.addTranslationLocation('./resources/translations');
+		import translator from '../../src/utilities/translate.js';
+
+		// setup the translator
+		translator.addTranslationLocation('../resources/translations');
 		translator.addTranslationUpdatedObserver((p_Translator) => {
 			document.body.setAttribute('lang', p_Translator.language);
 		}, null);

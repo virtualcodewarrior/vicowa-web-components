@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<link rel="import" href="../vicowa-string/vicowa-string.html">
+<div>
+    <template id="vicowa-button">
+        <style>
+			button {
+				cursor: pointer;
+			}
+			:host[disabled] {
+				pointer-events: none;
+				opacity: 0.5;
+				cursor: default;
+			}
+
+			#container {
+				display: flex;
+				flex-direction: row;
+			}
+        </style>
+        <div id="container">
+            <button><vicowa-icon id="icon"></vicowa-icon><vicowa-string id="string"></vicowa-string></button>
+        </div>
+    </template>
+    <script>
+		(function storeTemplate() {
+			const template = document.currentScript.parentNode.querySelector('template');
+			window.webComponentTemplates = window.webComponentTemplates || new Map();
+			window.webComponentTemplates.set(template.getAttribute('id'), template);
+		})();
+    </script>
+    <script type="module" src="./vicowa-button.js"></script>
+</div>
