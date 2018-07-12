@@ -1,13 +1,23 @@
 {
 	"locale_data": {
 		"strings": {
+			"Canadian Postal Code": { "translations": ["Canadese Postcode"], "description": "input label for Canadian Postal code" },
+			"Dutch Postal Code": { "translations": ["Nederlandse Postcode"], "description": "input label for Dutch Postal code" },
+			"email": { "translations": ["email"], "description": "input label for email" },
 			"input 1": { "translations": ["invoer 1"], "description": "input label" },
 			"input 2": { "translations": ["invoer 2"], "description": "input label" },
 			"input 3": { "translations": ["invoer 3"], "description": "input label" },
 			"input 4": { "translations": ["invoer 4"], "description": "input label" },
+			"Make sure the EMail address is valid": { "translations": ["Zorg ervoor dat het EMail adres correct is"], "description": "error message when an invalidly formatted email address is entered" },
+			"Make sure the postal code format is valid": { "translations": ["Zorg ervoor dat de postcode correct is"], "description": "error message when an invalidly formatted postal code is entered" },
+			"not empty": { "translations": ["niet leeg"], "description": "label for example input field showing not empty validation" },
+			"postal code": { "translations": ["postcode"], "description": "placeholder text for postal codes" },
 			"test string 1": { "translations": ["test tekst 1"], "description": "Just a test string" },
 			"test string 2 %1$s element": { "translations": ["test tekst 2 %1$s element", "test tekst 2 %1$s elementen"], "description": "Just a test string" },
-			"test string %2$s %1$s %3$s": { "translations": ["test text %1$s %2$s %3$s"], "description": "Just a test string" }
+			"test string %2$s %1$s %3$s": { "translations": ["test text %1$s %2$s %3$s"], "description": "Just a test string" },
+			"This field cannot be empty": { "translations": ["Dit veld moet ingevuld worden"], "description": "error message when a required field is left empty" },
+			"US Zip Code": { "translations": ["VS Postcode"], "description": "input label for US Zip Code" },
+			"zip code": { "translations": ["postcode"], "description": "placeholder text for US zip code" }
 		}
 	}
 }

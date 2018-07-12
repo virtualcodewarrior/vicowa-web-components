@@ -14,6 +14,11 @@
 			background-color: blue;
 			color: white;
 		}
+
+		vicowa-input {
+			width: 100%;
+			margin-bottom: 1em;
+		}
 	</style>
 </head>
 
@@ -22,12 +27,15 @@
 		<button id="english">English</button>
 		<button id="dutch">Nederlands</button>
 	</div>
-	<ul>
-		<li><vicowa-input label="input 1"></vicowa-input></li>
-		<li><vicowa-input label="input 2"></vicowa-input></li>
-		<li><vicowa-input label="input 3"></vicowa-input></li>
-		<li><vicowa-input label="input 4"></vicowa-input></li>
-	</ul>
+	<p>
+		<vicowa-input label="input 1"></vicowa-input>
+		<vicowa-input label="not empty" validator-name="notEmpty"></vicowa-input>
+		<vicowa-input label="email" validator-name="email" placeholder="email" tooltip="email"></vicowa-input>
+		<vicowa-input label="Canadian Postal Code" validator-name="postalCodeCA" placeholder="postal code" tooltip="postal code"></vicowa-input>
+		<vicowa-input label="Canadian Postal Code" validator-name="postalCodeCA" placeholder="postal code" tooltip="postal code" prevent-invalid-input value="H0H0H0"></vicowa-input>
+		<vicowa-input label="Dutch Postal Code" validator-name="postalCodeNL" placeholder="postal code" tooltip="postal code"></vicowa-input>
+		<vicowa-input label="US Zip Code" validator-name="postalCodeUS" top-label placeholder="zip code" tooltip="zip code"></vicowa-input>
+	</p>
 	<script type="module">
 		import translator from '../../src/utilities/translate.js';
 
