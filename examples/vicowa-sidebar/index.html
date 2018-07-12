@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>ViCoWa Web Components - vicowa-string</title>
+    <script src="../../node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js"></script>
+    <script src="../../node_modules/@webcomponents/html-imports/html-imports.min.js"></script>
+    <link rel="import" href="../../src/vicowa-sidebar/vicowa-sidebar.html">
+
+	<style>
+		body {
+			padding: 0;
+			margin: 0;
+		}
+		#left {
+			position: absolute;
+			left: 0;
+			top: 0;
+			right: 0;
+			bottom: 0;
+		}
+
+		div[slot] {
+			position: absolute;
+			left: 0;
+			top: 0;
+			right: 0;
+			bottom: 0;
+		}
+
+		#left > div[slot="side-content"] {
+			background: #aaeeff;
+		}
+		#right > div[slot="side-content"] {
+			background: #ffaaee;
+		}
+		#top > div[slot="side-content"] {
+			background: #aaffaa;
+		}
+		#bottom > div[slot="side-content"] {
+			background: #ffaaaa;
+		}
+
+		#bottom > div[slot="main-content"] {
+			background: #ffffaa;
+		}
+	</style>
+</head>
+
+<body lang="en_US">
+	<vicowa-sidebar id="left" resizeable floating>
+		<div slot="side-content">
+			Left Lorem ipsum etc
+		</div>
+		<div slot="main-content">
+			<vicowa-sidebar id="right" location="right" resizeable>
+				<div slot="side-content">Right Lorem ipsum etc</div>
+				<div slot="main-content">
+					<vicowa-sidebar id="top" location="top" resizeable>
+						<div slot="side-content">Top Lorem ipsum etc</div>
+						<div slot="main-content">
+							<vicowa-sidebar id="bottom" location="bottom" resizeable>
+								<div slot="side-content">Bottom Lorem ipsum etc</div>
+								<div slot="main-content">
+									<button id="toggle-left">Toggle Left</button>
+									<button id="toggle-right">Toggle Right</button>
+									<button id="toggle-top">Toggle Top</button>
+									<button id="toggle-bottom">Toggle Bottom</button>
+								</div>
+							</vicowa-sidebar>
+						</div>
+					</vicowa-sidebar>
+				</div>
+			</vicowa-sidebar>
+		</div>
+	</vicowa-sidebar>
+	<script type="module">
+		import { createQuickAccess } from '../../src/third_party/web-component-base-class/dist/tools.js';
+		const controls = createQuickAccess(document, 'id');
+
+		controls.toggleLeft.addEventListener('click', () => { controls.left.expanded = !controls.left.expanded; });
+		controls.toggleRight.addEventListener('click', () => { controls.right.expanded = !controls.right.expanded; });
+		controls.toggleTop.addEventListener('click', () => { controls.top.expanded = !controls.top.expanded; });
+		controls.toggleBottom.addEventListener('click', () => { controls.bottom.expanded = !controls.bottom.expanded; });
+	</script>
+</body>
+
+</html>
