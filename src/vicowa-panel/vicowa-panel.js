@@ -1,5 +1,9 @@
 import { webComponentBaseClass } from '../third_party/web-component-base-class/dist/webComponentBaseClass.js';
 
+function headerChanged(p_PanelControl) {
+	p_PanelControl.$.title = p_PanelControl.header;
+}
+
 const componentName = 'vicowa-panel';
 
 /**
@@ -21,7 +25,7 @@ class VicowaPanel extends webComponentBaseClass {
 				type: String,
 				value: '',
 				reflectToAttribute: true,
-				observer: '_headerChanged',
+				observer: headerChanged,
 			},
 			collapsible: {
 				type: Boolean,
