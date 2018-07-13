@@ -4,7 +4,13 @@ import { webComponentBaseClass } from '../third_party/web-component-base-class/d
 const iconSets = {};
 
 const componentName = 'vicowa-icon-set';
-window.customElements.define(componentName, class extends webComponentBaseClass {
+
+/**
+ * Class that represents the vicowa-icon-set custom element
+ * @extends webComponentBaseClass
+ * @property {string} name The name of this icon set
+ */
+class VicowaIconSet extends webComponentBaseClass {
 	static get is() { return componentName; }
 	constructor() {
 		super();
@@ -39,4 +45,6 @@ window.customElements.define(componentName, class extends webComponentBaseClass 
 		const parts = p_Name ? p_Name.split(':') : [];
 		return (parts.length > 1) ? ((iconSets[parts[0]]) ? iconSets[parts[0]][parts[1]] : null) : null;
 	}
-});
+}
+
+window.customElements.define(componentName, VicowaIconSet);

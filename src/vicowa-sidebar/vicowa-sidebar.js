@@ -1,7 +1,17 @@
 import { webComponentBaseClass } from '../third_party/web-component-base-class/dist/webComponentBaseClass.js';
 
 const componentName = 'vicowa-sidebar';
-window.customElements.define(componentName, class extends webComponentBaseClass {
+
+/**
+ * Class that represents the vicowa-sidebar custom element
+ * @extends webComponentBaseClass
+ * @property {string} location The location where the expandable bar is located.This can be one of left,right,top,bottom
+ * @property {boolean} expanded Indicate if the bar should be expanded or not
+ * @property {boolean} resizeable Indicate if the bar is user resizeable
+ * @property {boolean} floating Indicate if the bar if in floating (on top) mode
+ * @property {boolean} forceNonFloating Indicate that the bar will not switch automatically to floating when running in a small size (like mobile phone)
+ */
+class VicowaSideBar extends webComponentBaseClass {
 	static get is() { return componentName; }
 	constructor() {
 		super();
@@ -94,4 +104,6 @@ window.customElements.define(componentName, class extends webComponentBaseClass 
 		this.$.resizeHandle.addEventListener('mousedown', handleDragStart);
 		this.$.resizeHandle.addEventListener('touchstart', handleTouchDragStart);
 	}
-});
+}
+
+window.customElements.define(componentName, VicowaSideBar);

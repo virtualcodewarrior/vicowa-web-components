@@ -2,7 +2,15 @@ import { webComponentBaseClass } from '../third_party/web-component-base-class/d
 import translator from '../utilities/translate.js';
 
 const componentName = 'vicowa-string';
-window.customElements.define(componentName, class extends webComponentBaseClass {
+
+/**
+ * Class to represent the vicowa-string custom element
+ * @extends webComponentBaseClass
+ * @property {string} string The string that will be translated and displayed
+ * @property {array} arguments Arguments to be used in a sprintf manner with the current active string
+ * @property {number} pluralNumber A number to indicate the number of items this string applies to, the translator will decide if plural form is required for the specified number of items
+ */
+class VicowaString extends webComponentBaseClass {
 	static get is() { return componentName; }
 	constructor() {
 		super();
@@ -47,4 +55,6 @@ window.customElements.define(componentName, class extends webComponentBaseClass 
 			this.updateTranslation();
 		}, this);
 	}
-});
+}
+
+window.customElements.define(componentName, VicowaString);

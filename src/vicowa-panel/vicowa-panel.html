@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<link rel="import" href="../vicowa-string/vicowa-string.html">
+<div>
+    <template id="vicowa-panel">
+        <style>
+        </style>
+        <div id="main">
+            <div id="header"><vicowa-string id="title"></vicowa-string><slot name="header-content"></slot></div>
+            <div id="content"><slot name="main-content"></slot></div>
+        </div>
+    </template>
+    <script>
+		(function storeTemplate() {
+			const template = document.currentScript.parentNode.querySelector('template');
+			window.webComponentTemplates = window.webComponentTemplates || new Map();
+			window.webComponentTemplates.set(template.getAttribute('id'), template);
+		})();
+    </script>
+    <script type="module" src="./vicowa-panel.js"></script>
+</div>

@@ -23,8 +23,13 @@
 				box-sizing: border-box;
 			}
 
-			:host[hide-label] #label {
+			:host([hide-label]) #label {
 				display: none;
+			}
+
+			:host([disabled]) {
+				opacity: 0.5;
+				pointer-events: none;
 			}
 
 			#control-container {

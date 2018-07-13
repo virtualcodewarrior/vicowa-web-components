@@ -1,7 +1,13 @@
 import { webComponentBaseClass } from '../third_party/web-component-base-class/dist/webComponentBaseClass.js';
 
 const componentName = 'vicowa-icon';
-window.customElements.define(componentName, class extends webComponentBaseClass {
+
+/**
+ * Class to represent the vicowa-icon custom element
+ * @extends webComponentBaseClass
+ * @property {string} icon Name of the icon to use this should be in the form <iconSet>:<iconName> (e.g general:file)
+ */
+class VicowaIcon extends webComponentBaseClass {
 	static get is() { return componentName; }
 	constructor() {
 		super();
@@ -26,4 +32,6 @@ window.customElements.define(componentName, class extends webComponentBaseClass 
 			this.$.iconContainer.appendChild(icon.cloneNode(true));
 		}
 	}
-});
+}
+
+window.customElements.define(componentName, VicowaIcon);

@@ -3,6 +3,7 @@
     "server": "node ./node_modules/http-server/bin/http-server -c-1 -p 8989",
     "start": "npm run server",
     "build": "node build.js",
+    "doc": "node ./node_modules/jsdoc/jsdoc.js src -r -d doc -c jsdoc.conf.js",
     "lint": "node ./node_modules/eslint/bin/eslint.js --color -c ./eslintrc.js \"src/**/*.js\" \"test/**/*.js\"",
     "unittest": "node ./node_modules/karma/bin/karma start karma.conf.js --single-run",
     "watch-test": "node ./node_modules/karma/bin/karma start karma.conf.js --watch",
@@ -26,6 +27,7 @@
     "fs-extra": "^6.0.1",
     "http-server": "^0.11.1",
     "jasmine": "^3.1.0",
+    "jsdoc": "^3.5.5",
     "karma": "^2.0.4",
     "karma-chrome-launcher": "^2.2.0",
     "karma-coverage": "^1.1.2",
@@ -40,6 +42,6 @@
     "@webcomponents/html-imports": "git+https://git@github.com/webcomponents/html-imports.git",
     "@webcomponents/webcomponentsjs": "^2.0.2",
     "jed": "^1.1.1",
-    "web-component-base-class": "^0.1.4"
+    "web-component-base-class": "^0.1.5"
   }
 }

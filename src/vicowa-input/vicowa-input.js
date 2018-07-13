@@ -4,20 +4,78 @@ import validators from '../utilities/validators.js';
 
 /**
  * Validate the value for the given input element
- * @param {webComponentBaseClass} p_Element Element for which the value is validated
+ * @param {VicowaInput} p_InputControl Element for which the value is validated
  * @param {string} p_Value The value to validate
  * @param {boolean} p_ShowMessage true when an error message should be shown when invalid or false to not show the error message
  * @returns {{ valid: {boolean}, error: {string} }} Returns an object that indicates if the result was valid or not
  */
-function validate(p_Element, p_Value, p_ShowMessage) {
-	const validation = (validators[p_Element.validatorName] || p_Element.validator || (() => ({ valid: true })))(p_Value);
-	p_Element.$.error.string = (!validation.valid && p_ShowMessage) ? validation.error || 'something is wrong' : '';
-	p_Element.classList.toggle('invalid', !validation.valid && p_ShowMessage);
+function validate(p_InputControl, p_Value, p_ShowMessage) {
+	const validation = (validators[p_InputControl.validatorName] || p_InputControl.validator || (() => ({ valid: true })))(p_Value);
+	p_InputControl.$.error.string = (!validation.valid && p_ShowMessage) ? validation.error || 'something is wrong' : '';
+	p_InputControl.classList.toggle('invalid', !validation.valid && p_ShowMessage);
 	return validation;
 }
 
+/**
+ * Handler to be called when the value gets changed
+ * @param {VicowaInput} p_InputControl The control for which this handler is called
+ * @param {string} p_NewValue The new value
+ * @param {string} p_OldValue The old value
+ */
+function valueChanged(p_InputControl, p_NewValue, p_OldValue) {
+	p_InputControl.$.input.value = p_NewValue;
+	if (p_InputControl.onChange) {
+		p_InputControl.onChange(p_InputControl.value, p_OldValue);
+	}
+
+	validate(p_InputControl, p_InputControl.value, true);
+}
+
+/**
+ * Handler to be called when the label is changed
+ * @param {VicowaInput} p_InputControl The control for which this handler is called
+ */
+function labelChanged(p_InputControl) {
+	p_InputControl.$.label.string = p_InputControl.label;
+}
+
+/**
+ * Handler to be called when the placeholder text is changed
+ * @param {VicowaInput} p_InputControl The control for which this handler is called
+ */
+function placeholderChanged(p_InputControl) {
+	p_InputControl.$.input.placeholder = p_InputControl.placeholder;
+	p_InputControl.updateTranslation();
+}
+
+/**
+ * Handler to be called when the tooltip text is changed
+ * @param {VicowaInput} p_InputControl The control for which this handler is called
+ */
+function tooltipChanged(p_InputControl) {
+	p_InputControl.$.input.title = p_InputControl.tooltip;
+	p_InputControl.updateTranslation();
+}
+
 const componentName = 'vicowa-input';
-window.customElements.define(componentName, class extends webComponentBaseClass {
+
+/**
+ * Class that represents the vicowa-input custom element
+ * @extends webComponentBaseClass
+ * @property {string} validatorName Name of the validator function to use with this instance or empty for no validation
+ * @property {string} value The string representation of the value for this instance
+ * @property {string} label The label for this input element or empty if it has no label
+ * @property {boolean} topLabel Boolean that indicates if the label should e on top of the input control, default is to the left
+ * @property {boolean} hideLabel Boolean to indicate that the label should be hidden
+ * @property {boolean} static Boolean to indicate if the input should be drawn as if it is a static field, this will disable all input on it
+ * @property {string} placeholder Placeholder text to show in the control
+ * @property {number} index Tab index
+ * @property {string} tooltip Tooltip string for the control
+ * @property {boolean} disabled Indicates if the control is disabled or not
+ * @property {function} onChange Assign a function to this member that will get called when the value changes
+ * @property {function} validator Assign a custom validator function to this to use instead of one of the pre defined ones
+ */
+class VicowaInput extends webComponentBaseClass {
 	static get is() { return componentName; }
 	constructor() {
 		super();
@@ -35,13 +93,13 @@ window.customElements.define(componentName, class extends webComponentBaseClass 
 				type: String,
 				value: '',
 				reflectToAttribute: true,
-				observer: '_valueChanged',
+				observer: valueChanged,
 			},
 			label: {
 				type: String,
 				value: '',
 				reflectToAttribute: true,
-				observer: '_labelChanged',
+				observer: labelChanged,
 			},
 			topLabel: {
 				type: Boolean,
@@ -62,7 +120,7 @@ window.customElements.define(componentName, class extends webComponentBaseClass 
 				type: String,
 				value: '',
 				reflectToAttribute: true,
-				observer: '_placeholderChanged',
+				observer: placeholderChanged,
 			},
 			index: {
 				type: Number,
@@ -73,9 +131,13 @@ window.customElements.define(componentName, class extends webComponentBaseClass 
 				type: String,
 				value: '',
 				reflectToAttribute: true,
-				observer: '_tooltipChanged',
+				observer: tooltipChanged,
 			},
-
+			disabled: {
+				type: Boolean,
+				value: false,
+				reflectToAttribute: true,
+			},
 		};
 	}
 
@@ -106,28 +168,7 @@ window.customElements.define(componentName, class extends webComponentBaseClass 
 		}, this);
 	}
 
-	_valueChanged(p_NewValue, p_OldValue) {
-		this.$.input.value = p_NewValue;
-		if (this.onChange) {
-			this.onChange(this.value, p_OldValue);
-		}
-
-		validate(this, this.value, true);
-	}
-
 	get valid() { return validate(this, this.value, true).valid; }
+}
 
-	_labelChanged() {
-		this.$.label.string = this.label;
-	}
-
-	_placeholderChanged() {
-		this.$.input.placeholder = this.placeholder;
-		this.updateTranslation();
-	}
-
-	_tooltipChanged() {
-		this.$.input.title = this.tooltip;
-		this.updateTranslation();
-	}
-});
+window.customElements.define(componentName, VicowaInput);

@@ -1,27 +1,27 @@
 {
-  "_from": "web-component-base-class@0.1.4",
-  "_id": "web-component-base-class@0.1.4",
+  "_from": "web-component-base-class@0.1.5",
+  "_id": "web-component-base-class@0.1.5",
   "_inBundle": false,
-  "_integrity": "sha512-n5Y+rMKMft1EM/NQ9VQk4NlXj3tRKW+Q5hICY2t+hjxXbgyTv7P6z6c7c+91Nr0Z7Vn1Z1nhVLtMQm5N80E8Mg==",
+  "_integrity": "sha512-u4AutjQ3pmZcBC8TY9Fmz7pq3QxiZv1YDbHrHgC3KQclCmaq6IlVMUxgk5Vb+OOWjKW4k+z4g2kpdhY9skHvNw==",
   "_location": "/web-component-base-class",
   "_phantomChildren": {},
   "_requested": {
     "type": "version",
     "registry": true,
-    "raw": "web-component-base-class@0.1.4",
+    "raw": "web-component-base-class@0.1.5",
     "name": "web-component-base-class",
     "escapedName": "web-component-base-class",
-    "rawSpec": "0.1.4",
+    "rawSpec": "0.1.5",
     "saveSpec": null,
-    "fetchSpec": "0.1.4"
+    "fetchSpec": "0.1.5"
   },
   "_requiredBy": [
     "#USER",
     "/"
   ],
-  "_resolved": "https://registry.npmjs.org/web-component-base-class/-/web-component-base-class-0.1.4.tgz",
-  "_shasum": "fa70180a4b6a73c9620b3fcfcfbdf654dcc9dfe5",
-  "_spec": "web-component-base-class@0.1.4",
+  "_resolved": "https://registry.npmjs.org/web-component-base-class/-/web-component-base-class-0.1.5.tgz",
+  "_shasum": "fabb3806dccb5ad49da3cdbba9c6990b2bfbad48",
+  "_spec": "web-component-base-class@0.1.5",
   "_where": "/home/rodney/prj/vicowa-web-components",
   "author": {
     "name": "Rodney Draaisma"
@@ -79,5 +79,5 @@
     "unittest": "node ./node_modules/karma/bin/karma start karma.conf.js --single-run",
     "watch-test": "node ./node_modules/karma/bin/karma start karma.conf.js --watch"
   },
-  "version": "0.1.4"
+  "version": "0.1.5"
 }
