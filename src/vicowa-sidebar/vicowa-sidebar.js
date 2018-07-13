@@ -49,12 +49,19 @@ window.customElements.define(componentName, class extends webComponentBaseClass 
 			const newSize = startSize - (invertFactor * delta);
 			this.$.sideContent.style.flexBasis = `${Math.min(maxSize, Math.max(0, newSize))}px`;
 			if (vertical) {
-				this.$.innerContainer.style.height = `${Math.min(maxSize, Math.max(0, newSize))}px`;
+				const resizerSize = this.$.resizeHandle.getBoundingClientRect().height;
+				this.$.innerContainer.style.minHeight = `${Math.min(maxSize, Math.max(0, newSize - resizerSize))}px`;
 				this.$.sideContent.style.height = `${Math.min(maxSize, Math.max(0, newSize))}px`;
 			} else {
-				this.$.innerContainer.style.width = `${Math.min(maxSize, Math.max(0, newSize))}px`;
+				const resizerSize = this.$.resizeHandle.getBoundingClientRect().width;
+				this.$.innerContainer.style.minWidth = `${Math.min(maxSize, Math.max(0, newSize - resizerSize))}px`;
 				this.$.sideContent.style.width = `${Math.min(maxSize, Math.max(0, newSize))}px`;
 			}
+		};
+		const handleTouchDrag = (p_Event) => {
+			p_Event.clientX = p_Event.touches[0].clientX;
+			p_Event.clientY = p_Event.touches[0].clientY;
+			handleDrag(p_Event);
 		};
 
 		const handleDragEnd = () => {
@@ -62,7 +69,7 @@ window.customElements.define(componentName, class extends webComponentBaseClass 
 			this.removeAutoEventListener(window, 'mouseup', handleDragEnd);
 			this.removeAutoEventListener(window, 'touchend', handleDragEnd);
 			this.removeAutoEventListener(window, 'mousemove', handleDrag);
-			this.removeAutoEventListener(window, 'touchmove', handleDrag);
+			this.removeAutoEventListener(window, 'touchmove', handleTouchDrag);
 		};
 
 		const handleDragStart = (p_Event) => {
@@ -73,13 +80,18 @@ window.customElements.define(componentName, class extends webComponentBaseClass 
 			this.addAutoEventListener(window, 'mouseup', handleDragEnd);
 			this.addAutoEventListener(window, 'touchend', handleDragEnd);
 			this.addAutoEventListener(window, 'mousemove', handleDrag);
-			this.addAutoEventListener(window, 'touchmove', handleDrag);
+			this.addAutoEventListener(window, 'touchmove', handleTouchDrag);
 			this.classList.toggle('resizing', true);
 			startPos = (vertical) ? p_Event.clientY : p_Event.clientX;
 			console.log(`start ${startPos}`);
 		};
+		const handleTouchDragStart = (p_Event) => {
+			p_Event.clientX = p_Event.touches[0].clientX;
+			p_Event.clientY = p_Event.touches[0].clientY;
+			handleDragStart(p_Event);
+		};
 
 		this.$.resizeHandle.addEventListener('mousedown', handleDragStart);
-		this.$.resizeHandle.addEventListener('touchstart', handleDragStart);
+		this.$.resizeHandle.addEventListener('touchstart', handleTouchDragStart);
 	}
 });

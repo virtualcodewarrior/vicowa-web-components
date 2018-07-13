@@ -1,41 +1,46 @@
 <!DOCTYPE html>
 <div>
     <template id="vicowa-sidebar">
-        <style>
-            :host {
-                display: block;
-            }
+		<style>
+			:host {
+				display: block;
+			}
 
-            #main {
-                position: absolute;
-                display: flex;
-                flex-direction: row;
-                align-items: stretch;
-                align-content: stretch;
-                box-sizing: border-box;
-                left: 0;
-                top: 0;
-                bottom: 0;
-                right: 0;
-            }
-
-            :host([location="top"]) #main,
-            :host([location="bottom"]) #main,
-			:host([location="top"]) #side-content,
-			:host([location="bottom"]) #side-content {
-                flex-direction: column;
-            }
-
-            #side-content {
-                position: relative;
+			#main {
+				position: absolute;
 				display: flex;
 				flex-direction: row;
 				align-items: stretch;
 				align-content: stretch;
-                flex: 0 0 var(--vicowa-sidebar-size, 300px);
-                order: 0;
-                overflow: hidden;
-            }
+				box-sizing: border-box;
+				left: 0;
+				top: 0;
+				bottom: 0;
+				right: 0;
+			}
+
+			:host([location="top"]) #main,
+			:host([location="bottom"]) #main,
+			:host([location="top"]) #side-content,
+			:host([location="bottom"]) #side-content {
+				flex-direction: column;
+			}
+
+			#side-content {
+				position: relative;
+				display: flex;
+				flex-direction: row;
+				align-items: stretch;
+				align-content: stretch;
+				justify-content: flex-end;
+				flex: 0 0 var(--vicowa-sidebar-size, 300px);
+				order: 0;
+			}
+
+			:host([location="right"]) #side-content,
+			:host([location="bottom"]) #side-content {
+				justify-content: flex-start;
+			}
 
 			:host([location="left"]) #side-content,
 			:host([location="right"]) #side-content {
@@ -48,100 +53,121 @@
 			}
 
 			:host([expanded][location="left"]) #side-content,
-            :host([expanded][location="right"]) #side-content {
-                max-width: 100%;
+			:host([expanded][location="right"]) #side-content {
+				max-width: 100%;
 				width: var(--vicowa-sidebar-size, 300px);
-                transition: max-width 0.5s cubic-bezier(1,0,1,0);
-            }
+				transition: max-width 0.5s cubic-bezier(1,0,1,0);
+			}
 
-            :host([expanded][location="top"]) #side-content,
-            :host([expanded][location="bottom"]) #side-content {
-                transition: max-height 0.5s cubic-bezier(1,0,1,0);
+			:host([expanded][location="top"]) #side-content,
+			:host([expanded][location="bottom"]) #side-content {
+				transition: max-height 0.5s cubic-bezier(1,0,1,0);
 				height: var(--vicowa-sidebar-size, 300px);
-                max-height: 100%;
-            }
+				max-height: 100%;
+			}
 
-            :host([location="left"]) #side-content,
-            :host([location="right"]) #side-content {
-                transition: max-width 0.75s cubic-bezier(0,1,0,1);
-                max-width: 0;
-            }
+			:host([location="left"]) #side-content,
+			:host([location="right"]) #side-content {
+				transition: max-width 0.75s cubic-bezier(0,1,0,1);
+				max-width: 0;
+			}
 
-            :host([location="top"]) #side-content,
-            :host([location="bottom"]) #side-content {
-                transition: max-height 0.75s cubic-bezier(0,1,0,1);
-                max-height: 0;
-            }
+			:host([location="top"]) #side-content,
+			:host([location="bottom"]) #side-content {
+				transition: max-height 0.75s cubic-bezier(0,1,0,1);
+				max-height: 0;
+			}
 
-            #innerContainer {
-                display: block;
-                position: relative;
+			#innerContainer {
+				display: block;
+				position: relative;
 				flex: 1 1 auto;
-                box-sizing: border-box;
-                width: calc(var(--vicowa-sidebar-size, 300px) - var(--vicowa-sidebar-resizer-size, 5px));
-                height: 100%;
+				box-sizing: border-box;
+				min-width: calc(var(--vicowa-sidebar-size, 300px) - var(--vicowa-sidebar-resizer-size, 5px));
+				height: 100%;
 				order: 1;
-            }
+				overflow: hidden;
+			}
 
-            :host([location="top"]) #innerContainer,
-            :host([location="bottom"]) #innerContainer {
-                width: 100%;
-                height: calc(var(--vicowa-sidebar-size, 300px) - var(--vicowa-sidebar-resizer-size, 5px));
-            }
+			:host([location="top"]) #innerContainer,
+			:host([location="bottom"]) #innerContainer {
+				width: 100%;
+				height: calc(var(--vicowa-sidebar-size, 300px) - var(--vicowa-sidebar-resizer-size, 5px));
+			}
 
-            #main-content {
-                position: relative;
-                flex: 1 1 auto;
-                order: 2;
-                overflow: hidden;
-            }
+			#main-content {
+				position: relative;
+				flex: 1 1 auto;
+				order: 2;
+				overflow: hidden;
+			}
 
-            :host([location="right"]) #side-content,
-            :host([location="bottom"]) #side-content {
-                order: 2;
-            }
+			:host([location="right"]) #side-content,
+			:host([location="bottom"]) #side-content {
+				order: 2;
+			}
 
 			:host([location="right"]) #resize-handle,
 			:host([location="bottom"]) #resize-handle {
 				order: 0;
 			}
 
-            :host([location="right"]) #main-content,
-            :host([location="bottom"]) #main-content {
-                order: 0;
-            }
+			:host([location="right"]) #main-content,
+			:host([location="bottom"]) #main-content {
+				order: 0;
+			}
 
-            #resize-handle {
-                display: none;
-                cursor: col-resize;
-                flex: 0 0 var(--vicowa-sidebar-resizer-size, 5px);
-                order: 2;
+			#resize-handle {
+				position: relative;
+				display: none;
+				cursor: col-resize;
+				flex: 0 0 var(--vicowa-sidebar-resizer-size, 5px);
+				order: 2;
 				background: white;
-            }
+				overflow: visible;
+			}
 
-            .dragarea {
-                display: none;
-                position: fixed;
-                left: 0;
-                top: 0;
-                right: 0;
-                bottom: 0;
-                background: transparent;
-            }
+			#hitarea {
+				background: transparent;
+				position: absolute;
+				width: var(--vicowa-sidebar-min-hit-area, 7px);
+				left: var(--vicowa-sidebar-min-hit-area-start, -3px);
+				top: 0;
+				height: 100%;
+			}
 
-            :host(.resizing) .dragarea {
-                display: block;
-                z-index: 10;
-            }
+			:host([location="top"]) #hitarea,
+			:host([location="bottom"]) #hitarea {
+				width: 100%;
+				left: 0;
+				top: var(--vicowa-sidebar-min-hit-area-start, -3px);
+				height: var(--vicowa-sidebar-min-hit-area, 7px);
+			}
 
-            :host([location="top"]) #resize-handle,
-            :host([location="bottom"]) #resize-handle {
-                cursor: row-resize;
-            }
 
-            :host([resizeable]) #resize-handle {
-                display: block;
-            }
+			.dragarea {
+				display: none;
+				position: fixed;
+				left: 0;
+				top: 0;
+				right: 0;
+				bottom: 0;
+				background: transparent;
+			}
+
+			:host(.resizing) .dragarea {
+				display: block;
+				z-index: 10;
+			}
+
+			:host([location="top"]) #resize-handle,
+			:host([location="bottom"]) #resize-handle {
+				cursor: row-resize;
+			}
+
+			:host([resizeable]) #resize-handle {
+				display: block;
+			}
 
 			:host([floating]) main {
 				display: block;
@@ -153,6 +179,10 @@
 				right: 0;
 				top: 0;
 				bottom: 0;
+			}
+
+			:host([floating]) #side-content {
+				box-shadow: 0 0 12px gray;
 			}
 
 			:host([floating][location="left"]) #side-content {
@@ -176,15 +206,18 @@
 			}
 
 			@media screen and (max-width: 600px) {
-				#side-content {
-					opacity: 0.5;
+				:host(:not([force-non-floating])[location="left"]) #side-content,
+				:host(:not([force-non-floating])[location="right"]) #side-content {
+					box-shadow: 0 0 12px gray;
 				}
 
-				:host(:not([force-non-floating])) main {
+				:host(:not([force-non-floating])[location="left"]) main,
+				:host(:not([force-non-floating])[location="right"]) main {
 					display: block;
 				}
 
-				:host(:not([force-non-floating])) #main-content {
+				:host(:not([force-non-floating])[location="left"]) #main-content,
+				:host(:not([force-non-floating])[location="right"]) #main-content {
 					position: absolute;
 					left: 0;
 					right: 0;
@@ -197,28 +230,47 @@
 					left: 0;
 				}
 
-				:host(:not([force-non-floating])[location="top"]) #side-content {
-					position: absolute;
-					top: 0;
-				}
-
 				:host(:not([force-non-floating])[location="right"]) #side-content {
 					position: absolute;
 					right: 0;
+				}
+			}
+			@media screen and (max-height: 500px) {
+				:host(:not([force-non-floating])[location="top"]) #side-content,
+				:host(:not([force-non-floating])[location="bottom"]) #side-content {
+					box-shadow: 0 0 12px gray;
+				}
+
+				:host(:not([force-non-floating])[location="top"]) main,
+				:host(:not([force-non-floating])[location="bottom"]) main {
+					display: block;
+				}
+
+				:host(:not([force-non-floating])[location="top"]) #main-content,
+				:host(:not([force-non-floating])[location="bottom"]) #main-content {
+					position: absolute;
+					left: 0;
+					right: 0;
+					top: 0;
+					bottom: 0;
+				}
+
+				:host(:not([force-non-floating])[location="top"]) #side-content {
+					position: absolute;
+					top: 0;
 				}
 
 				:host(:not([force-non-floating])[location="bottom"]) #side-content {
 					position: absolute;
 					bottom: 0;
 				}
-            }
-
-        </style>
+			}
+		</style>
         <div id="main">
 			<div id="main-content"><slot name="main-content"></slot></div>
-			<div id="side-content"><div id="resize-handle"><div class="dragarea"></div></div><div id="innerContainer"><slot name="side-content"></slot></div></div>
+			<div id="side-content"><div id="innerContainer"><slot name="side-content"></slot></div><div id="resize-handle"><div id="hitarea"></div><slot name="hitarea-content"></slot><div class="dragarea"></div></div></div>
         </div>
-    </template>
+	</template>
     <script>
 		(function storeTemplate() {
 			const template = document.currentScript.parentNode.querySelector('template');
