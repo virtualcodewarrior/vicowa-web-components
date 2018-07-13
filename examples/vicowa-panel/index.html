@@ -18,13 +18,43 @@
 		body {
 			padding: 0;
 			margin: 0;
+			display: flex;
+			flex-wrap: wrap;
+			--vicowa-panel-header-background: #cccccc;
+			--vicowa-panel-footer-background: #ffffaa;
+			--vicowa-panel-main-background: #5fbbbf;
+			--vicowa-panel-header-height: 40px;
+			--vicowa-panel-footer-height: 30px;
 		}
+
+		vicowa-panel {
+			position: relative;
+			width: 200px;
+			min-width: 200px;
+		}
+
+		.fixed-height {
+			position: relative;
+			height: 400px;
+			overflow: auto;
+		}
+
+		div[slot="header-content"] {
+			overflow: hidden;
+			white-space: nowrap;
+			text-overflow: ellipsis;
+		}
+
+		div[slot="footer-content"] {
+			padding: 0 0 0 5px;
+		}
+
 	</style>
 </head>
 
 <body lang="en_US">
 	<vicowa-panel>
-		<div slot="header-content"></div>
+		<div slot="header-content">Header</div>
 		<div slot="main-content">
 			<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Alias asperiores aspernatur commodi delectus
 				doloremque ducimus earum, enim eos expedita fuga inventore iure laudantium odit quia quod temporibus ut
@@ -38,30 +68,49 @@
 			<p>Accusamus aliquam, cupiditate, deserunt dignissimos dolorum error inventore, labore minima nostrum nulla
 				numquam odio quod similique unde voluptatibus. At delectus dolorum harum nihil nulla optio, sunt.
 				Dolores ea obcaecati sunt!</p>
-			<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Adipisci culpa id, iure laboriosam maxime nobis
-				nulla obcaecati repellendus similique! Dignissimos maiores maxime necessitatibus odio optio possimus
-				recusandae sed ullam. Eos.</p>
-			<p>Amet, delectus ea enim impedit minus molestias odit possimus rem sint unde. Culpa delectus distinctio
-				eaque esse officia, quae rerum. Ab accusantium aliquam amet eius eveniet inventore ipsa provident
-				voluptatem?</p>
-			<p>Asperiores atque esse iusto nam neque nisi, officia quibusdam quos repellendus soluta totam vitae! Alias
-				animi debitis eos inventore ipsam ipsum iusto magni maiores minus, pariatur rerum, totam ullam,
-				vitae!</p>
-			<p>Accusamus accusantium adipisci amet aperiam aspernatur, dolor inventore ipsum labore laborum modi
-				molestias natus odit officiis omnis, quis sed vel. Alias consequuntur cupiditate ea error explicabo
-				ipsum optio temporibus vel.</p>
-			<p>Dolor eveniet fuga illo, quos recusandae soluta? Atque aut autem beatae cum eaque enim ex iste labore
-				odio quis? Ad aperiam assumenda beatae ea laboriosam natus officiis sapiente velit veniam.</p>
-			<p>Accusantium adipisci cumque, esse iste maxime quam quo quos. Culpa cum dolor ducimus eligendi excepturi
-				laborum minus nisi sint vel! At beatae delectus dicta ducimus fugiat harum nostrum tempore
-				veritatis.</p>
-			<p>A aliquam aperiam iusto repellat sapiente totam? Ad culpa itaque laborum pariatur quidem quis vel velit!
-				Accusantium at blanditiis cum delectus, eum ex magni nihil praesentium quibusdam quos! Rerum,
-				voluptate.</p>
-			<p>Ab aperiam aut cupiditate doloribus ea eaque eos expedita fuga fugiat ipsa labore laudantium nihil
-				nostrum numquam possimus quam saepe sint, soluta totam velit? Expedita minima non quidem repellendus
-				suscipit.</p>
 		</div>
+		<div slot="footer-content">Footer</div>
+	</vicowa-panel>
+	<vicowa-panel collapsible>
+		<div slot="header-content">Collapsible Header</div>
+		<div slot="main-content">
+			<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Alias asperiores aspernatur commodi delectus
+				doloremque ducimus earum, enim eos expedita fuga inventore iure laudantium odit quia quod temporibus ut
+				voluptatem, voluptatum.</p>
+			<p>Accusamus aspernatur beatae cumque, deserunt doloremque doloribus error explicabo fugiat hic impedit
+				laborum magnam minus molestiae nobis nostrum obcaecati quia rem rerum sed sequi similique sint soluta
+				velit, voluptas voluptates.</p>
+			<p>Architecto assumenda, consectetur error expedita libero, minus natus nulla, odio perspiciatis placeat
+				possimus tempora? Culpa dolor eligendi harum iusto labore magnam maiores placeat possimus, quas quo,
+				quos, sapiente tempore ullam.</p>
+			<p>Accusamus aliquam, cupiditate, deserunt dignissimos dolorum error inventore, labore minima nostrum nulla
+				numquam odio quod similique unde voluptatibus. At delectus dolorum harum nihil nulla optio, sunt.
+				Dolores ea obcaecati sunt!</p>
+		</div>
+		<div slot="footer-content">Footer</div>
+	</vicowa-panel>
+	<vicowa-panel collapsible>
+		<div slot="header-content">Collapsible Header with fixed content</div>
+		<div class="fixed-height" slot="main-content">
+			<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aperiam, at consectetur culpa dignissimos
+				distinctio eaque esse facere, fuga impedit officia omnis possimus quae quasi quis saepe, similique
+				soluta. Eligendi, similique!</p>
+			<p>Ab hic id in molestias quis repellat rerum sunt, voluptate. A ab accusantium architecto at autem
+				blanditiis commodi error excepturi expedita facere iure magnam magni necessitatibus non, odit officia
+				pariatur.</p>
+			<p>Debitis ducimus fugit, harum, minus optio possimus quibusdam quo saepe, sed temporibus tenetur voluptate
+				voluptatem! A, alias ea fugit incidunt molestias nemo placeat quos? Adipisci atque fugit nesciunt quia
+				sequi!</p>
+			<p>Aliquam aperiam asperiores at consectetur, deleniti eveniet incidunt ipsam itaque minima nulla odio
+				perferendis placeat tempora? Adipisci animi architecto distinctio expedita fugiat mollitia nisi,
+				perferendis, provident repellat soluta veniam, voluptas.</p>
+			<p>Accusamus ad aliquid ea ex illum labore magni maiores pariatur porro quibusdam sapiente sequi similique
+				sit, ut vero. Accusantium delectus doloribus est, inventore magni modi non omnis optio quia ullam!</p>
+			<p>Aliquid aperiam beatae delectus dolores ea enim error exercitationem facilis id, ipsum maxime modi nobis
+				perferendis quis tenetur, velit voluptatibus! Assumenda atque cum cumque explicabo fugit id possimus
+				praesentium soluta!</p>
+		</div>
+		<div slot="footer-content">Footer</div>
 	</vicowa-panel>
 	<script type="module">
 	</script>
