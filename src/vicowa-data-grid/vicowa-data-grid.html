@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<link rel="import" href="../vicowa-resize-detector/vicowa-resize-detector.html">
+<div>
+    <template id="vicowa-data-grid">
+        <style>
+            :host {
+                display: block;
+                position: relative;
+            }
+            #columns {
+                display: table-column-group;
+            }
+            #rows .row {
+                display: table-row;
+            }
+
+            #main {
+                display: table;
+                position: relative;
+            }
+        </style>
+        <div id="main">
+            <vicowa-resize-detector id="resize-detector"></vicowa-resize-detector>
+            <div id="columns">
+            </div>
+            <div id="content">
+                <div id="rows">
+
+                </div>
+            </div>
+        </div>
+        <template id="row">
+            <div class="row"></div>
+        </template>
+
+    </template>
+    <script>
+		(function storeTemplate() {
+			const template = document.currentScript.parentNode.querySelector('template');
+			window.webComponentTemplates = window.webComponentTemplates || new Map();
+			window.webComponentTemplates.set(template.getAttribute('id'), template);
+		})();
+    </script>
+    <script type="module" src="./vicowa-data-grid.js"></script>
+</div>

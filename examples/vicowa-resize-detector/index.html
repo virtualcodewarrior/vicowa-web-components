@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>ViCoWa Web Components - vicowa-string</title>
+    <script src="../../node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js"></script>
+    <script src="../../node_modules/@webcomponents/html-imports/html-imports.min.js"></script>
+    <link rel="import" href="../../src/vicowa-resize-detector/vicowa-resize-detector.html">
+
+	<style>
+		.resizeable {
+			border: 1px solid cyan;
+			height: 75px;
+			width: 75px;
+			user-select: none;
+		}
+
+		.resizeable .change {
+			background-color: transparent;
+			transition: background-color 0.5s;
+			color: transparent;
+		}
+
+		.resizeable .change.flash {
+			background-color: red;
+			color: white;
+		}
+	</style>
+</head>
+
+<body lang="en_US">
+	<div class="container">
+		<div class="resizeable" style="position: relative">click me<div class="change"></div><vicowa-resize-detector id="resizeDetector1"></vicowa-resize-detector></div>
+		<div class="resizeable" style="position: relative">click me<div class="change"></div><vicowa-resize-detector id="resizeDetector2"></vicowa-resize-detector></div>
+	</div>
+	<script>
+		const doFlash = (p_Element) => { p_Element.classList.toggle('flash', true); setTimeout(() => p_Element.classList.toggle('flash', false), 500); };
+		const detector1 = document.querySelector('#resizeDetector1');
+		detector1.addObserver((p_Change) => {
+			const changeNotify = detector1.parentElement.querySelector('.change');
+			changeNotify.textContent = (p_Change.oldRect.width < p_Change.newRect.width) ? 'width growing' : (p_Change.oldRect.width > p_Change.newRect.width) ? 'width shrinking' : (p_Change.oldRect.height < p_Change.newRect.height) ? 'height growing' : 'height shrinking';
+			doFlash(changeNotify);
+		}, window);
+		const detector2 = document.querySelector('#resizeDetector2');
+		detector2.addObserver((p_Change) => {
+			const changeNotify = detector2.parentElement.querySelector('.change');
+			changeNotify.textContent = (p_Change.oldRect.width < p_Change.newRect.width) ? 'width growing' : (p_Change.oldRect.width > p_Change.newRect.width) ? 'width shrinking' : (p_Change.oldRect.height < p_Change.newRect.height) ? 'height growing' : 'height shrinking';
+			doFlash(changeNotify);
+		}, window);
+		Array.from(document.querySelectorAll('.resizeable')).forEach((p_Elem, p_Index) => {
+			let size = 75;
+			let direction = 1;
+
+			p_Elem.addEventListener('click', () => {
+				size += 25 * direction;
+				if (size > 400) {
+					direction = -1;
+				}
+				if (size < 100) {
+					direction = 1;
+				}
+				if (p_Index%2) {
+					p_Elem.style.width = `${size}px`;
+				} else {
+					p_Elem.style.height = `${size}px`;
+				}
+			});
+		});
+	</script>
+</body>
+
+</html>

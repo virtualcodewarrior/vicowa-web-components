@@ -1,4 +1,10 @@
 {
+  "_args": [
+    [
+      "web-component-base-class@0.1.5",
+      "/home/rodney/prj/vicowa-web-components"
+    ]
+  ],
   "_from": "web-component-base-class@0.1.5",
   "_id": "web-component-base-class@0.1.5",
   "_inBundle": false,
@@ -16,12 +22,10 @@
     "fetchSpec": "0.1.5"
   },
   "_requiredBy": [
-    "#USER",
     "/"
   ],
   "_resolved": "https://registry.npmjs.org/web-component-base-class/-/web-component-base-class-0.1.5.tgz",
-  "_shasum": "fabb3806dccb5ad49da3cdbba9c6990b2bfbad48",
-  "_spec": "web-component-base-class@0.1.5",
+  "_spec": "0.1.5",
   "_where": "/home/rodney/prj/vicowa-web-components",
   "author": {
     "name": "Rodney Draaisma"
@@ -29,8 +33,6 @@
   "bugs": {
     "url": "https://github.com/virtualcodewarrior/webComponentBaseClass/issues"
   },
-  "bundleDependencies": false,
-  "deprecated": false,
   "description": "Base class to simplify the creation of web components",
   "devDependencies": {
     "@webcomponents/html-imports": "github:webcomponents/html-imports",
