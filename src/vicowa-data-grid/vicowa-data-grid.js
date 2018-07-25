@@ -2,21 +2,128 @@ import { webComponentBaseClass } from '../third_party/web-component-base-class/d
 
 const componentName = 'vicowa-data-grid';
 
-function updateData(p_Control) {
-	p_Control._dataInfo = p_Control.data.map((p_Data) => ((Array.isArray(p_Data)) ? p_Data.map((p_SubData) => ({ value: p_SubData })) : [{ value: p_Data }]));
-	p_Control._dataInfo.forEach((p_Data) => {
-		const div = document.createElement('div');
-		p_Control.$.rows.appendChild(div);
-		p_Data.forEach((p_Cell) => {
-			const cell = document.createElement('div');
-			cell.textContent = p_Cell.value;
-			div.appendChild(cell);
-		});
-	});
+function updateSizes(p_Control) {
+	if (p_Control._dataInfo.length) {
+		const rect = p_Control.$.verMain.getBoundingClientRect();
+
+		const totalWidth = p_Control._dataInfo[0].subData.reduce((p_Previous, p_Data) => p_Previous + (p_Data.width || p_Control.defaultWidth), 0);
+		const totalHeight = p_Control._dataInfo.reduce((p_Previous, p_Data) => p_Previous + (p_Data.height || p_Control.defaultHeight), 0);
+
+		p_Control.$.hscrollcontent.style.width = `${totalWidth}px`;
+		p_Control.$.vscrollcontent.style.height = `${totalHeight}px`;
+
+		const hScrollActive = p_Control.$.hscrollcontent.getBoundingClientRect().width > rect.width;
+		const vScrollActive = p_Control.$.vscrollcontent.getBoundingClientRect().height > rect.height;
+
+		p_Control.$.hscrollarea.style.flexBasis = (hScrollActive) ? '10px' : '0';
+		p_Control.$.vscrollarea.style.flexBasis = (vScrollActive) ? '15px' : '0';
+	}
 }
 
-function updateSizes(p_Control, p_NewRect) {
-	p_Control
+function updateData(p_Control, p_StartRow, p_StartColumn) {
+	const rows = p_Control.$$$('#rows > .row');
+	rows.forEach((p_Row, p_RowIndex) => {
+		const rowOffset = (p_RowIndex < p_Control.fixedHeaderRows) ? 0 : p_StartRow;
+		const data = p_Control._dataInfo[Math.min(p_RowIndex + rowOffset, p_Control._dataInfo.length - 1)];
+		p_Row.querySelector('.force-height').style.maxHeight = p_Row.style.minHeight = `${data.height | p_Control.defaultHeight}px`;
+		p_Row.classList.toggle('fixed', p_RowIndex < p_Control.fixedHeaderRows);
+		Array.from(p_Row.querySelectorAll('.cell')).forEach((p_Cell, p_CellIndex) => {
+			const columnOffset = (p_CellIndex < p_Control.fixedStartColumns) ? 0 : p_StartColumn;
+			p_Cell.querySelector('.cell-content').innerHTML = data.subData[Math.min(p_CellIndex + columnOffset, data.subData.length - 1)].value;
+			p_Cell.classList.toggle('fixed', p_CellIndex < p_Control.fixedStartColumns);
+			if (p_RowIndex === 0) {
+				p_Cell.style.minWidth = p_Cell.style.maxWidth = `${p_Control._dataInfo[0].subData[p_CellIndex].width || p_Control.defaultWidth}px`;
+			}
+		});
+	});
+	p_Control._startRowIndex = p_StartRow;
+	p_Control._startColumnIndex = p_StartColumn;
+}
+
+function updateVScroll(p_Control, p_ScrollArea) {
+	let dist = 0;
+	let startIndex = 0;
+	for (let index = 0; index < p_Control._dataInfo.length; index++) {
+		const newDist = dist + (p_Control._dataInfo[index].height || p_Control.defaultHeight);
+		if (newDist > p_ScrollArea.scrollTop) {
+			break;
+		}
+		dist = newDist;
+		startIndex = index + 1;
+	}
+
+	updateData(p_Control, startIndex, p_Control._startColumnIndex);
+
+	p_Control.$.contentMain.style.top = (p_Control.snapToCellBoundaries) ? '0' : `-${(dist) ? p_ScrollArea.scrollTop % dist : p_ScrollArea.scrollTop}px`;
+}
+
+function updateHScroll(p_Control, p_ScrollArea) {
+	let dist = 0;
+	let startIndex = 0;
+	for (let index = 0; index < p_Control._dataInfo[0].subData.length; index++) {
+		const newDist = dist + (p_Control._dataInfo[0].subData[index].width || p_Control.defaultWidth);
+		if (newDist > p_ScrollArea.scrollLeft) {
+			break;
+		}
+		dist = newDist;
+		startIndex = index + 1;
+	}
+
+	updateData(p_Control, p_Control._startRowIndex, startIndex);
+
+	p_Control.$.contentMain.style.left = (p_Control.snapToCellBoundaries) ? '0' : `-${(dist) ? p_ScrollArea.scrollLeft % dist : p_ScrollArea.scrollLeft}px`;
+}
+
+export function nestedArrayToDataInfo(p_Data) {
+	return {
+		subData: p_Data.map((p_DataValue) => ({ value: p_DataValue })),
+	};
+}
+
+export function arrayToDataInfo(p_Data) {
+	return {
+		subData: [{ value: p_Data }],
+	};
+}
+
+function dataChanged(p_Control) {
+	const controlRect = p_Control.$.verMain.getBoundingClientRect();
+	p_Control.$.rows.innerHTML = '';
+
+	p_Control._dataInfo = p_Control.data.map(p_Control.dataToDataInfo);
+	let totalHeight = 0;
+	let first = true;
+	let maxColumns = 0;
+
+	for (let index = 0; index < p_Control._dataInfo.length && totalHeight < controlRect.height; index++) {
+		const rowInfo = p_Control._dataInfo[index];
+		const rowTemplate = document.importNode(p_Control.$.row.content, true);
+		const row = rowTemplate.querySelector('.row');
+		const forceHeight = rowTemplate.querySelector('.force-height');
+		const height = rowInfo.height || p_Control.defaultHeight;
+		totalHeight += height;
+		forceHeight.style.minHeight = forceHeight.style.maxHeight = `${height}px`;
+		let totalWidth = 0;
+		for (let columnIndex = 0; columnIndex < rowInfo.subData.length && ((!first && columnIndex <= maxColumns) || (first && totalWidth < controlRect.width + p_Control.defaultWidth)); columnIndex++) { /* eslint-disable-line */
+			const cellInfo = rowInfo.subData[columnIndex];
+			const cellTemplate = document.importNode(p_Control.$.cell.content, true);
+			const cell = cellTemplate.querySelector('.cell');
+
+			if (first) {
+				const width = cellInfo.width || p_Control.defaultWidth;
+				totalWidth += width;
+				cell.style.minWidth = cell.style.maxWidth = `${width}px`;
+				maxColumns = columnIndex;
+			}
+			row.appendChild(cell);
+		}
+
+		p_Control.$.rows.appendChild(rowTemplate);
+		first = false;
+	}
+
+	updateSizes(p_Control);
+	updateData(p_Control, 0, 0);
 }
 
 /**
@@ -29,6 +136,36 @@ class VicowaDataGrid extends webComponentBaseClass {
 	constructor() {
 		super();
 		this._dataInfo = [];
+		this._columns = [];
+		this._startColumnIndex = 0;
+		this._startRowIndex = 0;
+		this.dataToDataInfo = nestedArrayToDataInfo;
+		this.onGetColumnInfo = (p_StartColumn, p_EndColumn) => new Promise((resolve) => {
+			// optional value items to provide
+			// headingKey: key to a translatable string
+			// heading: non translatable string
+			// width: width of the column
+			const lastItem = Math.min(this.columns, p_EndColumn);
+			const result = [];
+			for (let index = p_StartColumn; index < lastItem; index++){
+				result.push({});
+			}
+			resolve(result);
+		});
+		this._onGetDataRange = null;
+
+		/*	(p_StartRow, p_EndRow, p_StartColumn, p_EndColumn, p_Callback) => new Promise((resolve, reject) => {
+			reject(new Error('No implementation for onGetDataRange\n' +
+				'You should implement an onGetDataRange function with the following signature: \n' +
+				'onGetDataRange(p_StartRow, p_EndRow, p_StartColumn, p_EndColumn, p_Callback), where: \n' +
+				'p_StartRow is the index of the first row that should be returned\n' +
+				'p_EndRow is the index of the last row to be returned' +
+				'p_StartColumn is the index of the first column to be returned' +
+				'p_EndColumn is the index of the last column to be returned' +
+				'p_Callback is a callback to call with the result of the data retrieval' +
+				'The data should be in the format: ' +
+				'[{ subData: [{ value: <cell value html>}, ...], height: <optional height of a data row>}, ...]'));
+		});*/
 	}
 
 	static get properties() {
@@ -36,7 +173,37 @@ class VicowaDataGrid extends webComponentBaseClass {
 			data: {
 				type: Array,
 				value: [],
-				observer: updateData,
+				observer: dataChanged,
+			},
+			defaultHeight: {
+				type: Number,
+				value: 15,
+				reflectToAttribute: true,
+				observer: dataChanged,
+			},
+			defaultWidth: {
+				type: Number,
+				value: 50,
+				reflectToAttribute: true,
+				observer: dataChanged,
+			},
+			snapToCellBoundaries: {
+				type: Boolean,
+				value: false,
+				reflectToAttribute: true,
+				observer: dataChanged,
+			},
+			fixedHeaderRows: {
+				type: Number,
+				value: 0,
+				reflectToAttribute: true,
+				observer: dataChanged,
+			},
+			fixedStartColumns: {
+				type: Number,
+				value: 0,
+				reflectToAttribute: true,
+				observer: dataChanged,
 			},
 		};
 	}
@@ -45,6 +212,8 @@ class VicowaDataGrid extends webComponentBaseClass {
 		this.$.resizeDetector.addObserver((p_ResizeResult) => {
 			updateSizes(this, p_ResizeResult.newRect);
 		}, this);
+		this.addAutoEventListener(this.$.vscrollarea, 'scroll', () => { updateVScroll(this, this.$.vscrollarea); });
+		this.addAutoEventListener(this.$.hscrollarea, 'scroll', () => { updateHScroll(this, this.$.hscrollarea); });
 	}
 
 	detached() {
