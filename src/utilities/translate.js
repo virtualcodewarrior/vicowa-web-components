@@ -70,9 +70,9 @@ translator = {
 	 * Get the translation handler for the specified string. This will return an object that can be used to further specify details about the translation that needs to be retrieved or to pass parameters for a printf like substitution
 	 * usage:
 	 * if there is a plural form of the string use:
-	 * translate('string to translate %1s %2s').ifPlural(number).fetch(arguments|[argument1, argument2,...]);
+	 * translate('string to translate %1s %2s').ifPlural(number).fetch(parameters|[parameter1, parameter2,...]);
 	 * if there is only a singular form use:
-	 * translate('string to translate %1s %2s').fetch(arguments|[argument1, argument2,...]);
+	 * translate('string to translate %1s %2s').fetch(parameters|[parameter1, parameter2,...]);
 	 * @param {string} p_String String we want to translate
 	 * @returns {{ifPlural: ifPlural, fetch: fetch}} Object that allows you to specify further details about the kind of translation to get
 	 */

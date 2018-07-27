@@ -14,6 +14,10 @@
 			background-color: blue;
 			color: white;
 		}
+
+		vicowa-button {
+			--vicowa-button-width: 200px;
+		}
 	</style>
 </head>
 
@@ -24,9 +28,9 @@
 	</div>
 	<ul>
 		<li><vicowa-button string="test string 1"></vicowa-button></li>
-		<li><vicowa-button string="test string 2 %1$s element" plural-number=1 arguments='["1"]'></vicowa-button></li>
-		<li><vicowa-button string="test string 2 %1$s element" plural-number=2 arguments='["2"]' disabled></vicowa-button></li>
-		<li><vicowa-button string="test string %2$s %1$s %3$s" arguments='["first", "second", "third"]'></vicowa-button></li>
+		<li><vicowa-button string="test string 2 %1$s element" plural-number=1 parameters='["1"]'></vicowa-button></li>
+		<li><vicowa-button string="test string 2 %1$s element" plural-number=2 parameters='["2"]' disabled></vicowa-button></li>
+		<li><vicowa-button string="test string %2$s %1$s %3$s" parameters='["first", "second", "third"]'></vicowa-button></li>
 	</ul>
 	<script type="module">
 		import translator from '../../src/utilities/translate.js';

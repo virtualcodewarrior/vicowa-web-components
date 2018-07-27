@@ -82,7 +82,7 @@ describe('test vicowa-string usage', () => {
 	it('should be able to handle arguments through attribute and as a data member', () => {
 		stringElement.setAttribute('string', 'argument string binary: %b, char: %c, integer: %d, scientific float: %e, unsigned integer: %u, floating point: %f, octal: %o, string: %s, lowercase hex: %x, uppercase hex: %X, truncated string: %.4s, precision 4 float: %.4f, padded number %10d, padded string %10s');
 		expect(stringElement.displayString).toEqual('argument string binary: %b, char: %c, integer: %d, scientific float: %e, unsigned integer: %u, floating point: %f, octal: %o, string: %s, lowercase hex: %x, uppercase hex: %X, truncated string: %.4s, precision 4 float: %.4f, padded number %10d, padded string %10s');
-		stringElement.setAttribute('arguments', '[3, 65, 123, 0.00001, -3, 1.234, 123, "test string", 3735928559, 3735928559, "cutoff", 1.23456789, 222, "padded"]');
+		stringElement.setAttribute('parameters', '[3, 65, 123, 0.00001, -3, 1.234, 123, "test string", 3735928559, 3735928559, "cutoff", 1.23456789, 222, "padded"]');
 		expect(stringElement.displayString).toEqual('argument string binary: 11, char: A, integer: 123, scientific float: 1e-5, unsigned integer: 3, floating point: 1.234, octal: 173, string: test string, lowercase hex: deadbeef, uppercase hex: DEADBEEF, truncated string: cuto, precision 4 float: 1.2346, padded number        222, padded string     padded');
 		stringElement.arguments = [5, 66, 321, 0.0002, -5, 4.321, 124, 'another test string', 4277075694, 4277075694, 'truncated', 9.87654321, 444, 'pad'];
 		expect(stringElement.displayString).toEqual('argument string binary: 101, char: B, integer: 321, scientific float: 2e-4, unsigned integer: 5, floating point: 4.321, octal: 174, string: another test string, lowercase hex: feeefeee, uppercase hex: FEEEFEEE, truncated string: trun, precision 4 float: 9.8765, padded number        444, padded string        pad');
@@ -91,7 +91,7 @@ describe('test vicowa-string usage', () => {
 	it('should allow for positional and repeated string arguments', () => {
 		stringElement.setAttribute('string', 'argument string binary: %1$b, integer: %1$d, scientific float: %1$e, unsigned integer: %1$u, floating point: %1$f, octal: %1$o, string: %2$s, lowercase hex: %1$x, uppercase hex: %1$X, truncated string: %2$.4s, precision 4 float: %1$.4f, padded number %1$10d, padded string %2$10s');
 		expect(stringElement.displayString).toEqual('argument string binary: %1$b, integer: %1$d, scientific float: %1$e, unsigned integer: %1$u, floating point: %1$f, octal: %1$o, string: %2$s, lowercase hex: %1$x, uppercase hex: %1$X, truncated string: %2$.4s, precision 4 float: %1$.4f, padded number %1$10d, padded string %2$10s');
-		stringElement.setAttribute('arguments', '[200, "test string"]');
+		stringElement.setAttribute('parameters', '[200, "test string"]');
 		expect(stringElement.displayString).toEqual('argument string binary: 11001000, integer: 200, scientific float: 2e+2, unsigned integer: 200, floating point: 200, octal: 310, string: test string, lowercase hex: c8, uppercase hex: C8, truncated string: test, precision 4 float: 200.0000, padded number        200, padded string test string');
 		stringElement.string = '%1$s %2$s %3$s %4$s';
 		stringElement.arguments = ['a', 'woodchuck', 'chucks', 'wood', 'chucked', 'gets', 'by'];

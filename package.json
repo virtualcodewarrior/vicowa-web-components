@@ -1,4 +1,21 @@
 {
+  "name": "vicowa-web-components",
+  "version": "v0.1.0",
+  "description": "Various web components",
+  "keywords": [
+    "webComponents",
+    "translatable",
+    "validation",
+    "collapsible"
+  ],
+  "homepage": "https://github.com/virtualcodearrior/vicowa-web-components",
+  "bugs": {
+    "url": "https://github.com/virtualcodewarrior/vicowa-web-components/issues"
+  },
+  "license": "MIT",
+  "author": {
+    "name": "Rodney Draaisma"
+  },
   "scripts": {
     "server": "node ./node_modules/http-server/bin/http-server -c-1 -p 8989",
     "start": "npm run server",
@@ -9,7 +26,12 @@
     "watch-test": "node ./node_modules/karma/bin/karma start karma.conf.js --watch",
     "coverage": "node ./node_modules/karma/bin/karma start karma.conf.js coverage --single-run",
     "test": "npm run lint && npm run unittest",
-    "postinstall": "node ./node_modules/dependency-relocator/dependency-relocator.js ./src/third_party"
+    "postinstall": "node postinstall.js",
+    "prepare": "npm run build -- --npm"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/virtualcodewarrior/vicowa-web-components"
   },
   "nyc": {
     "check-coverage": true,
@@ -17,6 +39,10 @@
       "src/**/*.js"
     ]
   },
+  "files": [
+    "dist",
+	"postinstall.js"
+  ],
   "devDependencies": {
     "babel-minify": "^0.4.3",
     "babel-preset-minify": "^0.4.3",
@@ -42,6 +68,7 @@
     "@webcomponents/html-imports": "git+https://git@github.com/webcomponents/html-imports.git",
     "@webcomponents/webcomponentsjs": "^2.0.2",
     "jed": "^1.1.1",
+    "u2f-api": "^1.0.6",
     "web-component-base-class": "^0.1.5"
   }
 }

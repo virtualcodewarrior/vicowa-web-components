@@ -6,7 +6,7 @@ const componentName = 'vicowa-button';
  * Class that represents the vicowa-button custom element
  * @extends webComponentBaseClass
  * @property {string} string The text to be displayed on the button
- * @property {array} arguments Arguments that can be used in combination with the button text to do printf type insertions
+ * @property {array} parameters Arguments that can be used in combination with the button text to do printf type insertions
  * @property {number} pluralNumber A number to indicate the number of items a string applies to. The translator will use this to determine if a plural form should be used
  * @property {string} icon The name of an icon to use with this button. This should be in the format <iconSet>:<iconName> e.g. general:file
  */
@@ -23,7 +23,7 @@ class VicowaButton extends webComponentBaseClass {
 				value: '',
 				observer: '_stringChanged',
 			},
-			arguments: {
+			parameters: {
 				type: Array,
 				value: [],
 				observer: '_argumentsChanged',
@@ -51,7 +51,7 @@ class VicowaButton extends webComponentBaseClass {
 		this.$.string.pluralNumber = this.pluralNumber;
 	}
 	_argumentsChanged() {
-		this.$.string.arguments = this.arguments;
+		this.$.string.parameters = this.parameters;
 	}
 }
 

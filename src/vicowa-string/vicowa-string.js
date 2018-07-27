@@ -7,7 +7,7 @@ const componentName = 'vicowa-string';
  * Class to represent the vicowa-string custom element
  * @extends webComponentBaseClass
  * @property {string} string The string that will be translated and displayed
- * @property {array} arguments Arguments to be used in a sprintf manner with the current active string
+ * @property {array} parameters Arguments to be used in a sprintf manner with the current active string
  * @property {number} pluralNumber A number to indicate the number of items this string applies to, the translator will decide if plural form is required for the specified number of items
  */
 class VicowaString extends webComponentBaseClass {
@@ -25,7 +25,7 @@ class VicowaString extends webComponentBaseClass {
 				reflectToAttribute: true,
 				observer: 'updateTranslation',
 			},
-			arguments: {
+			parameters: {
 				type: Array,
 				value: [],
 				observer: 'updateTranslation',
@@ -39,7 +39,7 @@ class VicowaString extends webComponentBaseClass {
 	}
 
 	updateTranslation() {
-		this.$.string.textContent = (this._activeTranslator && this.string) ? this._activeTranslator.translate(this.string).ifPlural(this.pluralNumber || 1).fetch(this.arguments) : this.string;
+		this.$.string.textContent = (this._activeTranslator && this.string) ? this._activeTranslator.translate(this.string).ifPlural(this.pluralNumber || 1).fetch(this.parameters) : this.string;
 	}
 
 	get displayString() { return this.$.string.innerHTML; }
