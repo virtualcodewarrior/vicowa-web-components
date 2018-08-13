@@ -1,0 +1,23 @@
+{
+	"locale_data": {
+		"strings": {
+			"Canadian Postal Code": { "translations": ["Canadian Postal code"], "description": "input label for Canadian Postal code" },
+			"Dutch Postal Code": { "translations": ["Dutch Postal code"], "description": "input label for Dutch Postal code" },
+			"email": { "translations": ["email"], "description": "input label for email" },
+			"input 1": { "translations": ["input 1"], "description": "input label" },
+			"input 2": { "translations": ["input 2"], "description": "input label" },
+			"input 3": { "translations": ["input 3"], "description": "input label" },
+			"input 4": { "translations": ["input 4"], "description": "input label" },
+			"Make sure the EMail address is valid": { "translations": ["Make sure the EMail address is valid"], "description": "error message when an invalidly formatted email address is entered" },
+			"Make sure the postal code format is valid": { "translations": ["Make sure the postal code format is valid"], "description": "error message when an invalidly formatted postal code is entered" },
+			"not empty": { "translations": ["not empty"], "description": "label for example input field showing not empty validation" },
+			"postal code": { "translations": ["postal code"], "description": "placeholder text for postal codes" },
+			"test string 1": { "translations": ["test string 1"], "description": "Just a test string" },
+			"test string 2 %1$s element": { "translations": ["test string 2 %1$s element", "test string 2 %1$s elements"], "description": "Just a test string" },
+			"test string %2$s %1$s %3$s": { "translations": ["test string %2$s %1$s %3$s"], "description": "Just a test string" },
+			"This field cannot be empty": { "translations": ["This field cannot be empty"], "description": "error message when a required field is left empty" },
+			"US Zip Code": { "translations": ["US Zip Code"], "description": "input label for US Zip Code" },
+			"zip code": { "translations": ["zip code"], "description": "placeholder text for US zip code" }
+		}
+	}
+}

@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, minimal-ui">
+	<meta name="mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-title" content="vicowa-sidebar example">
+	<meta name="theme-color" content="red">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>ViCoWa Web Components - vicowa-string</title>
+    <script src="../../node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js"></script>
+    <script src="../../node_modules/@webcomponents/html-imports/html-imports.min.js"></script>
+    <link rel="import" href="../../src/vicowa-sidebar/vicowa-sidebar.html">
+
+	<style>
+		body {
+			padding: 0;
+			margin: 0;
+		}
+		#left {
+			position: absolute;
+			left: 0;
+			top: 0;
+			right: 0;
+			bottom: 0;
+		}
+
+		div[slot],
+		#hitboxcontainer {
+			position: absolute;
+			left: 0;
+			top: 0;
+			right: 0;
+			bottom: 0;
+		}
+
+		div[slot=side-content] {
+			overflow: auto;
+		}
+
+		#left > div[slot="side-content"] {
+			background: #aaeeff;
+		}
+		#right > div[slot="side-content"] {
+			background: #ffaaee;
+		}
+		#top > div[slot="side-content"] {
+			background: #aaffaa;
+		}
+		#bottom > div[slot="side-content"] {
+			background: #ffaaaa;
+		}
+
+		#bottom > div[slot="main-content"] {
+			background: #ffffaa;
+		}
+
+		body {
+			--vicowa-sidebar-resizer-size: 5px;
+		}
+
+		#hitboxcontainer {
+			display: flex;
+			flex-direction: column;
+			justify-content: center;
+		}
+
+		#hitbox {
+			position: relative;
+			left: -5px;
+			width: 20px;
+			height: 20px;
+			background: gray;
+		}
+	</style>
+</head>
+
+<body lang="en_US">
+	<vicowa-sidebar id="left" resizeable>
+		<div slot="side-content">
+			<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Alias asperiores aspernatur commodi delectus
+				doloremque ducimus earum, enim eos expedita fuga inventore iure laudantium odit quia quod temporibus ut
+				voluptatem, voluptatum.</p>
+			<p>Accusamus aspernatur beatae cumque, deserunt doloremque doloribus error explicabo fugiat hic impedit
+				laborum magnam minus molestiae nobis nostrum obcaecati quia rem rerum sed sequi similique sint soluta
+				velit, voluptas voluptates.</p>
+			<p>Architecto assumenda, consectetur error expedita libero, minus natus nulla, odio perspiciatis placeat
+				possimus tempora? Culpa dolor eligendi harum iusto labore magnam maiores placeat possimus, quas quo,
+				quos, sapiente tempore ullam.</p>
+			<p>Accusamus aliquam, cupiditate, deserunt dignissimos dolorum error inventore, labore minima nostrum nulla
+				numquam odio quod similique unde voluptatibus. At delectus dolorum harum nihil nulla optio, sunt.
+				Dolores ea obcaecati sunt!</p>
+			<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Adipisci culpa id, iure laboriosam maxime nobis
+				nulla obcaecati repellendus similique! Dignissimos maiores maxime necessitatibus odio optio possimus
+				recusandae sed ullam. Eos.</p>
+			<p>Amet, delectus ea enim impedit minus molestias odit possimus rem sint unde. Culpa delectus distinctio
+				eaque esse officia, quae rerum. Ab accusantium aliquam amet eius eveniet inventore ipsa provident
+				voluptatem?</p>
+			<p>Asperiores atque esse iusto nam neque nisi, officia quibusdam quos repellendus soluta totam vitae! Alias
+				animi debitis eos inventore ipsam ipsum iusto magni maiores minus, pariatur rerum, totam ullam,
+				vitae!</p>
+			<p>Accusamus accusantium adipisci amet aperiam aspernatur, dolor inventore ipsum labore laborum modi
+				molestias natus odit officiis omnis, quis sed vel. Alias consequuntur cupiditate ea error explicabo
+				ipsum optio temporibus vel.</p>
+			<p>Dolor eveniet fuga illo, quos recusandae soluta? Atque aut autem beatae cum eaque enim ex iste labore
+				odio quis? Ad aperiam assumenda beatae ea laboriosam natus officiis sapiente velit veniam.</p>
+			<p>Accusantium adipisci cumque, esse iste maxime quam quo quos. Culpa cum dolor ducimus eligendi excepturi
+				laborum minus nisi sint vel! At beatae delectus dicta ducimus fugiat harum nostrum tempore
+				veritatis.</p>
+			<p>A aliquam aperiam iusto repellat sapiente totam? Ad culpa itaque laborum pariatur quidem quis vel velit!
+				Accusantium at blanditiis cum delectus, eum ex magni nihil praesentium quibusdam quos! Rerum,
+				voluptate.</p>
+			<p>Ab aperiam aut cupiditate doloribus ea eaque eos expedita fuga fugiat ipsa labore laudantium nihil
+				nostrum numquam possimus quam saepe sint, soluta totam velit? Expedita minima non quidem repellendus
+				suscipit.</p>
+		</div>
+		<div slot="hitarea-content">
+			<div id="hitboxcontainer">
+				<div id="hitbox"></div>
+			</div>
+		</div>
+		<div slot="main-content">
+			<vicowa-sidebar id="right" location="right" resizeable floating>
+				<div slot="side-content"><p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aliquid corporis,
+					enim ipsam laborum nam perferendis rem voluptatem voluptates. Animi debitis dignissimos fugiat nam
+					nisi, optio provident quo repellat veritatis voluptas?</p>
+					<p>Amet, consequatur fugit labore officiis repellendus sunt? Illo illum possimus veniam voluptas.
+						Adipisci alias aspernatur autem corporis cupiditate delectus deserunt dolorem dolorum, illo
+						illum ipsum itaque nostrum, recusandae temporibus ullam.</p>
+					<p>Expedita facilis repellendus ullam. At aut beatae, consequuntur dolor dolorum explicabo illum in
+						labore mollitia natus nobis odit optio possimus quis, totam unde voluptas? Consequuntur dicta
+						eius mollitia temporibus veniam?</p>
+					<p>Beatae illo libero saepe tempora temporibus. Ab alias amet animi consectetur dicta dolor error
+						esse et facere laborum officia perferendis placeat provident quod reiciendis reprehenderit,
+						tenetur, ullam veniam voluptas voluptates.</p></div>
+				<div slot="main-content">
+					<vicowa-sidebar id="top" location="top" resizeable>
+						<div slot="side-content">
+							<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Alias animi, aut autem dolores
+								enim explicabo facilis harum illum iusto libero minima non officiis optio qui quidem quo
+								voluptas voluptatem, voluptatibus.</p>
+							<p>Ab ad alias doloribus qui quo saepe sed, sit tempora totam! Accusamus alias corporis
+								delectus eaque eligendi ex in iusto mollitia, qui rem? Alias commodi eaque est
+								perspiciatis reprehenderit suscipit.</p>
+							<p>Ab amet, atque dolor perspiciatis placeat quas quasi quis quo! Excepturi incidunt, libero
+								natus nemo obcaecati quis voluptatibus. Adipisci consequuntur earum neque nihil nulla
+								quibusdam quis repudiandae similique sit ullam?</p>
+							<p>Amet assumenda atque beatae cumque deserunt, distinctio dolores eligendi eos error est,
+								explicabo fugiat iste laborum nam obcaecati perspiciatis quae qui quis quod quos
+								recusandae repellendus tempora ut velit voluptas.</p>
+						</div>
+						<div slot="main-content">
+							<vicowa-sidebar id="bottom" location="bottom" resizeable>
+								<div slot="side-content">
+									<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Autem culpa debitis
+										dignissimos ea, earum expedita facere, ipsa ipsum neque officiis ratione
+										sapiente totam veritatis. Ipsam laboriosam nihil placeat sed sit?</p>
+									<p>Alias aliquam, cumque debitis deleniti deserunt ea eligendi et facilis id in iste
+										molestias omnis provident quas quis ratione reiciendis saepe, soluta, tempora
+										vitae. At culpa quidem quod tenetur vero?</p>
+									<p>Architecto blanditiis consectetur corporis debitis, deleniti eius expedita facere
+										fuga fugiat ipsum iure laudantium magni maxime molestiae molestias
+										necessitatibus nostrum placeat praesentium provident quis repellendus saepe
+										temporibus totam unde voluptatem.</p>
+									<p>Architecto asperiores at dolore, eaque eum ex fugiat impedit ipsa ipsam iste
+										itaque laudantium minus neque nihil nulla omnis optio rerum! Consequuntur,
+										cupiditate dicta dolorem doloribus nihil optio quia ratione?</p>
+								</div>
+								<div slot="main-content">
+									<button id="toggle-left">Toggle Left</button>
+									<button id="toggle-right">Toggle Right</button>
+									<button id="toggle-top">Toggle Top</button>
+									<button id="toggle-bottom">Toggle Bottom</button>
+								</div>
+							</vicowa-sidebar>
+						</div>
+					</vicowa-sidebar>
+				</div>
+			</vicowa-sidebar>
+		</div>
+	</vicowa-sidebar>
+	<script type="module">
+		import { createQuickAccess } from '../../src/third_party/web-component-base-class/dist/tools.js';
+		const controls = createQuickAccess(document, 'id');
+
+		controls.toggleLeft.addEventListener('click', () => { controls.left.expanded = !controls.left.expanded; });
+		controls.toggleRight.addEventListener('click', () => { controls.right.expanded = !controls.right.expanded; });
+		controls.toggleTop.addEventListener('click', () => { controls.top.expanded = !controls.top.expanded; });
+		controls.toggleBottom.addEventListener('click', () => { controls.bottom.expanded = !controls.bottom.expanded; });
+	</script>
+</body>
+
+</html>

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<link rel="import" href="../vicowa-string/vicowa-string.html">
+<link rel="import" href="../vicowa-icon/vicowa-icon.html">
+<div>
+    <template id="vicowa-button">
+        <style>
+            :host {
+                box-sizing: border-box;
+                display: block;
+                margin: 0;
+                padding: 0;
+            }
+
+			button {
+                box-sizing: border-box;
+                position: relative;
+                user-select: none;
+                display: flex;
+                flex-direction: row;
+                align-content: stretch;
+                align-items: center;
+                height: var(--vicowa-button-height, 30px);
+                width: var(--vicowa-button-width, auto);
+                border: var(--vicowa-button-border, 1px solid grey);
+                padding: var(--vicowa-button-padding, 0);
+                box-shadow: var(--vicowa-button-shadow, none);
+                margin: var(--vicowa-button-margin, 0);
+                background: var(--vicowa-button-background, transparent);
+                color: var(--vicowa-button-color, black);
+                cursor: var(--vicowa-button-cursor, pointer);
+			}
+
+            #icon {
+                position: relative;
+                height: 24px;
+                flex: 0 0 24px;
+            }
+
+            #icon[icon=""],
+            #icon:not([icon]){
+                flex: 0 0 var(--vicowa-button-min-icon-width, 0);
+            }
+
+			:host[disabled] {
+				pointer-events: none;
+				opacity: 0.5;
+				cursor: default;
+			}
+
+			#container {
+				display: flex;
+				flex-direction: row;
+			}
+        </style>
+        <div id="container">
+            <button><vicowa-icon id="icon"></vicowa-icon><vicowa-string id="string"></vicowa-string></button>
+        </div>
+    </template>
+    <script>
+		(function storeTemplate() {
+			const template = document.currentScript.parentNode.querySelector('template');
+			window.webComponentTemplates = window.webComponentTemplates || new Map();
+			window.webComponentTemplates.set(template.getAttribute('id'), template);
+		})();
+    </script>
+    <script type="module" src="./vicowa-button.js"></script>
+</div>

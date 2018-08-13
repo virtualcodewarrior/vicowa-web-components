@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>ViCoWa Web Components - vicowa-data-grid</title>
+    <script src="../../node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js"></script>
+    <script src="../../node_modules/@webcomponents/html-imports/html-imports.min.js"></script>
+    <link rel="import" href="../../src/vicowa-data-grid/vicowa-data-grid.html">
+
+	<style>
+		vicowa-data-grid {
+			width: 400px;
+			height: 200px;
+			box-shadow: 0 0 10px gray;
+			margin: 1em;
+			--vicowa-data-grid-cell-border-top: 1px dotted gray;
+			--vicowa-data-grid-cell-border-right: 1px dotted gray;
+			--vicowa-data-grid-cell-border-left: 1px dotted gray;
+			--vicowa-data-grid-cell-border-bottom: 1px dotted gray;
+			--vicowa-data-grid-fixed-row-background: #ccc;
+			--vicowa-data-grid-fixed-column-background: #ccc;
+		}
+	</style>
+</head>
+
+<body lang="en_US">
+	<vicowa-data-grid id="data-grid1"></vicowa-data-grid>
+	<vicowa-data-grid id="data-grid2" snap-to-cell-boundaries></vicowa-data-grid>
+	<vicowa-data-grid id="data-grid3" snap-to-cell-boundaries fixed-header-rows="1" fixed-start-columns="1"></vicowa-data-grid>
+<script>
+	const dataGrid1 = document.querySelector('#data-grid1');
+	const dataGrid2 = document.querySelector('#data-grid2');
+	const dataGrid3 = document.querySelector('#data-grid3');
+	const data = [];
+	const rowData = [];
+	for (let columnIndex = 0; columnIndex < 100; columnIndex++) {
+		rowData.push(`${columnIndex}-abcdefgh`);
+		rowData.push(`${columnIndex}-ijklmnopq`);
+		rowData.push(`${columnIndex}-rstuvwxyz`);
+	}
+	for (let index = 0; index < 1000; index++) {
+		data.push([index].concat(rowData));
+	}
+	dataGrid1.onAttached = () => {
+		dataGrid1.data = data;
+	};
+	dataGrid2.onAttached = () => {
+		dataGrid2.data = data;
+	};
+	dataGrid3.onAttached = () => {
+		dataGrid3.data = data;
+	};
+</script>
+</body>
+
+</html>

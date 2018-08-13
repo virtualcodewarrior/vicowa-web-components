@@ -2,24 +2,25 @@
   "_from": "git+https://git@github.com/webcomponents/html-imports.git",
   "_id": "@webcomponents/html-imports@1.2.0",
   "_inBundle": false,
-  "_integrity": "",
   "_location": "/@webcomponents/html-imports",
   "_phantomChildren": {},
   "_requested": {
     "type": "git",
-    "raw": "git+https://git@github.com/webcomponents/html-imports.git",
+    "raw": "@webcomponents/html-imports@git+https://git@github.com/webcomponents/html-imports.git",
+    "name": "@webcomponents/html-imports",
+    "escapedName": "@webcomponents%2fhtml-imports",
+    "scope": "@webcomponents",
     "rawSpec": "git+https://git@github.com/webcomponents/html-imports.git",
     "saveSpec": "git+https://git@github.com/webcomponents/html-imports.git",
     "fetchSpec": "https://git@github.com/webcomponents/html-imports.git",
     "gitCommittish": null
   },
   "_requiredBy": [
-    "#USER",
     "/"
   ],
   "_resolved": "git+https://git@github.com/webcomponents/html-imports.git#a83cc7065a719a6059ad13917e8205c01ad2c413",
-  "_spec": "git+https://git@github.com/webcomponents/html-imports.git",
-  "_where": "/home/rodney/prj/webcomponents/vicowa-web-components",
+  "_spec": "@webcomponents/html-imports@git+https://git@github.com/webcomponents/html-imports.git",
+  "_where": "/home/rodney/prj/vicowa-web-components",
   "author": {
     "name": "The Polymer Authors",
     "url": "https://polymer.github.io/AUTHORS.txt"
