@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>ViCoWa Web Components - vicowa-input</title>
+    <script src="../../node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js"></script>
+    <script src="../../node_modules/@webcomponents/html-imports/html-imports.min.js"></script>
+    <link rel="import" href="../../src/vicowa-single-selection/vicowa-single-selection.html">
+	<link rel="import" href="../../src/vicowa-icon/vicowa-icon.html">
+	<link rel="import" href="../vicowa-icon-set/test-icons.html">
+
+	<style>
+		body[lang="en_US"] #english,
+		body[lang="nl_NL"] #dutch {
+			background-color: blue;
+			color: white;
+		}
+
+		vicowa-single-selection{
+			margin-bottom: 1em;
+			--vicowa-icon-line-color: none;
+			--vicowa-icon-fill-color: blue;
+		}
+
+	</style>
+</head>
+
+<body lang="en_US">
+	<test-icons></test-icons>
+	<div id="translations">
+		<button id="english">English</button>
+		<button id="dutch">Nederlands</button>
+	</div>
+	<p>
+		<div id="control-result1"></div>
+		<vicowa-single-selection id="first" label="input 1" value="one"></vicowa-single-selection>
+		<div id="control-result2"></div>
+		<vicowa-single-selection id="second" label="input 2" type="select"></vicowa-single-selection>
+		<div id="control-result3"></div>
+		<vicowa-single-selection id="third" label="input 3" value="two"></vicowa-single-selection>
+		<div id="control-result4"></div>
+		<vicowa-single-selection id="fourth" label="input 4" value="three" type="select"></vicowa-single-selection>
+	</p>
+	<script type="module">
+		import translator from '../../src/utilities/translate.js';
+		import { createQuickAccess } from '../../src/third_party/web-component-base-class/dist/tools.js';
+
+		const qa = createQuickAccess(document.body, 'id');
+
+		// setup the translator
+		translator.addTranslationLocation('../resources/translations');
+		translator.addTranslationUpdatedObserver((p_Translator) => {
+			document.body.setAttribute('lang', p_Translator.language);
+		}, null);
+		translator.language = document.body.getAttribute('lang');
+
+		qa.english.addEventListener('click', () => { translator.language = 'en_US'; });
+		qa.dutch.addEventListener('click', () => { translator.language = 'nl_NL'; });
+
+		qa.first.onAttached = () => {
+			qa.first.options = [{
+				value: 'one',
+				displayText: 'One',
+			}, {
+				value: 'two',
+				displayText: 'Two',
+			}, {
+				value: 'three',
+				displayText: 'Three',
+			}];
+		};
+		qa.second.onAttached = () => {
+			qa.second.options = [{
+				value: 'one',
+				displayText: 'One',
+			}, {
+				value: 'two',
+				displayText: 'Two',
+			}, {
+				value: 'three',
+				displayText: 'Three',
+			}];
+		};
+		const icons = [document.createElement('vicowa-icon'), document.createElement('vicowa-icon'), document.createElement('vicowa-icon')];
+		icons[0].setAttribute('icon', 'general:cog');
+		icons[0].style.width = '48px';
+		icons[1].setAttribute('icon', 'general:file');
+		icons[1].style.width = '48px';
+		icons[2].setAttribute('icon', 'errors:error');
+		icons[2].style.width = '48px';
+		qa.third.onAttached = () => {
+			qa.third.options = [{
+				value: 'one',
+				childElement: icons[0],
+			}, {
+				value: 'two',
+				childElement: icons[1],
+			}, {
+				value: 'three',
+				childElement: icons[2],
+			}];
+		};
+
+		qa.fourth.onAttached = () => {
+			qa.fourth.options = [{
+				value: 'one',
+				childElement: icons[0].cloneNode(true),
+			}, {
+				value: 'two',
+				childElement: icons[1].cloneNode(true),
+			}, {
+				value: 'three',
+				childElement: icons[2].cloneNode(true),
+			}];
+		};
+
+		qa.first.onChange = (p_NewValue) => {
+			qa.controlResult1.textContent = `input 1 (${p_NewValue})`;
+		}
+		qa.second.onChange = (p_NewValue) => {
+			qa.controlResult2.textContent = `input 2 (${p_NewValue})`;
+		}
+		qa.third.onChange = (p_NewValue) => {
+			qa.controlResult3.textContent = `input 3 (${p_NewValue})`;
+		}
+		qa.fourth.onChange = (p_NewValue) => {
+			qa.controlResult4.textContent = `input 4 (${p_NewValue})`;
+		}
+	</script>
+</body>
+
+</html>

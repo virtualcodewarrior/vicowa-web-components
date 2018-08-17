@@ -11,11 +11,14 @@
 			"Make sure the EMail address is valid": { "translations": ["Zorg ervoor dat het EMail adres correct is"], "description": "error message when an invalidly formatted email address is entered" },
 			"Make sure the postal code format is valid": { "translations": ["Zorg ervoor dat de postcode correct is"], "description": "error message when an invalidly formatted postal code is entered" },
 			"not empty": { "translations": ["niet leeg"], "description": "label for example input field showing not empty validation" },
+			"One": { "translations": ["Een"], "description": "label for example radio button" },
 			"postal code": { "translations": ["postcode"], "description": "placeholder text for postal codes" },
 			"test string 1": { "translations": ["test tekst 1"], "description": "Just a test string" },
 			"test string 2 %1$s element": { "translations": ["test tekst 2 %1$s element", "test tekst 2 %1$s elementen"], "description": "Just a test string" },
 			"test string %2$s %1$s %3$s": { "translations": ["test text %1$s %2$s %3$s"], "description": "Just a test string" },
 			"This field cannot be empty": { "translations": ["Dit veld moet ingevuld worden"], "description": "error message when a required field is left empty" },
+			"Three": { "translations": ["Drie"], "description": "label for example radio button" },
+			"Two": { "translations": ["Twee"], "description": "label for example radio button" },
 			"US Zip Code": { "translations": ["VS Postcode"], "description": "input label for US Zip Code" },
 			"zip code": { "translations": ["postcode"], "description": "placeholder text for US zip code" }
 		}

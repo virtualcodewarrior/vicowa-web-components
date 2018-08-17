@@ -1,43 +1,6 @@
-import { webComponentBaseClass } from '../third_party/web-component-base-class/dist/webComponentBaseClass.js';
+import { VicowaInputBaseClass, validate } from '../vicowa-input-base/vicowa-input-base.js';
 import translator from '../utilities/translate.js';
 import validators from '../utilities/validators.js';
-
-/**
- * Validate the value for the given input element
- * @param {VicowaInput} p_InputControl Element for which the value is validated
- * @param {string} p_Value The value to validate
- * @param {boolean} p_ShowMessage true when an error message should be shown when invalid or false to not show the error message
- * @returns {{ valid: {boolean}, error: {string} }} Returns an object that indicates if the result was valid or not
- */
-function validate(p_InputControl, p_Value, p_ShowMessage) {
-	const validation = (validators[p_InputControl.validatorName] || p_InputControl.validator || (() => ({ valid: true })))(p_Value);
-	p_InputControl.$.error.string = (!validation.valid && p_ShowMessage) ? validation.error || 'something is wrong' : '';
-	p_InputControl.classList.toggle('invalid', !validation.valid && p_ShowMessage);
-	return validation;
-}
-
-/**
- * Handler to be called when the value gets changed
- * @param {VicowaInput} p_InputControl The control for which this handler is called
- * @param {string} p_NewValue The new value
- * @param {string} p_OldValue The old value
- */
-function valueChanged(p_InputControl, p_NewValue, p_OldValue) {
-	p_InputControl.$.input.value = p_NewValue;
-	if (p_InputControl.onChange) {
-		p_InputControl.onChange(p_InputControl.value, p_OldValue);
-	}
-
-	validate(p_InputControl, p_InputControl.value, true);
-}
-
-/**
- * Handler to be called when the label is changed
- * @param {VicowaInput} p_InputControl The control for which this handler is called
- */
-function labelChanged(p_InputControl) {
-	p_InputControl.$.label.string = p_InputControl.label;
-}
 
 /**
  * Handler to be called when the placeholder text is changed
@@ -48,20 +11,11 @@ function placeholderChanged(p_InputControl) {
 	p_InputControl.updateTranslation();
 }
 
-/**
- * Handler to be called when the tooltip text is changed
- * @param {VicowaInput} p_InputControl The control for which this handler is called
- */
-function tooltipChanged(p_InputControl) {
-	p_InputControl.$.input.title = p_InputControl.tooltip;
-	p_InputControl.updateTranslation();
-}
-
 const componentName = 'vicowa-input';
 
 /**
  * Class that represents the vicowa-input custom element
- * @extends webComponentBaseClass
+ * @extends VicowaInputBaseClass
  * @property {string} validatorName Name of the validator function to use with this instance or empty for no validation
  * @property {string} value The string representation of the value for this instance
  * @property {string} label The label for this input element or empty if it has no label
@@ -75,78 +29,30 @@ const componentName = 'vicowa-input';
  * @property {function} onChange Assign a function to this member that will get called when the value changes
  * @property {function} validator Assign a custom validator function to this to use instead of one of the pre defined ones
  */
-class VicowaInput extends webComponentBaseClass {
+class VicowaInput extends VicowaInputBaseClass {
 	static get is() { return componentName; }
 	constructor() {
 		super();
-		this.validator = null;
-		this._activeTranslator = null;
 	}
 
 	static get properties() {
-		return {
-			validatorName: {
-				type: String,
-				value: '',
-			},
-			value: {
-				type: String,
-				value: '',
-				reflectToAttribute: true,
-				observer: valueChanged,
-			},
-			label: {
-				type: String,
-				value: '',
-				reflectToAttribute: true,
-				observer: labelChanged,
-			},
-			topLabel: {
-				type: Boolean,
-				value: false,
-				reflectToAttribute: true,
-			},
-			hideLabel: {
-				type: Boolean,
-				value: false,
-				reflectToAttribute: true,
-			},
-			static: {
-				type: Boolean,
-				value: false,
-				reflectToAttribute: true,
-			},
+		return Object.assign({}, super.properties, {
 			placeholder: {
 				type: String,
 				value: '',
 				reflectToAttribute: true,
 				observer: placeholderChanged,
 			},
-			index: {
-				type: Number,
-				value: 0,
-				reflectToAttribute: true,
-			},
-			tooltip: {
-				type: String,
-				value: '',
-				reflectToAttribute: true,
-				observer: tooltipChanged,
-			},
-			disabled: {
-				type: Boolean,
-				value: false,
-				reflectToAttribute: true,
-			},
-		};
+		});
 	}
 
 	updateTranslation() {
+		super.updateTranslation();
 		this.$.input.placeholder = (this._activeTranslator && this.placeholder) ? this._activeTranslator.translate(this.placeholder).fetch() : this.placeholder;
-		this.$.input.title = (this._activeTranslator && this.tooltip) ? this._activeTranslator.translate(this.tooltip).fetch() : this.tooltip;
 	}
 
 	attached() {
+		super.attached();
 		const validateAndSet = () => {
 			validate(this, this.value, true);
 			this.value = this.$.input.value;
@@ -167,8 +73,6 @@ class VicowaInput extends webComponentBaseClass {
 			this.updateTranslation();
 		}, this);
 	}
-
-	get valid() { return validate(this, this.value, true).valid; }
 }
 
 window.customElements.define(componentName, VicowaInput);

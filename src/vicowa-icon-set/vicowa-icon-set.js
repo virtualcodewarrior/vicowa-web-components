@@ -2,6 +2,7 @@ import { webComponentBaseClass } from '../third_party/web-component-base-class/d
 
 // all icon sets will go here, there should be only one instance in the current web page
 const iconSets = {};
+const callbacks = {};
 
 const componentName = 'vicowa-icon-set';
 
@@ -34,16 +35,49 @@ class VicowaIconSet extends webComponentBaseClass {
 				activeSet[p_SVGElement.id] = p_SVGElement;
 			});
 		});
+		const activeSetCallbacks = callbacks[this.name];
+		if (activeSetCallbacks) {
+			Object.keys(activeSetCallbacks).forEach((p_Key) => {
+				if (activeSet[p_Key] && activeSetCallbacks[p_Key]) {
+					activeSetCallbacks[p_Key].forEach((p_CallbackInfo) => {
+						p_CallbackInfo.callback(activeSet[p_Key]);
+					});
+				}
+			});
+		}
 	}
 
 	/**
 	 * Retrieve an icon from the given icon set
+	 * @param {object} p_CallbackOwner The owner of the callback
 	 * @param {string} p_Name Name of the icon, should be in the format namespace:iconName
-	 * @returns {SVGElement|null} the icon or null if the icon or the set does not exist
+	 * @param {function} p_Callback Function that will be called when the icon is found or changes
 	 */
-	static getIcon(p_Name) {
+	static getIcon(p_CallbackOwner, p_Name, p_Callback) {
 		const parts = p_Name ? p_Name.split(':') : [];
-		return (parts.length > 1) ? ((iconSets[parts[0]]) ? iconSets[parts[0]][parts[1]] : null) : null;
+
+		if (parts.length > 1) {
+			const iconInfo = { group: parts[0], name: parts[1] };
+			callbacks[iconInfo.group] = callbacks[iconInfo.group] || {};
+			const callbacksByName = callbacks[iconInfo.group][iconInfo.name] = callbacks[iconInfo.group][iconInfo.name] || [];
+			if (!callbacksByName.find((p_CallbackInfo) => p_CallbackInfo.owner === p_CallbackOwner && p_CallbackInfo.callback === p_Callback)) {
+				callbacksByName.push({ owner: p_CallbackOwner, callback: p_Callback });
+			}
+			if ((iconSets[iconInfo.group])) {
+				p_Callback(iconSets[iconInfo.group][iconInfo.name]);
+			}
+		} else {
+			throw new Error('icon names should have the format group:name');
+		}
+	}
+
+	static removeCallback(p_CallbackOwner) {
+		Object.keys(callbacks).forEach((p_GroupKey) => {
+			const group = callbacks[p_GroupKey];
+			Object.keys(group).forEach((p_NameKey) => {
+				group[p_NameKey] = group[p_NameKey].filter((p_CallbackInfo) => p_CallbackInfo.owner === p_CallbackOwner);
+			});
+		});
 	}
 }
 

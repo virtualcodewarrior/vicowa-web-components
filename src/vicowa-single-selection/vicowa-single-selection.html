@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<link rel="import" href="../vicowa-string/vicowa-string.html">
+<div>
+    <template id="vicowa-single-selection">
+        <style>
+			:host {
+				position: relative;
+				display: block;
+				box-sizing: border-box;
+				width: var(--vicowa-single-selection-width, 150px);
+			}
+			:host([type="select"]) {
+			}
+            :host(:not([type="select"])) #dropdown-control {
+                display: none;
+            }
+
+			#control-container {
+				display: flex;
+				flex-direction: row;
+			}
+
+			#arrow {
+				position: absolute;
+				top: 40%;
+				right: 5px;
+				border-top: 8px solid var(--vicowa-single-selection-arrow-color, black);
+				border-bottom: 8px solid transparent;
+				border-left: 6px solid transparent;
+				border-right: 6px solid transparent;
+			}
+
+			:host([opened]) #arrow {
+				z-index: 1000;
+			}
+
+			label {
+				flex: 0 0 auto;
+				margin-right: 1em;
+			}
+
+			#input {
+				position: relative;
+				flex: 1 1 auto;
+			}
+
+			#dropdown-control {
+				position: absolute;
+				left: 0;
+				top: 0;
+				right: 0;
+				bottom: 0;
+			}
+
+			#select-option-container {
+				display: block;
+				position: relative;
+				overflow-x: hidden;
+				overflow-y: auto;
+				border: var(--vicowa-single-selection-border, 1px solid #bbb);
+				background: var(--vicowa-single-selection-background, white);
+			}
+
+			.option-container {
+				padding: 2px 5px;
+				display: none;
+				width: 100%;
+			}
+			:host([opened]) .option-container,
+			:host(:not([type="select"])) .option-container,
+			.option-container[checked] {
+				display: block;
+				cursor: pointer;
+			}
+
+			:host([opened]) .option-container[checked],
+			:host([opened]) .option-container:hover {
+				background: blue;
+				color: white;
+				--vicowa-icon-fill-color: white;
+			}
+
+			:host([opened]) #select-option-container {
+				box-sizing: border-box;
+				position: fixed;
+				z-index: 1000;
+			}
+        </style>
+        <div id="control-container">
+            <label for="input"><vicowa-string id="label"></vicowa-string></label>
+            <div id="input">
+                <div id="dropdown-control">
+                    <div id="select-option-container">
+                    </div>
+                    <div id="arrow"></div>
+                </div>
+				<div id="radio-option-container"></div>
+            </div>
+        </div>
+        <vicowa-string id="error"></vicowa-string>
+        <template id="radio-option">
+            <div name="option-container" class="option-container">
+                <input name="vicowa-selection-option" type="radio">
+                <label name="option-label"><vicowa-string name="option-label-string" string=""></vicowa-string></label>
+                <div name="child-container"></div>
+            </div>
+        </template>
+        <template id="select-option">
+            <div name="option-container" class="option-container">
+                <vicowa-string name="option-label-string" string=""></vicowa-string>
+                <div name="child-container"></div>
+            </div>
+        </template>
+    </template>
+    <script>
+		(function storeTemplate() {
+			const template = document.currentScript.parentNode.querySelector('template');
+			window.webComponentTemplates = window.webComponentTemplates || new Map();
+			window.webComponentTemplates.set(template.getAttribute('id'), template);
+		})();
+    </script>
+    <script type="module" src="./vicowa-single-selection.js"></script>
+</div>

@@ -26,11 +26,17 @@ class VicowaIcon extends webComponentBaseClass {
 	}
 
 	_iconChanged() {
-		const icon = this.$.iconSource.constructor.getIcon(this.icon);
 		this.$.iconContainer.innerHTML = '';
-		if (icon) {
-			this.$.iconContainer.appendChild(icon.cloneNode(true));
-		}
+		this.$.iconSource.constructor.getIcon(this, this.icon, (p_Icon) => {
+			this.$.iconContainer.innerHTML = '';
+			if (p_Icon) {
+				this.$.iconContainer.appendChild(p_Icon.cloneNode(true));
+			}
+		});
+	}
+
+	detached() {
+		this.$.iconSource.constructor.removeCallback(this);
 	}
 }
 
