@@ -37,11 +37,11 @@ function optionsChanged(p_Control) {
 					const itemAccess = createQuickAccess(item, 'name');
 					itemAccess.optionLabelString.setAttribute('string', p_Option.displayText || '');
 					itemAccess.optionContainer.id = p_Option.value;
-					(p_Control.value === p_Option.value) ? itemAccess.optionContainer.setAttribute('checked', '') : itemAccess.optionContainer.removeAttribute('checked');
+					if (p_Control.value === p_Option.value) { itemAccess.optionContainer.setAttribute('checked', ''); } else { itemAccess.optionContainer.removeAttribute('checked'); }
 					itemAccess.optionContainer.addEventListener('click', () => {
 						handleSelectionChange(p_Control, itemAccess.optionContainer);
 						p_Control.$$$('[name="option-container"]').forEach((p_OptionContainer) => {
-							(p_Control.value === p_OptionContainer.id) ? p_OptionContainer.setAttribute('checked', '') : p_OptionContainer.removeAttribute('checked');
+							if (p_Control.value === p_OptionContainer.id) { p_OptionContainer.setAttribute('checked', ''); } else { p_OptionContainer.removeAttribute('checked'); }
 						});
 					});
 					const childElement = (p_Option.childElementName) ? document.createElement(p_Option.childElementName) : (p_Option.childElement || null);
@@ -87,7 +87,7 @@ class VicowaSingleSelection extends VicowaInputBaseClass {
 				type: Boolean,
 				value: false,
 				reflectToAttribute: true,
-			}
+			},
 		});
 	}
 
@@ -99,7 +99,6 @@ class VicowaSingleSelection extends VicowaInputBaseClass {
 		this.addAutoEventListener(this.$.dropdownControl, 'click', (p_Event) => {
 			this.opened = !this.opened;
 			if (this.opened) {
-
 				this.$.selectOptionContainer.style.width = `${this.$.dropdownControl.offsetWidth}px`;
 			}
 			p_Event.preventDefault();

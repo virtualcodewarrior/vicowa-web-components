@@ -44,23 +44,41 @@ const translationInfo = {
 };
 
 function loadTranslationFiles(p_Language) {
+	const languageParts = p_Language.split('_');
+	// we might have a specific locale version of a language (e.g. en_US, en_UK, en_CA etc)
+	// in this case we will try to load both the base and the specific version of the language e.g. en.json and en_CA.json
+	const locationsToLoad = [];
 	locations.forEach((p_Location) => {
-		p_Location.loaded = false;
-		fetch(`${p_Location.url}/${p_Language}.json`).then((p_Response) => p_Response.json()).then((p_Translations) => {
-			Object.keys(p_Translations.locale_data.strings).forEach((p_Key) => {
-				if (p_Translations.locale_data.strings[p_Key].translations) {
-					translationInfo.locale_data.strings[p_Key] = p_Translations.locale_data.strings[p_Key].translations;
-				}
-			});
-			p_Location.loaded = true;
+		if (languageParts.length > 1) {
+			// load the base first so the more specific values can overrule the less specific ones
+			locationsToLoad.push({ translations: {}, finished: false, url: `${p_Location.url}/${languageParts[0]}.json` });
+		}
+		locationsToLoad.push({ translations: {}, finished: false, url: `${p_Location.url}/${p_Language}.json` });
+	});
 
-			if (locations.every((p_TestLocation) => p_TestLocation.loaded)) {
-				jed = new exports.Jed(translationInfo);
-				notifiers.notify('loaded', translator);
-			}
+	const applyTranslations = () => {
+		if (locationsToLoad.every((p_TestLocation) => p_TestLocation.finished)) {
+			locationsToLoad.forEach((p_Location) => {
+				Object.keys(p_Location.translations).forEach((p_Key) => {
+					if (p_Location.translations[p_Key].translations) {
+						translationInfo.locale_data.strings[p_Key] = p_Location.translations[p_Key].translations;
+					}
+				});
+			});
+			jed = new exports.Jed(translationInfo);
+			notifiers.notify('loaded', translator);
+		}
+	};
+
+	locationsToLoad.forEach((p_Location) => {
+		fetch(p_Location.url).then((p_Response) => ((p_Response.ok) ? Promise.resolve(p_Response.json()) : Promise.reject(new Error('retrieve failed')))).then((p_Translations) => {
+			p_Location.translations = p_Translations.locale_data.strings;
+			p_Location.finished = true;
+			applyTranslations();
 		}).catch((p_Err) => {
-			// failed to load ??
 			debug.log(p_Err);
+			p_Location.finished = true;
+			applyTranslations();
 		});
 	});
 }
@@ -92,7 +110,7 @@ translator = {
 	 * @param {string} p_Location URL of the directory from where translation files can be loaded. This will be combined with a language code when loading translation files
 	 */
 	addTranslationLocation(p_Location) {
-		if (locations.findIndex((p_LocationInfo) => p_LocationInfo.url === p_Location) === -1) {
+		if (p_Location && locations.findIndex((p_LocationInfo) => p_LocationInfo.url === String(p_Location)) === -1) {
 			locations.push({ url: p_Location, loaded: false });
 		}
 	},

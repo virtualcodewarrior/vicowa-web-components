@@ -1,6 +1,5 @@
 import { VicowaInputBaseClass, validate } from '../vicowa-input-base/vicowa-input-base.js';
 import translator from '../utilities/translate.js';
-import validators from '../utilities/validators.js';
 
 /**
  * Handler to be called when the placeholder text is changed

@@ -43,8 +43,7 @@ walker.on('file', (p_Root, p_Stat, p_Next) => {
 				} else {
 					// for some reason babel doesn't add the source map line, so do it here manually
 					fs.outputFileSync(path.resolve(target, p_Stat.name), `${info.code}\n//# sourceMappingURL=${p_Stat.name}.map`);
-					// for some reason babel doesn't do this, even if I set the appropriate options
-					// so set the source here manually
+					// for some reason babel doesn't do this, even if I set the appropriate options so set the source here manually
 					info.map.sources[0] = p_Stat.name;
 					fs.outputFileSync(path.resolve(target, `${p_Stat.name}.map`), JSON.stringify(info.map));
 				}

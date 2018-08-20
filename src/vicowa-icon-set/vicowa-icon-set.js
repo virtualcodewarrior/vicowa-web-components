@@ -54,7 +54,7 @@ class VicowaIconSet extends webComponentBaseClass {
 	 * @param {function} p_Callback Function that will be called when the icon is found or changes
 	 */
 	static getIcon(p_CallbackOwner, p_Name, p_Callback) {
-		const parts = p_Name ? p_Name.split(':') : [];
+		const parts = p_Name ? p_Name.trim().split(':') : [];
 
 		if (parts.length > 1) {
 			const iconInfo = { group: parts[0], name: parts[1] };
@@ -66,7 +66,7 @@ class VicowaIconSet extends webComponentBaseClass {
 			if ((iconSets[iconInfo.group])) {
 				p_Callback(iconSets[iconInfo.group][iconInfo.name]);
 			}
-		} else {
+		} else if (p_Name) {
 			throw new Error('icon names should have the format group:name');
 		}
 	}

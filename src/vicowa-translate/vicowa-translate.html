@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<div>
+    <template id="vicowa-translate">
+    </template>
+    <script>
+		(function storeTemplate() {
+			const template = document.currentScript.parentNode.querySelector('template');
+			window.webComponentTemplates = window.webComponentTemplates || new Map();
+			window.webComponentTemplates.set(template.getAttribute('id'), template);
+		})();
+    </script>
+    <script type="module" src="./vicowa-translate.js"></script>
+</div>

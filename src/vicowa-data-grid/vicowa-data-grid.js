@@ -147,7 +147,7 @@ class VicowaDataGrid extends webComponentBaseClass {
 			// width: width of the column
 			const lastItem = Math.min(this.columns, p_EndColumn);
 			const result = [];
-			for (let index = p_StartColumn; index < lastItem; index++){
+			for (let index = p_StartColumn; index < lastItem; index++) {
 				result.push({});
 			}
 			resolve(result);

@@ -66,3 +66,5 @@ typings/
 
 #ignore jsdoc output
 /doc
+#ignore build output
+/dist
