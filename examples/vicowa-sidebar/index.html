@@ -19,7 +19,7 @@
 			padding: 0;
 			margin: 0;
 		}
-		#left {
+		#left, #right, #top, #bottom {
 			position: absolute;
 			left: 0;
 			top: 0;
@@ -27,7 +27,6 @@
 			bottom: 0;
 		}
 
-		div[slot],
 		#hitboxcontainer {
 			position: absolute;
 			left: 0;
@@ -42,19 +41,26 @@
 
 		#left > div[slot="side-content"] {
 			background: #aaeeff;
+			height: 100%;
 		}
 		#right > div[slot="side-content"] {
 			background: #ffaaee;
+			height: 100%;
 		}
 		#top > div[slot="side-content"] {
 			background: #aaffaa;
+			height: 100%;
 		}
 		#bottom > div[slot="side-content"] {
 			background: #ffaaaa;
+			height: 100%;
 		}
 
 		#bottom > div[slot="main-content"] {
 			background: #ffffaa;
+			height: 100%;
+			width: 100%;
+			position: absolute;
 		}
 
 		body {

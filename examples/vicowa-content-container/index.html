@@ -9,12 +9,47 @@
     <link rel="import" href="../../src/vicowa-content-container/vicowa-content-container.html">
 
 	<style>
+		#content {
+			border: 1px solid grey;
+			box-shadow: 0 0 6px grey;
+			margin-top: 1em;
+		}
+
+		#parent-container {
+			box-sizing: border-box;
+			margin-top: 1em;
+			position: relative;
+			width: 500px;
+			height: 500px;
+			overflow-x: hidden;
+			overflow-y: auto;
+			border: 1px solid grey;
+			box-shadow: 0 0 6px grey;
+		}
+
+		#content2 {
+
+		}
+
 	</style>
 </head>
 
 <body>
-	<button onclick="document.querySelector('#content').location='content-test1.html'">Load Content 1</button>	<button onclick="document.querySelector('#content').location='content-test2.html'">Load Content 2</button>	<button onclick="document.querySelector('#content').location='content-test3.html'">Load Content 3</button>	<button onclick="document.querySelector('#content').location='content-test4.html'">Load Content 4</button>
+	<button location="content-test1.html">Load Content 1</button>	<button location="content-test2.html">Load Content 2</button>	<button location="content-test3.html">Load Content 3</button>	<button location="content-test4.html">Load Content 4</button>
 	<vicowa-content-container id="content" location="content-test1.html" content-base-location="./content/" add-location-to-url></vicowa-content-container>
+	<div id="parent-container">
+		<vicowa-content-container id="content2" location="content-test1.html" content-base-location="./content/" add-location-to-url></vicowa-content-container>
+	</div>
+	<script>
+		const content = document.querySelector('#content');
+		const content2 = document.querySelector('#content2');
+			Array.from(document.querySelectorAll('button')).forEach((p_Button) => {
+			p_Button.addEventListener('click', (p_Event) => {
+				content.location = p_Event.target.getAttribute('location');
+				content2.location = p_Event.target.getAttribute('location');
+			});
+		});
+	</script>
 </body>
 
 </html>

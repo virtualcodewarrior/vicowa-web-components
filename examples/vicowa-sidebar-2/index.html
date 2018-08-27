@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, minimal-ui">
+	<meta name="mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-title" content="vicowa-sidebar example">
+	<meta name="theme-color" content="red">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>ViCoWa Web Components - vicowa-string</title>
+    <script src="../../node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js"></script>
+    <script src="../../node_modules/@webcomponents/html-imports/html-imports.min.js"></script>
+    <link rel="import" href="../../src/vicowa-sidebar/vicowa-sidebar.html">
+
+	<style>
+		body {
+			padding: 0;
+			margin: 0;
+		}
+
+		vicowa-sidebar {
+			border: 1px solid grey;
+			box-shadow: 0 0 6px grey;
+			margin: 1em;
+		}
+
+		#hitboxcontainer {
+			position: absolute;
+			left: 0;
+			top: 0;
+			right: 0;
+			bottom: 0;
+		}
+
+		div[slot=side-content] {
+			overflow: auto;
+		}
+
+		#left > div[slot="side-content"] {
+			background: #aaeeff;
+			height: 100%;
+		}
+		body {
+			--vicowa-sidebar-resizer-size: 5px;
+		}
+
+		#hitboxcontainer {
+			display: flex;
+			flex-direction: column;
+			justify-content: center;
+		}
+
+		#hitbox {
+			position: relative;
+			left: -5px;
+			width: 20px;
+			height: 20px;
+			background: gray;
+		}
+	</style>
+</head>
+
+<body lang="en_US">
+	<vicowa-sidebar id="left" resizeable>
+		<div slot="side-content">
+			<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Alias asperiores aspernatur commodi delectus
+				doloremque ducimus earum, enim eos expedita fuga inventore iure laudantium odit quia quod temporibus ut
+				voluptatem, voluptatum.</p>
+			<p>Accusamus aspernatur beatae cumque, deserunt doloremque doloribus error explicabo fugiat hic impedit
+				laborum magnam minus molestiae nobis nostrum obcaecati quia rem rerum sed sequi similique sint soluta
+				velit, voluptas voluptates.</p>
+			<p>Architecto assumenda, consectetur error expedita libero, minus natus nulla, odio perspiciatis placeat
+				possimus tempora? Culpa dolor eligendi harum iusto labore magnam maiores placeat possimus, quas quo,
+				quos, sapiente tempore ullam.</p>
+			<p>Accusamus aliquam, cupiditate, deserunt dignissimos dolorum error inventore, labore minima nostrum nulla
+				numquam odio quod similique unde voluptatibus. At delectus dolorum harum nihil nulla optio, sunt.
+				Dolores ea obcaecati sunt!</p>
+			<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Adipisci culpa id, iure laboriosam maxime nobis
+				nulla obcaecati repellendus similique! Dignissimos maiores maxime necessitatibus odio optio possimus
+				recusandae sed ullam. Eos.</p>
+		</div>
+		<div slot="hitarea-content">
+			<div id="hitboxcontainer">
+				<div id="hitbox"></div>
+			</div>
+		</div>
+		<div slot="main-content">
+				<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aliquid corporis,
+					enim ipsam laborum nam perferendis rem voluptatem voluptates. Animi debitis dignissimos fugiat nam
+					nisi, optio provident quo repellat veritatis voluptas?</p>
+					<p>Amet, consequatur fugit labore officiis repellendus sunt? Illo illum possimus veniam voluptas.
+						Adipisci alias aspernatur autem corporis cupiditate delectus deserunt dolorem dolorum, illo
+						illum ipsum itaque nostrum, recusandae temporibus ullam.</p>
+					<p>Expedita facilis repellendus ullam. At aut beatae, consequuntur dolor dolorum explicabo illum in
+						labore mollitia natus nobis odit optio possimus quis, totam unde voluptas? Consequuntur dicta
+						eius mollitia temporibus veniam?</p>
+					<p>Beatae illo libero saepe tempora temporibus. Ab alias amet animi consectetur dicta dolor error
+						esse et facere laborum officia perferendis placeat provident quod reiciendis reprehenderit,
+						tenetur, ullam veniam voluptas voluptates.</p>
+		</div>
+	</vicowa-sidebar>
+	<script type="module">
+		import { createQuickAccess } from '../../src/third_party/web-component-base-class/dist/tools.js';
+		const controls = createQuickAccess(document, 'id');
+
+		controls.toggleLeft.addEventListener('click', () => { controls.left.expanded = !controls.left.expanded; });
+		controls.toggleRight.addEventListener('click', () => { controls.right.expanded = !controls.right.expanded; });
+		controls.toggleTop.addEventListener('click', () => { controls.top.expanded = !controls.top.expanded; });
+		controls.toggleBottom.addEventListener('click', () => { controls.bottom.expanded = !controls.bottom.expanded; });
+	</script>
+</body>
+
+</html>
