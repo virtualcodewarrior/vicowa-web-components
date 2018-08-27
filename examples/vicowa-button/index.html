@@ -18,6 +18,35 @@
 		vicowa-button {
 			--vicowa-button-width: 200px;
 		}
+
+		#red-square {
+			width: 20px;
+			height: 20px;
+			background: red;
+		}
+		#blue-square {
+			margin-left: 15px;
+			margin-top: -5px;
+			width: 20px;
+			height: 20px;
+			background: blue;
+		}
+		#green-square {
+			margin-left: 30px;
+			margin-top: -5px;
+			width: 20px;
+			height: 20px;
+			background: green;
+		}
+
+		.custom {
+			margin: 1em;
+			--vicowa-button-padding: 1em;
+			--vicowa-button-width: 75px;
+			--vicowa-button-height: 75px;
+			--vicowa-button-border: none;
+			--vicowa-button-shadow: 0 0 6px gray;
+		}
 	</style>
 </head>
 
@@ -31,6 +60,7 @@
 		<li><vicowa-button string="test string 2 %1$s element" plural-number=1 parameters='["1"]'></vicowa-button></li>
 		<li><vicowa-button string="test string 2 %1$s element" plural-number=2 parameters='["2"]' disabled></vicowa-button></li>
 		<li><vicowa-button string="test string %2$s %1$s %3$s" parameters='["first", "second", "third"]'></vicowa-button></li>
+		<li><vicowa-button class="custom" parameters='["first", "second", "third"]'><div slot="custom-content"><div id="red-square"></div><div id="blue-square"></div><div id="green-square"></div></div></vicowa-button></li>
 	</ul>
 	<script type="module">
 		import translator from '../../src/utilities/translate.js';

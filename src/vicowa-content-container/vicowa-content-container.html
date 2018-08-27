@@ -1,0 +1,24 @@
+<template id="vicowa-content-container">
+	<style>
+	:host {
+		position: relative;
+		display: block;
+	}
+	#container {
+		position: absolute;
+		left: 0;
+		top: 0;
+		right: 0;
+		bottom: 0;
+	}
+	</style>
+	<div id="container"></div>
+</template>
+<script>
+	(function storeTemplate() {
+		const template = document.currentScript.parentNode.querySelector('template');
+		window.webComponentTemplates = window.webComponentTemplates || new Map();
+		window.webComponentTemplates.set(template.getAttribute('id'), template);
+	})();
+</script>
+<script src="vicowa-content-container.js" type="module"></script>
