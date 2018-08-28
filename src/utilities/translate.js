@@ -112,6 +112,10 @@ translator = {
 	addTranslationLocation(p_Location) {
 		if (p_Location && locations.findIndex((p_LocationInfo) => p_LocationInfo.url === String(p_Location)) === -1) {
 			locations.push({ url: p_Location, loaded: false });
+			// if the language was set, immediately start loading any new locations
+			if (language) {
+				loadTranslationFiles(language);
+			}
 		}
 	},
 	/**
