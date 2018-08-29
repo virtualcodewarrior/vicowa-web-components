@@ -1,16 +1,17 @@
 import { webComponentBaseClass } from '../third_party/web-component-base-class/dist/webComponentBaseClass.js';
 import translator from '../utilities/translate.js';
 
-const galleries = {
-};
-
 /**
  * Handler to be called when the tooltip text is changed
  * @param {VicowaImageContainer} p_ImageControl The control for which this handler is called
  */
 function tooltipChanged(p_ImageControl) {
-	p_ImageControl.$.image.title = p_ImageControl.tooltip;
-	p_ImageControl.updateTranslation();
+	if (p_ImageControl.tooltip) {
+		p_ImageControl.$.image.title = p_ImageControl.tooltip;
+		p_ImageControl.updateTranslation();
+	} else {
+		p_ImageControl.$.image.removeAttribute('title');
+	}
 }
 
 /**
@@ -18,8 +19,12 @@ function tooltipChanged(p_ImageControl) {
  * @param {VicowaImageContainer} p_ImageControl The control for which this handler is called
  */
 function altChanged(p_ImageControl) {
-	p_ImageControl.$.image.alt = p_ImageControl.alt;
-	p_ImageControl.updateTranslation();
+	if (p_ImageControl.alt) {
+		p_ImageControl.$.image.alt = p_ImageControl.alt;
+		p_ImageControl.updateTranslation();
+	} else {
+		p_ImageControl.$.image.removeAttribute('alt');
+	}
 }
 
 /**
@@ -31,13 +36,31 @@ function descriptionChanged(p_ImageControl) {
 	p_ImageControl.updateTranslation();
 }
 
+function alternatesChanged(p_ImageControl) {
+	const alternates = (p_ImageControl.alternates || []).slice();
+	p_ImageControl.$$$('picture source').forEach((p_Source) => { p_Source.parentNode.removeChild(p_Source); });
+	if (alternates.length || p_ImageControl.src) {
+		if ((!alternates.length || alternates[alternates.length - 1] !== p_ImageControl.src) && p_ImageControl.src) {
+			alternates.push(p_ImageControl.src);
+		}
+		alternates.slice(0, -1).forEach((p_Alternate) => {
+			const source = document.createElement('source');
+			source.setAttribute('srcset', p_Alternate);
+			if (/\./.test(p_Alternate)) {
+				source.setAttribute('type', `image/${p_Alternate.split('.').slice(-1)[0]}`);
+			}
+			p_ImageControl.$.picture.insertBefore(source, p_ImageControl.$.image);
+		});
+		p_ImageControl.$.image.src = alternates.slice(-1)[0];
+	}
+}
+
 /**
  * Handler to be called when the src is changed
  * @param {VicowaImageContainer} p_ImageControl The control for which this handler is called
  */
 function srcChanged(p_ImageControl) {
-	p_ImageControl.$.image.src = p_ImageControl.src;
-	p_ImageControl.updateTranslation();
+	alternatesChanged(p_ImageControl);
 }
 
 /**
@@ -98,6 +121,12 @@ class VicowaImageContainer extends webComponentBaseClass {
 				reflectToAttribute: true,
 				observer: galleryGroupChanged,
 			},
+			alternates: {
+				type: Array,
+				value: [],
+				reflectToAttribute: true,
+				observer: alternatesChanged,
+			},
 		});
 	}
 
@@ -111,9 +140,6 @@ class VicowaImageContainer extends webComponentBaseClass {
 			this._activeTranslator = p_Translator;
 			this.updateTranslation();
 		}, this);
-		this.addAutoEventListener(this.$.image, 'click', () => {
-
-		});
 	}
 }
 

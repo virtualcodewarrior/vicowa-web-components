@@ -15,6 +15,10 @@
 			background-color: blue;
 			color: white;
 		}
+
+		vicowa-image-container {
+			width: 200px;
+		}
 	</style>
 </head>
 
@@ -24,16 +28,14 @@
 		<button id="english">English</button>
 		<button id="dutch">Nederlands</button>
 	</div>
-	<vicowa-image-container id="img1"></vicowa-image-container>
-	<vicowa-image-container id="img2" description="image 2"></vicowa-image-container>
-	<vicowa-image-container id="img3" tooltip="image 3"></vicowa-image-container>
-	<vicowa-image-container id="img4" alt="Some image depicting something"></vicowa-image-container>
-	<vicowa-image-container id="img5" description="image 6" title="img 6" alt="Depicts something else"></vicowa-image-container>
-	<vicowa-image-container id="img6"></vicowa-image-container>
-	<vicowa-image-container id="img7"></vicowa-image-container>
-	<vicowa-image-container id="img8"></vicowa-image-container>
-	<vicowa-image-container id="img9"></vicowa-image-container>
-	<vicowa-image-container id="img10"></vicowa-image-container>
+	<vicowa-image-container id="img1" src="../resources/images/image.jpg"></vicowa-image-container>
+	<vicowa-image-container id="img2" src="../resources/images/image.jpg" description="image 2"></vicowa-image-container>
+	<vicowa-image-container id="img3" src="../resources/images/image.jpg" tooltip="image 3"></vicowa-image-container>
+	<vicowa-image-container id="img4" src="../resources/images/image.jpg" alt="Some image depicting something"></vicowa-image-container>
+	<vicowa-image-container id="img5" src="../resources/images/image.jpg" description="image 6" tooltip="img 6" alt="Depicts something else"></vicowa-image-container>
+	<vicowa-image-container id="img6" src="../resources/images/image.jpg" alternates='["../resources/images/image.webp"]'></vicowa-image-container>
+	<vicowa-image-container id="img7" alternates='["../resources/images/image.webp", "../resources/images/image.jpg"]'></vicowa-image-container>
+	<vicowa-image-container id="img8" alternates='["../resources/images/image.jpg"]'></vicowa-image-container>
 	<script type="module">
 		import translator from '../../src/utilities/translate.js';
 
