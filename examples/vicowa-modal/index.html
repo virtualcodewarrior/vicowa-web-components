@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>ViCoWa Web Components - vicowa-input</title>
+    <script src="../../node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js"></script>
+    <script src="../../node_modules/@webcomponents/html-imports/html-imports.min.js"></script>
+    <link rel="import" href="../../src/vicowa-modal/vicowa-modal.html">
+
+	<style>
+		#modal1 [slot] {
+			position: relative;
+			width: 150px;
+			height: 150px;
+		}
+		#modal2 [slot] {
+			position: relative;
+			width: 300px;
+			height: 300px;
+		}
+	</style>
+</head>
+
+<body>
+	<button id="show1" modal="modal1">Show modal outside click doesn't close</button>
+	<button id="show2" modal="modal2">Show modal allows outside click to close</button>
+	<vicowa-modal id="modal1">
+		<div slot="content">
+			<button onclick="document.querySelector('#modal1').open = false;">Close</button>
+		</div>
+	</vicowa-modal>
+	<vicowa-modal id="modal2" outside-closes>
+		<div slot="content">
+			<button onclick="document.querySelector('#modal2').open = false;">Close</button>
+		</div>
+	</vicowa-modal>
+	<script>
+		Array.from(document.querySelectorAll('button[modal]')).forEach((p_Button) => {
+			p_Button.addEventListener('click', () => { document.querySelector(`#${p_Button.getAttribute('modal')}`).open = true; });
+		});
+	</script>
+</body>
+
+</html>

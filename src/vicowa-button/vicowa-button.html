@@ -5,13 +5,40 @@
     <template id="vicowa-button">
         <style>
             :host {
+                position: relative;
                 box-sizing: border-box;
                 display: block;
                 margin: 0;
                 padding: 0;
+				background: var(--vicowa-button-background, transparent);
+				color: var(--vicowa-button-color);
+				font: var(--vicowa-button-font);
+				cursor: var(--vicowa-button-cursor);
+				box-shadow: var(--vicowa-button-box-shadow);
             }
 
+			:host(:hover) {
+				background: var(--vicowa-button-background-hover, var(--vicowa-button-background));
+				color: var(--vicowa-button-color-hover, var(--vicowa-button-color));
+				font: var(--vicowa-button-font-hover, var(--vicowa-button-font));
+				cursor: var(--vicowa-button-cursor-hover, var(--vicowa-button-cursor));
+				box-shadow: var(--vicowa-button-box-shadow-hover, var(--vicowa-button-shadow));
+				left: var(--vicowa-button-left-hover);
+				top: var(--vicowa-button-top-hover);
+			}
+
+			:host(:active) {
+				background: var(--vicowa-button-background-active, var(--vicowa-button-background));
+				color: var(--vicowa-button-color-active, var(--vicowa-button-color));
+				font: var(--vicowa-button-font-active, var(--vicowa-button-font));
+				cursor: var(--vicowa-button-cursor-active, var(--vicowa-button-cursor));
+				box-shadow: var(--vicowa-button-box-shadow-active, var(--vicowa-button-shadow));
+				left: var(--vicowa-button-left-active);
+				top: var(--vicowa-button-top-active);
+			}
+
 			button {
+				width: 100%;
                 box-sizing: border-box;
                 position: relative;
                 user-select: none;
@@ -19,15 +46,11 @@
                 flex-direction: row;
                 align-content: stretch;
                 align-items: center;
-                height: var(--vicowa-button-height, 30px);
-                width: var(--vicowa-button-width, auto);
-                border: var(--vicowa-button-border, 1px solid grey);
-                padding: var(--vicowa-button-padding, 0);
-                box-shadow: var(--vicowa-button-shadow, none);
-                margin: var(--vicowa-button-margin, 0);
-                background: var(--vicowa-button-background, transparent);
-                color: var(--vicowa-button-color, black);
-                cursor: var(--vicowa-button-cursor, pointer);
+				border: var(--vicowa-button-border, none);
+				background: transparent;
+				color: inherit;
+				font: inherit;
+				cursor: inherit;
 			}
 
             #icon {
@@ -39,9 +62,10 @@
             #icon[icon=""],
             #icon:not([icon]){
                 flex: 0 0 var(--vicowa-button-min-icon-width, 0);
+				max-width: 0;
             }
 
-			:host[disabled] {
+			:host([disabled]) {
 				pointer-events: none;
 				opacity: 0.5;
 				cursor: default;
@@ -51,6 +75,11 @@
 				display: flex;
 				flex-direction: row;
 			}
+
+			vicowa-string {
+				flex: 1 1 auto;
+			}
+
         </style>
         <div id="container">
             <button><slot name="custom-content"></slot><vicowa-icon id="icon"></vicowa-icon><vicowa-string id="string"></vicowa-string></button>

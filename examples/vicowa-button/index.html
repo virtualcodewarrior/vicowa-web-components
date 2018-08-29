@@ -9,29 +9,79 @@
     <link rel="import" href="../../src/vicowa-button/vicowa-button.html">
 
 	<style>
+		body {
+			font-family: sans-serif;
+		}
 		body[lang="en_US"] #english,
 		body[lang="nl_NL"] #dutch {
 			background-color: blue;
 			color: white;
 		}
 
-		vicowa-button {
-			--vicowa-button-width: 200px;
+		.themes {
+			display: flex;
 		}
 
-		#red-square {
+		.themes p {
+			font-weight: bold;
+		}
+
+		.themes > div {
+			margin-right: 1em;
+		}
+
+		vicowa-button,
+		test-container {
+			position: relative;
+			width: 200px;
+			margin-top: 5px;
+		}
+
+		.css-theme vicowa-button {
+			border: 1px solid grey;
+			box-shadow: 3px 3px 8px grey;
+			background: white;
+			font-family: serif;
+			font-weight: bold;
+			cursor: pointer;
+		}
+
+		.css-theme vicowa-button:hover {
+			left: -1px;
+			top: -1px;
+			box-shadow: 4px 4px 8px grey;
+		}
+
+		.css-theme vicowa-button:active {
+			left: 1px;
+			top: 1px;
+			box-shadow: 2px 2px 6px grey;
+		}
+
+		.individual-styles .prop1 {
+			background: blue;
+			color: white;
+			font-weight: bold;
+		}
+
+		.individual-styles .prop2 {
+			font-style: italic;
+			font-family: sans-serif;
+		}
+
+		.red-square {
 			width: 20px;
 			height: 20px;
 			background: red;
 		}
-		#blue-square {
+		.blue-square {
 			margin-left: 15px;
 			margin-top: -5px;
 			width: 20px;
 			height: 20px;
 			background: blue;
 		}
-		#green-square {
+		.green-square {
 			margin-left: 30px;
 			margin-top: -5px;
 			width: 20px;
@@ -39,32 +89,88 @@
 			background: green;
 		}
 
-		.custom {
-			margin: 1em;
-			--vicowa-button-padding: 1em;
-			--vicowa-button-width: 75px;
-			--vicowa-button-height: 75px;
-			--vicowa-button-border: none;
-			--vicowa-button-shadow: 0 0 6px gray;
+		.custom-var-theme {
+			--vicowa-button-border: 1px dotted blue;
+			--vicowa-button-box-shadow: 3px 3px 8px blue;
+			--vicowa-button-cursor: pointer;
+			--vicowa-button-color: white;
+			--vicowa-button-background: green;
+			--vicowa-button-font: italic bold 1em serif;
+			--vicowa-button-background-hover: blue;
+			--vicowa-button-box-shadow-hover: 4px 4px 8px green;
+			--vicowa-button-left-hover: -1px;
+			--vicowa-button-top-hover: -1px;
+			--vicowa-button-background-active: blue;
+			--vicowa-button-box-shadow-active: 2px 2px 6px green;
+			--vicowa-button-left-active: 1px;
+			--vicowa-button-top-active: 1px;
 		}
 	</style>
 </head>
-
+<template id="test-container">
+	<style>
+		:host {
+			position: relative;
+			display: block;
+		}
+		vicowa-button {
+			width: 100%;
+		}
+	</style>
+	<vicowa-button class="prop3" string="test string %2$s %1$s %3$s" parameters='["first", "second", "third"]'></vicowa-button>
+</template>
 <body lang="en_US">
 	<div id="translations">
 		<button id="english">English</button>
 		<button id="dutch">Nederlands</button>
 	</div>
-	<ul>
-		<li><vicowa-button string="test string 1"></vicowa-button></li>
-		<li><vicowa-button string="test string 2 %1$s element" plural-number=1 parameters='["1"]'></vicowa-button></li>
-		<li><vicowa-button string="test string 2 %1$s element" plural-number=2 parameters='["2"]' disabled></vicowa-button></li>
-		<li><vicowa-button string="test string %2$s %1$s %3$s" parameters='["first", "second", "third"]'></vicowa-button></li>
-		<li><vicowa-button class="custom" parameters='["first", "second", "third"]'><div slot="custom-content"><div id="red-square"></div><div id="blue-square"></div><div id="green-square"></div></div></vicowa-button></li>
-	</ul>
+	<div class="themes">
+		<div class="un-themed">
+			<p>Default</p>
+			<vicowa-button string="test string 1"></vicowa-button>
+			<vicowa-button class="prop1" string="test string 2 %1$s element" plural-number=1 parameters='["1"]'></vicowa-button>
+			<vicowa-button class="prop2" string="test string 2 %1$s element" plural-number=2 parameters='["2"]' disabled></vicowa-button>
+			<test-container></test-container>
+			<vicowa-button class="custom" parameters='["first", "second", "third"]'><div slot="custom-content"><div class="red-square"></div><div class="blue-square"></div><div class="green-square"></div></div></vicowa-button>
+		</div>
+		<div class="individual-styles">
+			<p>Individual styles using css</p>
+			<vicowa-button string="test string 1"></vicowa-button>
+			<vicowa-button class="prop1" string="test string 2 %1$s element" plural-number=1 parameters='["1"]'></vicowa-button>
+			<vicowa-button class="prop2" string="test string 2 %1$s element" plural-number=2 parameters='["2"]' disabled></vicowa-button>
+			<test-container></test-container>
+			<vicowa-button class="custom" parameters='["first", "second", "third"]'><div slot="custom-content"><div class="red-square"></div><div class="blue-square"></div><div class="green-square"></div></div></vicowa-button>
+		</div>
+		<div class="css-theme">
+			<p>Themed using css<br/> (note style does not penetrate<br/> test-container in<br/> native implementations)</p>
+			<vicowa-button string="test string 1"></vicowa-button>
+			<vicowa-button class="prop1" string="test string 2 %1$s element" plural-number=1 parameters='["1"]'></vicowa-button>
+			<vicowa-button class="prop2" string="test string 2 %1$s element" plural-number=2 parameters='["2"]' disabled></vicowa-button>
+			<test-container></test-container>
+			<vicowa-button class="custom" parameters='["first", "second", "third"]'><div slot="custom-content"><div class="red-square"></div><div class="blue-square"></div><div class="green-square"></div></div></vicowa-button>
+		</div>
+		<div class="custom-var-theme">
+			<p>Themed using custom variables<br/> (note style will penetrate<br/> test-container)</p>
+			<vicowa-button string="test string 1"></vicowa-button>
+			<vicowa-button class="prop1" string="test string 2 %1$s element" plural-number=1 parameters='["1"]'></vicowa-button>
+			<vicowa-button class="prop2" string="test string 2 %1$s element" plural-number=2 parameters='["2"]' disabled></vicowa-button>
+			<test-container></test-container>
+			<vicowa-button class="custom" parameters='["first", "second", "third"]'><div slot="custom-content"><div class="red-square"></div><div class="blue-square"></div><div class="green-square"></div></div></vicowa-button>
+		</div>
+	</div>
 	<script type="module">
 		import translator from '../../src/utilities/translate.js';
+		import { webComponentBaseClass } from '../../src/third_party/web-component-base-class/dist/webComponentBaseClass.js';
 
+		// create a web component on the fly to show nested button theming
+		const componentName = 'test-container';
+		const template = document.querySelector(`#${componentName}`);
+		window.webComponentTemplates = window.webComponentTemplates || new Map();
+		window.webComponentTemplates.set(componentName, template);
+		window.customElements.define(componentName, class extends webComponentBaseClass {
+			static get is() { return componentName; }
+			constructor() { super(); }
+		});
 		// setup the translator
 		translator.addTranslationLocation('../resources/translations');
 		translator.addTranslationUpdatedObserver((p_Translator) => {

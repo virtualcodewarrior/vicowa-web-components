@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<link rel="import" href="../vicowa-string/vicowa-string.html">
+<div>
+    <template id="vicowa-image-container">
+        <style>
+            :host {
+                position: relative;
+                box-sizing: border-box;
+                display: inline-block;
+            }
+
+            #image-container {
+                display: flex;
+                flex-direction: column;
+                align-content: center;
+                align-items: center;
+            }
+
+            img {
+                position: relative;
+            }
+        </style>
+        <div id="image-container">
+            <img id="image" src="">
+            <vicowa-string id="description"></vicowa-string>
+        </div>
+    </template>
+    <script>
+		(function storeTemplate() {
+			const template = document.currentScript.parentNode.querySelector('template');
+			window.webComponentTemplates = window.webComponentTemplates || new Map();
+			window.webComponentTemplates.set(template.getAttribute('id'), template);
+		})();
+    </script>
+    <script type="module" src="./vicowa-image-container.js"></script>
+</div>

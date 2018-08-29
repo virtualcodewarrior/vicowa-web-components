@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<div>
+    <template id="vicowa-modal">
+        <style>
+            :host {
+                position: fixed;
+                left: 0;
+                top: 0;
+                right: 0;
+                bottom: 0;
+                display: none;
+                background: black;
+                opacity: 0.7;
+                align-items: center;
+                justify-content: center;
+            }
+
+            :host([open]) {
+                display: flex;
+            }
+
+            #modal-box {
+                background: white;
+                border: 1px solid grey;
+                box-shadow: 5px 5px 15px black;
+                min-width: 1em;
+                min-height: 1em;
+            }
+        </style>
+        <div id="modal-box">
+            <slot name="content"></slot>
+        </div>
+    </template>
+    <script>
+		(function storeTemplate() {
+			const template = document.currentScript.parentNode.querySelector('template');
+			window.webComponentTemplates = window.webComponentTemplates || new Map();
+			window.webComponentTemplates.set(template.getAttribute('id'), template);
+		})();
+    </script>
+    <script type="module" src="./vicowa-modal.js"></script>
+</div>
+
