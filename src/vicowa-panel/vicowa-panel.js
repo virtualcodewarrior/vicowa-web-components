@@ -1,4 +1,4 @@
-import { webComponentBaseClass } from '../third_party/web-component-base-class/dist/webComponentBaseClass.js';
+import { webComponentBaseClass } from '../third_party/web-component-base-class/src/webComponentBaseClass.js';
 
 function headerChanged(p_PanelControl) {
 	p_PanelControl.$.title = p_PanelControl.header;

@@ -1,4 +1,4 @@
-import { webComponentBaseClass } from '../third_party/web-component-base-class/dist/webComponentBaseClass.js';
+import { webComponentBaseClass } from '../third_party/web-component-base-class/src/webComponentBaseClass.js';
 
 // all icon sets will go here, there should be only one instance in the current web page
 const iconSets = {};

@@ -1,4 +1,4 @@
-import { webComponentBaseClass } from '../third_party/web-component-base-class/dist/webComponentBaseClass.js';
+import { webComponentBaseClass } from '../third_party/web-component-base-class/src/webComponentBaseClass.js';
 
 const componentName = 'vicowa-content-container';
 

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>ViCoWa Web Components - vicowa-string</title>
+    <script src="../../node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js"></script>
+    <script src="../../node_modules/@webcomponents/html-imports/html-imports.min.js"></script>
+    <link rel="import" href="../../src/vicowa-image-carousel/vicowa-image-carousel.html">
+	<link rel="import" href="../../src/vicowa-translate/vicowa-translate.html">
+
+	<style>
+		body[lang="en_US"] #english,
+		body[lang="nl_NL"] #dutch {
+			background-color: blue;
+			color: white;
+		}
+
+		vicowa-image-carousel {
+			box-shadow: 2px 2px 8px grey;
+			position: relative;
+			--vicowa-image-carousel-width: 300px;
+			height: 300px;
+		}
+
+		.carousel-container {
+			margin: 1em;
+			display: inline-block;
+			width: 300px;
+		}
+	</style>
+</head>
+
+<body lang="en_US">
+	<vicowa-translate translation-location="../resources/translations"></vicowa-translate>
+	<div id="translations">
+		<button id="english">English</button>
+		<button id="dutch">Nederlands</button>
+	</div>
+	<div class="carousel-container"><div>Carousel without loop or auto</div><vicowa-image-carousel id="carousel1"></vicowa-image-carousel></div>
+	<div class="carousel-container"><div>Carousel with auto set to 2000 (2s), this also implies loop</div><vicowa-image-carousel id="carousel2" auto="2000"></vicowa-image-carousel></div>
+	<div class="carousel-container"><div>Carousel with loop set</div><vicowa-image-carousel id="carousel3" loop></vicowa-image-carousel></div>
+	<div class="carousel-container"><div>Carousel with custom controls</div><vicowa-image-carousel id="carousel4">
+		<div slot="previous-control"><button>&lt;</button></div>
+		<div slot="next-control"><button>&gt;</button></div>
+	</vicowa-image-carousel></div>
+	<script type="module">
+		import translator from '../../src/utilities/translate.js';
+
+		const carousel1 = document.querySelector('#carousel1');
+		const carousel2 = document.querySelector('#carousel2');
+		const carousel3 = document.querySelector('#carousel3');
+		const carousel4 = document.querySelector('#carousel4');
+		carousel1.images = carousel2.images = carousel3.images = carousel4.images = [
+			{ alternates: ['../resources/images/image1.jpg'], description: 'image 1' },
+			{ alternates: ['../resources/images/image2.jpg'], description: 'image 2' },
+			{ alternates: ['../resources/images/image3.jpg'], description: 'image 3 longer description that might not actually fit in the box without wrapping it' },
+			{ alternates: ['../resources/images/image4.jpg'], description: 'image 4' },
+			{ alternates: ['../resources/images/image5.jpg'], description: 'image 5' },
+			{ alternates: ['../resources/images/image6.webp', '../resources/images/image6.jpg'], description: 'image 6' },
+			{ alternates: ['../resources/images/image7.webp', '../resources/images/image7.jpg'], description: 'image 7' },
+			{ alternates: ['../resources/images/image8.jpg'], description: 'image 8' },
+		];
+
+		// setup the translator
+		translator.addTranslationUpdatedObserver((p_Translator) => {
+			document.body.setAttribute('lang', p_Translator.language);
+		}, null);
+		translator.language = document.body.getAttribute('lang');
+
+		document.querySelector('#english').addEventListener('click', () => { translator.language = 'en_US'; });
+		document.querySelector('#dutch').addEventListener('click', () => { translator.language = 'nl_NL'; });
+	</script>
+</body>
+
+</html>

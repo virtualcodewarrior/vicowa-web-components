@@ -26,7 +26,7 @@
     "watch-test": "node ./node_modules/karma/bin/karma start karma.conf.js --watch",
     "coverage": "node ./node_modules/karma/bin/karma start karma.conf.js coverage --single-run",
     "test": "npm run lint && npm run unittest",
-    "postinstall": "node ./postinstall.js",
+    "third_party": "node ./node_modules/dependency-relocator/dependency-relocator.js ./src/third_party",
     "prepare": "npm run build -- --npm"
   },
   "repository": {
@@ -40,6 +40,7 @@
     ]
   },
   "files": [
+	"src",
     "dist",
     "postinstall.js"
   ],
@@ -66,9 +67,9 @@
   },
   "dependencies": {
     "@webcomponents/html-imports": "git+https://git@github.com/webcomponents/html-imports.git",
-    "@webcomponents/webcomponentsjs": "^2.0.4",
+    "@webcomponents/webcomponentsjs": "^2.1.1",
     "jed": "^1.1.1",
     "u2f-api": "^1.0.6",
-    "web-component-base-class": "^0.1.7"
+    "web-component-base-class": "^0.1.8"
   }
 }

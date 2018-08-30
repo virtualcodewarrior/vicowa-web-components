@@ -1,0 +1,74 @@
+{
+  "_from": "u2f-api@1.0.6",
+  "_id": "u2f-api@1.0.6",
+  "_inBundle": false,
+  "_integrity": "sha512-CDvSoiHLdB4I7ArzAngsSattj7lIRBmih/NAD9VUKVuMBoQHuhDdIkEM80Fu2vAMUQO9WQc/kjF8Akp5JvVfQw==",
+  "_location": "/u2f-api",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "version",
+    "registry": true,
+    "raw": "u2f-api@1.0.6",
+    "name": "u2f-api",
+    "escapedName": "u2f-api",
+    "rawSpec": "1.0.6",
+    "saveSpec": null,
+    "fetchSpec": "1.0.6"
+  },
+  "_requiredBy": [
+    "#USER",
+    "/"
+  ],
+  "_resolved": "https://registry.npmjs.org/u2f-api/-/u2f-api-1.0.6.tgz",
+  "_shasum": "fdde2a0788fcf7d8d273aa8688b217625961f866",
+  "_spec": "u2f-api@1.0.6",
+  "_where": "/home/rodney/prj/webcomponents/vicowa-web-components",
+  "author": {
+    "name": "Gustaf Räntilä",
+    "email": "g.rantila@gmail.com"
+  },
+  "bugs": {
+    "url": "https://github.com/grantila/u2f-api/issues"
+  },
+  "bundleDependencies": false,
+  "deprecated": false,
+  "description": "Promisified U2F API for browsers",
+  "devDependencies": {
+    "@types/mocha": "2.x",
+    "already": "1.x",
+    "chai": "4.x",
+    "jsdom": "11.x",
+    "mocha": "5.x",
+    "pre-commit": "1.x",
+    "rimraf": "2.x",
+    "typescript": "2.7.x"
+  },
+  "homepage": "https://github.com/grantila/u2f-api#readme",
+  "keywords": [
+    "u2f",
+    "api",
+    "client",
+    "2-factor",
+    "authentication",
+    "fido",
+    "yubikey",
+    "promise"
+  ],
+  "license": "MIT",
+  "main": "./dist/index.js",
+  "name": "u2f-api",
+  "pre-commit": [
+    "buildtest"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/grantila/u2f-api.git"
+  },
+  "scripts": {
+    "build": "scripts/build.sh",
+    "buildtest": "npm run build && npm run test",
+    "test": "mocha dist/test"
+  },
+  "types": "./dist/index.d.ts",
+  "version": "1.0.6"
+}

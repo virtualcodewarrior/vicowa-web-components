@@ -1,5 +1,5 @@
 import { VicowaInputBaseClass } from '../vicowa-input-base/vicowa-input-base.js';
-import { createQuickAccess } from '../third_party/web-component-base-class/dist/tools.js';
+import { createQuickAccess } from '../third_party/web-component-base-class/src/tools.js';
 
 const componentName = 'vicowa-single-selection';
 

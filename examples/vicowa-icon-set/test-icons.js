@@ -1,4 +1,4 @@
-import { webComponentBaseClass } from '../../src/third_party/web-component-base-class/dist/webComponentBaseClass.js';
+import { webComponentBaseClass } from '../../src/third_party/web-component-base-class/src/webComponentBaseClass.js';
 
 const customElementName = 'test-icons';
 window.customElements.define(customElementName, class extends webComponentBaseClass {

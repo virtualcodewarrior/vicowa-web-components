@@ -1,0 +1,15 @@
+{
+	"compilerOptions": {
+		"declaration": true,
+		"lib": [ "es2015", "es2017", "dom" ],
+		"outDir": "dist",
+		"sourceMap": true,
+		"module": "CommonJS",
+		"target": "es5"
+	},
+	"include": [
+		"index.ts",
+		"src",
+		"test"
+	]
+}

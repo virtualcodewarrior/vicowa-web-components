@@ -1,4 +1,4 @@
-import { webComponentBaseClass } from '../third_party/web-component-base-class/dist/webComponentBaseClass.js';
+import { webComponentBaseClass } from '../third_party/web-component-base-class/src/webComponentBaseClass.js';
 import translator from '../utilities/translate.js';
 import validators from '../utilities/validators.js';
 
