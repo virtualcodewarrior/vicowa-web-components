@@ -136,12 +136,9 @@ class VicowaImageCarousel extends webComponentBaseClass {
 	}
 
 	goToIndex(p_Index) {
-		if (p_Index < 0 || p_Index >= this.images.length) {
-			this.startIndex = Math.min(Math.max(0, this.startIndex), this.images.length);
-		} else {
-			this._activeImage = this.startIndex;
-			updateActiveImages(this);
-		}
+		this.startIndex = Math.min(Math.max(0, p_Index), this.images.length - 1);
+		this._activeImage = this.startIndex;
+		updateActiveImages(this);
 	}
 }
 
