@@ -9,22 +9,27 @@ function updateActiveImages(p_ImageControl) {
 	updateControls(p_ImageControl);
 	if (p_ImageControl._activeImage < p_ImageControl.images.length) {
 		const active = p_ImageControl.images[p_ImageControl._activeImage];
-		p_ImageControl.$.currentImage.alternates = active.alternates;
-		p_ImageControl.$.currentImage.description = active.description;
-		p_ImageControl.$.currentImage.alt = (active.alt || active.description).trim();
-		p_ImageControl.$.currentImage.tooltip = (active.tooltip || active.description).trim();
-
+		if (active) {
+			p_ImageControl.$.currentImage.alternates = active.alternates;
+			p_ImageControl.$.currentImage.description = active.description;
+			p_ImageControl.$.currentImage.alt = (active.alt || active.description).trim();
+			p_ImageControl.$.currentImage.tooltip = (active.tooltip || active.description).trim();
+		}
 		const previous = (p_ImageControl._activeImage > 0) ? p_ImageControl.images[p_ImageControl._activeImage - 1] : p_ImageControl.images[p_ImageControl.images.length - 1];
-		p_ImageControl.$.previousImage.alternates = previous.alternates;
-		p_ImageControl.$.previousImage.description = previous.description;
-		p_ImageControl.$.previousImage.alt = (previous.alt || previous.description).trim();
-		p_ImageControl.$.previousImage.tooltip = (previous.tooltip || previous.description).trim();
+		if (previous) {
+			p_ImageControl.$.previousImage.alternates = previous.alternates;
+			p_ImageControl.$.previousImage.description = previous.description;
+			p_ImageControl.$.previousImage.alt = (previous.alt || previous.description).trim();
+			p_ImageControl.$.previousImage.tooltip = (previous.tooltip || previous.description).trim();
+		}
 
 		const next = (p_ImageControl._activeImage < p_ImageControl.images.length - 1) ? p_ImageControl.images[p_ImageControl._activeImage + 1] : p_ImageControl.images[0];
-		p_ImageControl.$.nextImage.alternates = next.alternates;
-		p_ImageControl.$.nextImage.description = next.description;
-		p_ImageControl.$.nextImage.alt = (next.alt || next.description).trim();
-		p_ImageControl.$.nextImage.tooltip = (next.tooltip || next.description).trim();
+		if (next) {
+			p_ImageControl.$.nextImage.alternates = next.alternates;
+			p_ImageControl.$.nextImage.description = next.description;
+			p_ImageControl.$.nextImage.alt = (next.alt || next.description).trim();
+			p_ImageControl.$.nextImage.tooltip = (next.tooltip || next.description).trim();
+		}
 	}
 }
 

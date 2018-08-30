@@ -10,7 +10,7 @@ module.exports = {
 	],
 	parserOptions: {
 		sourceType: 'module',
-		ecmaVersion: 6,
+		ecmaVersion: 8,
 	},
 	// 'extends': 'eslint:recommended', // don't use any default settings, we will specify all settings explicitly
 	rules: {
