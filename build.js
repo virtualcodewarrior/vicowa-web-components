@@ -26,9 +26,9 @@ walker.on('file', (p_Root, p_Stat, p_Next) => {
 		if (!exclude.find((p_RegExp) => p_RegExp.test(p_Stat.name))) {
 			if (/\.jsm?$/.test(p_Stat.name)) {
 				let fileContent = fs.readFileSync(path.resolve(p_Root, p_Stat.name), { encoding: 'utf8' });
-				fileContent = fileContent.replace('/web-component-base-class/src/', '/web-component-base-class/dist/');
+				fileContent = fileContent.replace(/\/web-component-base-class\/src\//g, '/web-component-base-class/dist/');
 				if (npmBuild) {
-					fileContent = fileContent.replace('/third_party/', '/../../');
+					fileContent = fileContent.replace(/\/third_party\//g, '/../../');
 				}
 				let info = null;
 				try {
