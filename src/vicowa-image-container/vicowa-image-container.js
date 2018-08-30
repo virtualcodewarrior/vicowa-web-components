@@ -45,13 +45,13 @@ function alternatesChanged(p_ImageControl) {
 		}
 		alternates.slice(0, -1).forEach((p_Alternate) => {
 			const source = document.createElement('source');
-			source.setAttribute('srcset', p_Alternate);
+			source.setAttribute('srcset', encodeURIComponent(p_Alternate));
 			if (/\./.test(p_Alternate)) {
 				source.setAttribute('type', `image/${p_Alternate.split('.').slice(-1)[0]}`);
 			}
 			p_ImageControl.$.picture.insertBefore(source, p_ImageControl.$.image);
 		});
-		p_ImageControl.$.image.src = alternates.slice(-1)[0];
+		p_ImageControl.$.image.src = encodeURIComponent(alternates.slice(-1)[0]);
 	}
 }
 
