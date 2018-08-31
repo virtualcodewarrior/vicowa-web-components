@@ -16,12 +16,17 @@
 			color: white;
 		}
 
-		vicowa-image-container {
-			width: 200px;
-			height: 200px;
-			box-shadow: 2px 2px 8px grey;
-			background: black;
-			color: white;
+		#gallery4 {
+			--vicowa-image-gallery-tile-width: 150px;
+			--vicowa-image-gallery-tile-height: 100px;
+		}
+
+		#gallery5 {
+			margin-top: 1em;
+		}
+
+		vicowa-image-gallery > div[slot="custom-tile"] {
+			display: none;
 		}
 	</style>
 </head>
@@ -32,11 +37,31 @@
 		<button id="english">English</button>
 		<button id="dutch">Nederlands</button>
 	</div>
-	<vicowa-image-gallery id="gallery1"></vicowa-image-gallery>
-	<vicowa-image-gallery id="gallery2"></vicowa-image-gallery>
+	<div>
+		<h3>Gallery1</h3>
+		All defaults
+		<vicowa-image-gallery id="gallery1"></vicowa-image-gallery>
+	</div>
+	<div>
+		<h3>Gallery2</h3>
+		No grid description and no grid tooltips
+		<vicowa-image-gallery id="gallery2" no-grid-description no-grid-tooltip></vicowa-image-gallery>
+	</div>
+	<div>
+		<h3>Gallery3</h3>
+		No grid description, no grid tooltips, no carousel description, no carousel tooltip
+		<vicowa-image-gallery id="gallery3" no-grid-description no-grid-tooltip no-carousel-description no-carousel-tooltip></vicowa-image-gallery>
+	</div>
+	<div>
+		<h3>Gallery4</h3>
+		No grid description, custom width and height
+		<vicowa-image-gallery id="gallery4" no-grid-description></vicowa-image-gallery>
+	</div>
 	<script type="module">
 		import translator from '../../src/utilities/translate.js';
+		import { createQuickAccess } from '../../src/third_party/web-component-base-class/src/tools.js';
 
+		const availableItems = createQuickAccess(document.body, 'id');
 		// setup the translator
 		translator.addTranslationUpdatedObserver((p_Translator) => {
 			document.body.setAttribute('lang', p_Translator.language);
@@ -46,38 +71,36 @@
 		document.querySelector('#english').addEventListener('click', () => { translator.language = 'en_US'; });
 		document.querySelector('#dutch').addEventListener('click', () => { translator.language = 'nl_NL'; });
 
-		const gallery1 = document.querySelector('#gallery1');
-		const gallery2 = document.querySelector('#gallery2');
+		const imageProvider = {
+			getImages() {
+				return new Promise((resolve) => {
+					resolve([
+						{ thumbNail: ["../resources/images/image1.jpg"], description: 'some description', tooltip: 'some tooltip' },
+						{ fullSize: ["../resources/images/image2.jpg"], description: 'Long description that will not fit on one line', tooltip: 'long tooltip, that will probably be wrapped by the system to make it not into a crazy long box' },
+						{ thumbNail: ["../resources/images/image3.jpg"], fullSize: ["../resources/images/image3.jpg"], description: 'description for image 3', tooltip: 'tooltip for image 3' },
+						{ thumbNail: ["../resources/images/image4.jpg"], fullSize: ["../resources/images/image4.jpg"], description: 'description for image 4', tooltip: 'tooltip for image 4' },
+						{ thumbNail: ["../resources/images/image5.jpg"], fullSize: ["../resources/images/image5.jpg"], description: 'description for image 5', tooltip: 'tooltip for image 5' },
+						{ thumbNail: ["../resources/images/image6.webp", "../resources/images/image6.jpg"], fullSize: ["../resources/images/image6.webp", "../resources/images/image6.jpg"], description: 'description for image 6', tooltip: 'tooltip for image 6' },
+						{ thumbNail: ["../resources/images/image7.webp", "../resources/images/image7.jpg"], fullSize: ["../resources/images/image7.webp", "../resources/images/image7.jpg"], description: 'description for image 7', tooltip: 'tooltip for image 7' },
+						{ thumbNail: ["../resources/images/image8.jpg"], fullSize: ["../resources/images/image8.jpg"], description: 'description for image 8', tooltip: 'tooltip for image 8' },
+						{ thumbNail: ["../resources/images/image1.jpg"], fullSize: ["../resources/images/image1.jpg"], description: 'description for image 1', tooltip: 'tooltip for image 1' },
+						{ thumbNail: ["../resources/images/image2.jpg"], fullSize: ["../resources/images/image2.jpg"], description: 'description for image 2', tooltip: 'tooltip for image 2' },
+						{ thumbNail: ["../resources/images/image3.jpg"], fullSize: ["../resources/images/image3.jpg"], description: 'description for image 3 again', tooltip: 'tooltip for image 3 again' },
+						{ thumbNail: ["../resources/images/image4.jpg"], fullSize: ["../resources/images/image4.jpg"], description: 'description for image 4 again', tooltip: 'tooltip for image 4 again' },
+						{ thumbNail: ["../resources/images/image5.jpg"], fullSize: ["../resources/images/image5.jpg"], description: 'description for image 5 again', tooltip: 'tooltip for image 5 again' },
+						{ thumbNail: ["../resources/images/image6.webp", "../resources/images/image6.jpg"], fullSize: ["../resources/images/image6.webp", "../resources/images/image6.jpg"], description: 'description for image 6 again', tooltip: 'tooltip for image 6 again' },
+						{ thumbNail: ["../resources/images/image7.webp", "../resources/images/image7.jpg"], fullSize: ["../resources/images/image7.webp", "../resources/images/image7.jpg"], description: 'description for image 7 again', tooltip: 'tooltip for image 7 again' },
+						{ thumbNail: ["../resources/images/image8.jpg"], fullSize: ["../resources/images/image8.jpg"], description: 'description for image 8 again', tooltip: 'tooltip for image 8 again' },
+						{ thumbNail: ["../resources/images/image1.jpg"], fullSize: ["../resources/images/image1.jpg"], description: 'description for image 1 again', tooltip: 'tooltip for image 9 again' },
+					]);
+				});
+			}
+		};
 
-		gallery1.onAttached = () => {
-			gallery1.setImageProvider({
-				getImages(p_StartIndex, p_EndIndex) {
-					return new Promise((resolve) => {
-						resolve([
-							{ thumbNail: ["../resources/images/image1.jpg"], description: 'test' },
-							{ fullSize: ["../resources/images/image2.jpg"], description: 'test' },
-							{ thumbNail: ["../resources/images/image3.jpg"], fullSize: ["../resources/images/image3.jpg"], description: 'test' },
-							{ thumbNail: ["../resources/images/image4.jpg"], fullSize: ["../resources/images/image4.jpg"], description: 'test' },
-							{ thumbNail: ["../resources/images/image5.jpg"], fullSize: ["../resources/images/image5.jpg"], description: 'test' },
-							{ thumbNail: ["../resources/images/image6.webp", "../resources/images/image6.jpg"], fullSize: ["../resources/images/image6.webp", "../resources/images/image6.jpg"], description: 'test' },
-							{ thumbNail: ["../resources/images/image7.webp", "../resources/images/image7.jpg"], fullSize: ["../resources/images/image7.webp", "../resources/images/image7.jpg"], description: 'test' },
-							{ thumbNail: ["../resources/images/image8.jpg"], fullSize: ["../resources/images/image8.jpg"], description: 'test' },
-							{ thumbNail: ["../resources/images/image1.jpg"], fullSize: ["../resources/images/image1.jpg"], description: 'test' },
-							{ thumbNail: ["../resources/images/image2.jpg"], fullSize: ["../resources/images/image2.jpg"], description: 'test' },
-							{ thumbNail: ["../resources/images/image3.jpg"], fullSize: ["../resources/images/image3.jpg"], description: 'test' },
-							{ thumbNail: ["../resources/images/image4.jpg"], fullSize: ["../resources/images/image4.jpg"], description: 'test' },
-							{ thumbNail: ["../resources/images/image5.jpg"], fullSize: ["../resources/images/image5.jpg"], description: 'test' },
-							{ thumbNail: ["../resources/images/image6.webp", "../resources/images/image6.jpg"], fullSize: ["../resources/images/image6.webp", "../resources/images/image6.jpg"], description: 'test' },
-							{ thumbNail: ["../resources/images/image7.webp", "../resources/images/image7.jpg"], fullSize: ["../resources/images/image7.webp", "../resources/images/image7.jpg"], description: 'test' },
-							{ thumbNail: ["../resources/images/image8.jpg"], fullSize: ["../resources/images/image8.jpg"], description: 'test' },
-							{ thumbNail: ["../resources/images/image1.jpg"], fullSize: ["../resources/images/image1.jpg"], description: 'test' },
-							{ thumbNail: ['https://f000.backblazeb2.com/file/website-pictures/mandyrodney/wedding.mandyrodney.com/rodney/SchoolFoto+OpDreef+1983-1984-thumb.jpg'], fullSize: ['https://f000.backblazeb2.com/file/website-pictures/mandyrodney/wedding.mandyrodney.com/rodney/SchoolFoto+OpDreef+1983-1984.jpg'], description: 'test' },
-						]);
-					});
-				}
-			});
-		}
-//		gallery2.setImageProvider();
+		availableItems.gallery1.onAttached = (p_Control) => { p_Control.setImageProvider(imageProvider); };
+		availableItems.gallery2.onAttached = (p_Control) => { p_Control.setImageProvider(imageProvider); };
+		availableItems.gallery3.onAttached = (p_Control) => { p_Control.setImageProvider(imageProvider); };
+		availableItems.gallery4.onAttached = (p_Control) => { p_Control.setImageProvider(imageProvider); };
 	</script>
 </body>
 
