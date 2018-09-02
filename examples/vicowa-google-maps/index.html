@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>ViCoWa Web Components - vicowa-button</title>
+    <script src="../../node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js"></script>
+    <script src="../../node_modules/@webcomponents/html-imports/html-imports.min.js"></script>
+    <link rel="import" href="../../src/vicowa-google-maps/vicowa-google-maps.html">
+
+	<style>
+		body {
+			font-family: sans-serif;
+		}
+		body[lang="en_US"] #english,
+		body[lang="nl_NL"] #dutch {
+			background-color: blue;
+			color: white;
+		}
+
+		vicowa-google-maps {
+			width: 400px;
+			height: 300px;
+		}
+
+		.container {
+			display: flex;
+			flex-wrap: wrap;
+		}
+
+		.container > div {
+			width: 400px;
+			margin: 2em;
+		}
+
+	</style>
+</head>
+<body lang="en_US">
+	<div id="translations">
+		<button id="english">English</button>
+		<button id="dutch">Nederlands</button>
+	</div>
+	<div class="container">
+		<div>
+			<vicowa-google-maps api-key="AIzaSyDbtQpXn5HPhaOsegaCQVb5COlmb3srJcU"></vicowa-google-maps>
+			<div>Default map with default location and zoom, the default is 'roadmap' mode. At least one of the vicowa-google-maps objects will need the api-key attribute to be set to a valid value. See <a href="https://developers.google.com/maps/documentation/javascript/get-api-key">google</a> for getting an API key</div>
+		</div>
+		<div>
+			<vicowa-google-maps latitude="43.6567919" longitude="-79.4609314" zoom="10" marker="Toronto, Canada"></vicowa-google-maps>
+			<div>map with specific location and zoom and using a default marker (which is always centered at the same location as the map coordinates)</div>
+		</div>
+		<div>
+			<vicowa-google-maps latitude="43.6567919" longitude="-79.4609314" zoom="10" marker="Toronto, Canada" info="Toronto, Canada's most populous city,<br/>Capital of Ontario, Canada's most populous province"></vicowa-google-maps>
+			<div>map with specific location and zoom and using a default marker and info (marker centered on the map and info associated with the marker)</div>
+		</div>
+		<div>
+			<vicowa-google-maps latitude="43.6567919" longitude="-79.4609314" zoom="10" id="markers-map"></vicowa-google-maps>
+			<div>map with multiple infos and markers but no default markers</div>
+		</div>
+		<div>
+			<vicowa-google-maps latitude="43.6567919" longitude="-79.4609314" zoom="13" type="hybrid"></vicowa-google-maps>
+			<div>map in 'hybrid' mode</div>
+		</div>
+		<div>
+			<vicowa-google-maps latitude="36.0911048" longtitude="-113.4035397" zoom="10" type="terrain"></vicowa-google-maps>
+			<div>map in 'terrain' mode</div>
+		</div>
+	</div>
+	<script type="module">
+		import translator from '../../src/utilities/translate.js';
+		import { webComponentBaseClass } from '../../src/third_party/web-component-base-class/src/webComponentBaseClass.js';
+
+		// setup the translator
+		translator.addTranslationLocation('../resources/translations');
+		translator.addTranslationUpdatedObserver((p_Translator) => {
+			document.body.setAttribute('lang', p_Translator.language);
+		}, null);
+		translator.language = document.body.getAttribute('lang');
+
+		document.querySelector('#english').addEventListener('click', () => { translator.language = 'en_US'; });
+		document.querySelector('#dutch').addEventListener('click', () => { translator.language = 'nl_NL'; });
+
+		const markersMap = document.querySelector('#markers-map');
+		markersMap.onAttached = () => {
+			markersMap.addMarker((p_Marker) => {
+				markersMap.addInfo(null, 'Edwards Gardens information<br/>A nice place to visit outside of the winter season', p_Marker); // marker associated info
+			}, 43.733173, -79.359152, 'Edwards Gardens');
+			markersMap.addMarker(() => {}, 43.753592, -79.432328, 'Earls Bales Park');
+			markersMap.addMarker(() => {}, 43.779619, -79.196932, 'Morningside Park');
+			markersMap.addMarker(() => {}, 43.696663, -79.255209, 'Rosetta McClain Gardens');
+			markersMap.addInfo(null, 'High park, one of the biggest parks in Toronto', 43.646786, -79.463453);
+		};
+	</script>
+</body>
+
+</html>

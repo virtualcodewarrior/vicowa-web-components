@@ -4,7 +4,9 @@
 			"Canadian Postal Code": { "translations": ["Canadian Postal code"], "description": "input label for Canadian Postal code" },
 		  	"Depicts something else": { "translations": ["Depicts something else"], "description": "alt text for an image" },
 			"Dutch Postal Code": { "translations": ["Dutch Postal code"], "description": "input label for Dutch Postal code" },
+		  	"Edwards Gardens information<br/>A nice place to visit outside of the winter season": { "translations": ["Edwards Gardens information<br/>A nice place to visit outside of the winter season"], "description": "info label on google maps" },
 			"email": { "translations": ["email"], "description": "input label for email" },
+		    "High park, one of the biggest parks in Toronto": { "translations": ["High park, one of the biggest parks in Toronto"], "description": "info label on google maps" },
 		  	"image 1": { "translations": ["image 1"], "description": "image description" },
 			"image 2": { "translations": ["image 2"], "description": "image description" },
 			"image 3": { "translations": ["image 3"], "description": "image tooltip" },
@@ -30,6 +32,7 @@
 			"test string %2$s %1$s %3$s": { "translations": ["test string %2$s %1$s %3$s"], "description": "Just a test string" },
 			"This field cannot be empty": { "translations": ["This field cannot be empty"], "description": "error message when a required field is left empty" },
 		  	"Three": { "translations": ["Three"], "description": "label for example radio button" },
+		  	"Toronto, Canada's most populous city,<br/>Capital of Ontario, Canada's most populous province": { "translations": ["Toronto, Canada's most populous city,<br/>Capital of Ontario, Canada's most populous province"], "description": "info for google maps" },
 		  	"Two": { "translations": ["Two"], "description": "label for example radio button" },
 			"US Zip Code": { "translations": ["US Zip Code"], "description": "input label for US Zip Code" },
 			"zip code": { "translations": ["zip code"], "description": "placeholder text for US zip code" }

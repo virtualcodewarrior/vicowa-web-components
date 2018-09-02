@@ -4,7 +4,9 @@
 			"Canadian Postal Code": { "translations": ["Canadese Postcode"], "description": "input label for Canadian Postal code" },
 		  	"Depicts something else": { "translations": ["Laat iets anders zien"], "description": "alt text for an image" },
 			"Dutch Postal Code": { "translations": ["Nederlandse Postcode"], "description": "input label for Dutch Postal code" },
+		    "Edwards Gardens information<br/>A nice place to visit outside of the winter season": { "translations": ["Edwards Gardens informatie<br/>Een mooie plaats om te bezoeken buiten het winter seizoen"], "description": "input label for Dutch Postal code" },
 			"email": { "translations": ["email"], "description": "input label for email" },
+		    "High park, one of the biggest parks in Toronto": { "translations": ["High park, een van de grootste parken in Toronto"], "description": "info label on google maps" },
 			"image 1": { "translations": ["plaatje 1"], "description": "image description" },
 			"image 2": { "translations": ["plaatje 2"], "description": "image description" },
 			"image 3": { "translations": ["plaatje 3"], "description": "image tooltip" },
@@ -30,6 +32,7 @@
 			"test string %2$s %1$s %3$s": { "translations": ["test text %1$s %2$s %3$s"], "description": "Just a test string" },
 			"This field cannot be empty": { "translations": ["Dit veld moet ingevuld worden"], "description": "error message when a required field is left empty" },
 			"Three": { "translations": ["Drie"], "description": "label for example radio button" },
+		    "Toronto, Canada's most populous city,<br/>Capital of Ontario, Canada's most populous province": { "translations": ["Toronto, Canada's stad met de meeste inwoners,<br/>Hoofdstad van Ontario, Canada's provincie met de meeste inwoners"], "description": "info for google maps" },
 			"Two": { "translations": ["Twee"], "description": "label for example radio button" },
 			"US Zip Code": { "translations": ["VS Postcode"], "description": "input label for US Zip Code" },
 			"zip code": { "translations": ["postcode"], "description": "placeholder text for US zip code" }
