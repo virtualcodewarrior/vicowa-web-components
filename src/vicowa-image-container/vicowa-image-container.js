@@ -1,5 +1,6 @@
 import { webComponentBaseClass } from '../third_party/web-component-base-class/src/webComponentBaseClass.js';
 import translator from '../utilities/translate.js';
+import '../third_party/intersection-observer/intersection-observer.js';
 
 /**
  * Handler to be called when the tooltip text is changed
@@ -37,21 +38,23 @@ function descriptionChanged(p_ImageControl) {
 }
 
 function alternatesChanged(p_ImageControl) {
-	const alternates = (p_ImageControl.alternates || []).slice();
-	p_ImageControl.$$$('picture source').forEach((p_Source) => { p_Source.parentNode.removeChild(p_Source); });
-	if (alternates.length || p_ImageControl.src) {
-		if ((!alternates.length || alternates[alternates.length - 1] !== p_ImageControl.src) && p_ImageControl.src) {
-			alternates.push(p_ImageControl.src);
-		}
-		alternates.slice(0, -1).forEach((p_Alternate) => {
-			const source = document.createElement('source');
-			source.setAttribute('srcset', p_Alternate.replace(' ', '%20'));
-			if (/\./.test(p_Alternate)) {
-				source.setAttribute('type', `image/${p_Alternate.split('.').slice(-1)[0]}`);
+	if (!p_ImageControl.hasAttribute('lazyload') || p_ImageControl._visible) {
+		const alternates = (p_ImageControl.alternates || []).slice();
+		p_ImageControl.$$$('picture source').forEach((p_Source) => { p_Source.parentNode.removeChild(p_Source); });
+		if (alternates.length || p_ImageControl.src) {
+			if ((!alternates.length || alternates[alternates.length - 1] !== p_ImageControl.src) && p_ImageControl.src) {
+				alternates.push(p_ImageControl.src);
 			}
-			p_ImageControl.$.picture.insertBefore(source, p_ImageControl.$.image);
-		});
-		p_ImageControl.$.image.src = alternates.slice(-1)[0].replace(' ', '%20');
+			alternates.slice(0, -1).forEach((p_Alternate) => {
+				const source = document.createElement('source');
+				source.setAttribute('srcset', p_Alternate.replace(' ', '%20'));
+				if (/\./.test(p_Alternate)) {
+					source.setAttribute('type', `image/${p_Alternate.split('.').slice(-1)[0]}`);
+				}
+				p_ImageControl.$.picture.insertBefore(source, p_ImageControl.$.image);
+			});
+			p_ImageControl.$.image.src = alternates.slice(-1)[0].replace(' ', '%20');
+		}
 	}
 }
 
@@ -63,13 +66,21 @@ function srcChanged(p_ImageControl) {
 	alternatesChanged(p_ImageControl);
 }
 
-/**
- * Handler to be called when the src is changed
- * @param {VicowaImageContainer} p_ImageControl The control for which this handler is called
- */
-function galleryGroupChanged(p_ImageControl) {
-	p_ImageControl.$.image.src = p_ImageControl.src;
-	p_ImageControl.updateTranslation();
+function lazyloadChanged(p_ImageControl) {
+	if (p_ImageControl.lazyload) {
+		p_ImageControl._intersectionObserver = new IntersectionObserver((p_Entries) => {
+			if (p_Entries[0].intersectionRatio > 0) {
+				// set the image containers
+				p_ImageControl._visible = true;
+				alternatesChanged(p_ImageControl);
+			}
+		});
+
+		p_ImageControl._intersectionObserver.observe(p_ImageControl);
+	} else if (p_ImageControl._intersectionObserver) {
+		p_ImageControl._intersectionObserver.disconnect();
+		p_ImageControl._intersectionObserver = null;
+	}
 }
 
 const componentName = 'vicowa-image-container';
@@ -119,13 +130,18 @@ class VicowaImageContainer extends webComponentBaseClass {
 				type: String,
 				value: '',
 				reflectToAttribute: true,
-				observer: galleryGroupChanged,
 			},
 			alternates: {
 				type: Array,
 				value: [],
 				reflectToAttribute: true,
 				observer: alternatesChanged,
+			},
+			lazyload: {
+				type: Boolean,
+				value: false,
+				reflectToAttribute: true,
+				observer: lazyloadChanged,
 			},
 		});
 	}
