@@ -22,9 +22,15 @@
 			box-shadow: 2px 2px 8px grey;
 		}
 
-		#lazyload {
+		#lazyload-notvisible {
 			position: relative;
 			top: 4000px;
+		}
+
+		.bottom-spacer {
+			position: relative;
+			top: 5000px;
+			height: 10px;
 		}
 	</style>
 </head>
@@ -43,7 +49,9 @@
 	<vicowa-image-container id="img6" src="../resources/images/image6.jpg" alternates='["../resources/images/image6.webp"]'></vicowa-image-container>
 	<vicowa-image-container id="img7" alternates='["../resources/images/image7.webp", "../resources/images/image7.jpg"]'></vicowa-image-container>
 	<vicowa-image-container id="img8" alternates='["../resources/images/image8.jpg"]'></vicowa-image-container>
-	<vicowa-image-container id="lazyload" lazyload alternates='["../resources/images/image8lazy.jpg"]'></vicowa-image-container>
+	<vicowa-image-container id="lazyload-visible" lazyload alternates='["../resources/images/image7lazy.jpg"]'></vicowa-image-container>
+	<vicowa-image-container id="lazyload-notvisible" lazyload alternates='["../resources/images/image8lazy.jpg"]'></vicowa-image-container>
+	<div class="bottom-spacer">End of page</div>
 	<script type="module">
 		import translator from '../../src/utilities/translate.js';
 
