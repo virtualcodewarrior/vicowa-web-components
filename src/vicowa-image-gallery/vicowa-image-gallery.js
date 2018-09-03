@@ -13,6 +13,7 @@ async function retrieveImages(p_GalleryControl) {
 			imageContainer = (tile) ? tile.querySelector('vicowa-image-container') : null;
 			if (!imageContainer) {
 				tile = imageContainer = document.createElement('vicowa-image-container');
+				tile.setAttribute('lazyload', '');
 			}
 			p_GalleryControl.$.images.appendChild(tile);
 		}
