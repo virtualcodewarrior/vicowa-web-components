@@ -32,10 +32,26 @@
 			top: 5000px;
 			height: 10px;
 		}
+
+		.features {
+			font-family: sans-serif;
+			font-size: 15px;
+		}
+		.not-webp {
+			color: red;
+			font-weight: bold;
+		}
+		.webp .not-webp {
+			display: none;
+		}
+
 	</style>
 </head>
 
 <body lang="en_US">
+	<div class="features">
+		<p>webP support <span class="not-webp">Not</span> detected</p>
+	</div>
 	<vicowa-translate translation-location="../resources/translations"></vicowa-translate>
 	<div id="translations">
 		<button id="english">English</button>
@@ -54,6 +70,11 @@
 	<div class="bottom-spacer">End of page</div>
 	<script type="module">
 		import translator from '../../src/utilities/translate.js';
+		import features from '../../src/utilities/featureDetect.js';
+
+		if (features.webp) {
+			document.body.classList.add('webp');
+		}
 
 		// setup the translator
 		translator.addTranslationUpdatedObserver((p_Translator) => {

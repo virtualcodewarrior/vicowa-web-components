@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>ViCoWa Web Components - vicowa-button</title>
+    <script src="../../node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js"></script>
+    <script src="../../node_modules/@webcomponents/html-imports/html-imports.min.js"></script>
+
+	<style>
+		body {
+			font-family: sans-serif;
+		}
+
+		.detection {
+			background: red;
+			color: white;
+			font-weight: bold;
+			padding: 5px;
+		}
+		.detection::after {
+			content: 'no';
+		}
+
+		.detection.detected {
+			background: green;
+		}
+		.detection.detected::after {
+			content: 'yes';
+		}
+
+	</style>
+</head>
+<body lang="en_US">
+	<div class="features">
+		<table>
+			<thead>
+				<tr>
+					<th>Feature</th><th>Detected</th>
+				</tr>
+			</thead>
+			<tbody id="list-body">
+			</tbody>
+		</table>
+	</div>
+	<script type="module">
+		import features from '../../src/utilities/featureDetect.js';
+		const listBody = document.querySelector('#list-body');
+		Object.keys(features).forEach((p_Key) => {
+			const row = document.createElement('tr');
+			const cell1 = document.createElement('td');
+			const cell2 = document.createElement('td');
+			cell1.textContent = p_Key;
+			row.appendChild(cell1);
+			row.appendChild(cell2);
+			cell2.classList.add('detection');
+			listBody.appendChild(row);
+			cell2.classList.toggle('detected', features[p_Key]);
+		});
+
+	</script>
+</body>
+
+</html>
