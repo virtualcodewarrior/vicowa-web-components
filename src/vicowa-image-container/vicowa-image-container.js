@@ -47,13 +47,13 @@ function alternatesChanged(p_ImageControl) {
 			}
 			alternates.slice(0, -1).forEach((p_Alternate) => {
 				const source = document.createElement('source');
-				source.setAttribute('srcset', p_Alternate.replace(' ', '%20'));
+				source.setAttribute('srcset', p_Alternate.replace(/ /g, '%20'));
 				if (/\./.test(p_Alternate)) {
 					source.setAttribute('type', `image/${p_Alternate.split('.').slice(-1)[0]}`);
 				}
 				p_ImageControl.$.picture.insertBefore(source, p_ImageControl.$.image);
 			});
-			p_ImageControl.$.image.src = alternates.slice(-1)[0].replace(' ', '%20');
+			p_ImageControl.$.image.src = alternates.slice(-1)[0].replace(/ /g, '%20');
 		}
 	}
 }
