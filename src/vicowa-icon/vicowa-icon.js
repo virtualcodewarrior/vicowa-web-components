@@ -2,6 +2,16 @@ import { webComponentBaseClass } from '../third_party/web-component-base-class/s
 
 const componentName = 'vicowa-icon';
 
+function iconChanged(p_IconControl) {
+	p_IconControl.$.iconContainer.innerHTML = '';
+	p_IconControl.$.iconSource.constructor.getIcon(p_IconControl, p_IconControl.icon, (p_Icon) => {
+		p_IconControl.$.iconContainer.innerHTML = '';
+		if (p_Icon) {
+			p_IconControl.$.iconContainer.appendChild(p_Icon.cloneNode(true));
+		}
+	});
+}
+
 /**
  * Class to represent the vicowa-icon custom element
  * @extends webComponentBaseClass
@@ -20,19 +30,9 @@ class VicowaIcon extends webComponentBaseClass {
 				type: String,
 				reflectToAttribute: true,
 				value: '',
-				observer: '_iconChanged',
+				observer: iconChanged,
 			},
 		};
-	}
-
-	_iconChanged() {
-		this.$.iconContainer.innerHTML = '';
-		this.$.iconSource.constructor.getIcon(this, this.icon, (p_Icon) => {
-			this.$.iconContainer.innerHTML = '';
-			if (p_Icon) {
-				this.$.iconContainer.appendChild(p_Icon.cloneNode(true));
-			}
-		});
 	}
 
 	detached() {

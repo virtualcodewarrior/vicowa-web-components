@@ -2,6 +2,10 @@ import { webComponentBaseClass } from '../third_party/web-component-base-class/s
 import translator from '../utilities/translate.js';
 import validators from '../utilities/validators.js';
 
+function ariaLabelChanged(p_InputControl) {
+	p_InputControl.$.input.setAttribute('aria-label', p_InputControl.ariaLabel);
+}
+
 /**
  * Validate the value for the given input element
  * @param {VicowaInputBase} p_InputControl Element for which the value is validated
@@ -63,6 +67,7 @@ function tooltipChanged(p_InputControl) {
  * @property {boolean} disabled Indicates if the control is disabled or not
  * @property {function} onChange Assign a function to this member that will get called when the value changes
  * @property {function} validator Assign a custom validator function to this to use instead of one of the pre defined ones
+ * @property {string} ariaLabel The name of the input control, used for accessibility, if this is not set it will use any string set for the button
  */
 export class VicowaInputBaseClass extends webComponentBaseClass {
 	constructor() {
@@ -120,6 +125,11 @@ export class VicowaInputBaseClass extends webComponentBaseClass {
 				value: false,
 				reflectToAttribute: true,
 			},
+			ariaLabel: {
+				type: String,
+				value: '',
+				observer: ariaLabelChanged,
+			},
 		};
 	}
 
@@ -128,6 +138,13 @@ export class VicowaInputBaseClass extends webComponentBaseClass {
 	}
 
 	attached() {
+		this.$.label.onTranslationUpdated = (p_String) => {
+			if (!this.ariaLabel) {
+				this.$.input.setAttribute('aria-label', p_String);
+			}
+		};
+		this.$.input.setAttribute('aria-label', this.$.label.displayString);
+
 		const validateAndSet = () => {
 			validate(this, this.value, true);
 			this.value = this.$.input.value;

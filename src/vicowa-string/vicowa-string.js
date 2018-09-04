@@ -40,6 +40,9 @@ class VicowaString extends webComponentBaseClass {
 
 	updateTranslation() {
 		this.$.string.innerHTML = (this._activeTranslator && this.string) ? this._activeTranslator.translate(this.string).ifPlural(this.pluralNumber || 1).fetch(this.parameters) : this.string;
+		if (this.onTranslationUpdated) {
+			this.onTranslationUpdated(this.displayString);
+		}
 	}
 
 	get displayString() { return this.$.string.innerHTML; }
