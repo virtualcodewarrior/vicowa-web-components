@@ -66,11 +66,6 @@ function srcChanged(p_ImageControl) {
 	alternatesChanged(p_ImageControl);
 }
 
-function isVisible(p_Element) {
-	const rect = p_Element.getBoundingClientRect();
-	return rect.bottom > 0 && rect.top < window.innerHeight && rect.right > 0 && rect.left < window.innerWidth;
-}
-
 function lazyloadChanged(p_ImageControl) {
 	if (p_ImageControl.lazyload) {
 		p_ImageControl._intersectionObserver = new IntersectionObserver((p_Entries) => {
@@ -82,7 +77,6 @@ function lazyloadChanged(p_ImageControl) {
 		});
 
 		p_ImageControl._intersectionObserver.observe(p_ImageControl);
-		p_ImageControl._visible = isVisible(p_ImageControl);
 	} else if (p_ImageControl._intersectionObserver) {
 		p_ImageControl._intersectionObserver.disconnect();
 		p_ImageControl._intersectionObserver = null;
