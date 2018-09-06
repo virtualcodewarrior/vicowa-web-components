@@ -24,11 +24,20 @@
 		<button id="english">English</button>
 		<button id="dutch">Nederlands</button>
 	</div>
+	Text as "string" attribute
 	<ul>
 		<li><vicowa-string string="test string 1"></vicowa-string></li>
 		<li><vicowa-string string="test string 2 %1$s element" plural-number=1 parameters='["1"]'></vicowa-string></li>
 		<li><vicowa-string string="test string 2 %1$s element" plural-number=2 parameters='["2"]'></vicowa-string></li>
 		<li><vicowa-string string="test string %2$s %1$s %3$s" parameters='["first", "second", "third"]'></vicowa-string></li>
+	</ul>
+	Text as vicowa-string content, advantage here is that if there is no javascript support or web component support the text will still show up.
+	Obviously any dynamic behavior like insertion of data will not work in that case.
+	<ul>
+		<li><vicowa-string >test string 1</vicowa-string></li>
+		<li><vicowa-string plural-number=1 parameters='["1"]'>test string 2 %1$s element</vicowa-string></li>
+		<li><vicowa-string plural-number=2 parameters='["2"]'>test string 2 %1$s element</vicowa-string></li>
+		<li><vicowa-string parameters='["first", "second", "third"]'>test string %2$s %1$s %3$s</vicowa-string></li>
 	</ul>
 	<script type="module">
 		import translator from '../../src/utilities/translate.js';

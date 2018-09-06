@@ -3,6 +3,26 @@ import translator from '../utilities/translate.js';
 
 const componentName = 'vicowa-string';
 
+function updateString(p_StringElement, p_NewValue, p_OldValue) {
+	if (p_OldValue === undefined && !p_NewValue && p_StringElement.innerHTML.trim()) {
+		p_StringElement.string = p_StringElement.innerHTML.trim();
+	} else {
+		p_StringElement.updateTranslation();
+	}
+}
+
+function updateParameters(p_StringElement, p_NewValue, p_OldValue) {
+	if (p_StringElement.string && (p_OldValue !== undefined || p_NewValue.length > 0)) {
+		p_StringElement.updateTranslation();
+	}
+}
+
+function updatePluralNumber(p_StringElement, p_NewValue, p_OldValue) {
+	if (p_StringElement.string && (p_OldValue !== undefined || p_NewValue !== 1)) {
+		p_StringElement.updateTranslation();
+	}
+}
+
 /**
  * Class to represent the vicowa-string custom element
  * @extends webComponentBaseClass
@@ -23,17 +43,17 @@ class VicowaString extends webComponentBaseClass {
 				type: String,
 				value: '',
 				reflectToAttribute: true,
-				observer: 'updateTranslation',
+				observer: updateString,
 			},
 			parameters: {
 				type: Array,
 				value: [],
-				observer: 'updateTranslation',
+				observer: updateParameters,
 			},
 			pluralNumber: {
 				type: Number,
 				value: 1,
-				observer: 'updateTranslation',
+				observer: updatePluralNumber,
 			},
 		};
 	}
