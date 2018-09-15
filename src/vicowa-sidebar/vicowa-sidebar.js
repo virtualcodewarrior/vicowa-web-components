@@ -101,8 +101,8 @@ class VicowaSideBar extends webComponentBaseClass {
 			handleDragStart(p_Event);
 		};
 
-		this.$.resizeHandle.addEventListener('mousedown', handleDragStart);
-		this.$.resizeHandle.addEventListener('touchstart', handleTouchDragStart);
+		this.addAutoEventListener(this.$.resizeHandle, 'mousedown', handleDragStart);
+		this.addAutoEventListener(this.$.resizeHandle, 'touchstart', handleTouchDragStart);
 	}
 }
 

@@ -22,7 +22,7 @@
 
 			#arrow {
 				position: absolute;
-				top: 40%;
+				top: 7px;
 				right: 5px;
 				border-top: 8px solid var(--vicowa-single-selection-arrow-color, black);
 				border-bottom: 8px solid transparent;
@@ -65,6 +65,7 @@
 				padding: 2px 5px;
 				display: none;
 				width: 100%;
+                height: var(--vicowa-single-selection-height, auto);
 			}
 			:host([opened]) .option-container,
 			:host(:not([type="select"])) .option-container,
@@ -75,9 +76,9 @@
 
 			:host([opened]) .option-container[checked],
 			:host([opened]) .option-container:hover {
-				background: blue;
-				color: white;
-				--vicowa-icon-fill-color: white;
+				background: var(--vicowa-single-selection-selected-background, blue);
+				color: var(--vicowa-single-selection-selected-color, white);
+				--vicowa-icon-fill-color: var(--vicowa-single-selection-selected-color, white);
 			}
 
 			:host([opened]) #select-option-container {
