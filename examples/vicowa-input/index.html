@@ -30,11 +30,15 @@
 	<p>
 		<vicowa-input label="input 1"></vicowa-input>
 		<vicowa-input label="not empty" validator-name="notEmpty"></vicowa-input>
-		<vicowa-input label="email" validator-name="email" placeholder="email" tooltip="email"></vicowa-input>
+		<vicowa-input label="email" validator-name="email" placeholder="email" tooltip="email" type="email"></vicowa-input>
 		<vicowa-input label="Canadian Postal Code" validator-name="postalCodeCA" placeholder="postal code" tooltip="postal code"></vicowa-input>
 		<vicowa-input label="Canadian Postal Code" validator-name="postalCodeCA" placeholder="postal code" tooltip="postal code" prevent-invalid-input value="H0H0H0"></vicowa-input>
 		<vicowa-input label="Dutch Postal Code" validator-name="postalCodeNL" placeholder="postal code" tooltip="postal code"></vicowa-input>
 		<vicowa-input label="US Zip Code" validator-name="postalCodeUS" top-label placeholder="zip code" tooltip="zip code"></vicowa-input>
+		<vicowa-input label="Password" validator-name="notEmpty" top-label placeholder="Password" tooltip="password" type="password"></vicowa-input>
+		<vicowa-input label="Number" validator-name="notEmpty" top-label placeholder="Number" tooltip="Number" type="number"></vicowa-input>
+		<vicowa-input label="Search" validator-name="notEmpty" top-label placeholder="Search" tooltip="Search" type="search"></vicowa-input>
+		<vicowa-input label="url" validator-name="notEmpty" top-label placeholder="url" tooltip="url" type="url"></vicowa-input>
 	</p>
 	<script type="module">
 		import translator from '../../src/utilities/translate.js';

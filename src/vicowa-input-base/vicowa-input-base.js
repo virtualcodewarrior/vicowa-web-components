@@ -21,6 +21,17 @@ export function validate(p_InputControl, p_Value, p_ShowMessage) {
 }
 
 /**
+ * Handler to be called when the type is changed
+ * @param {VicowaInputBase} p_InputControl The control for which this handler is called
+ */
+function typeChanged(p_InputControl) {
+	if (['text', 'password', 'email', 'number', 'search', 'url'].indexOf(p_InputControl.type) === -1) {
+		p_InputControl.type = 'text';
+	}
+	p_InputControl.$.input.type = p_InputControl.type;
+}
+
+/**
  * Handler to be called when the value gets changed
  * @param {VicowaInputBase} p_InputControl The control for which this handler is called
  * @param {string} p_NewValue The new value
@@ -81,6 +92,12 @@ export class VicowaInputBaseClass extends webComponentBaseClass {
 			validatorName: {
 				type: String,
 				value: '',
+			},
+			type: {
+				type: String,
+				value: 'text',
+				reflectToAttribute: true,
+				observer: typeChanged,
 			},
 			value: {
 				type: String,
