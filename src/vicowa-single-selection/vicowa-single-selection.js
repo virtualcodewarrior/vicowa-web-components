@@ -13,7 +13,7 @@ function optionsChanged(p_Control) {
 	if (p_Control.type) {
 		switch (p_Control.type) {
 			case 'radio':
-				p_Control.options.forEach((p_Option) => {
+				(p_Control.options || []).forEach((p_Option) => {
 					const item = document.importNode(p_Control.$.radioOption.content, true);
 					const itemAccess = createQuickAccess(item, 'name');
 					itemAccess.optionLabelString.setAttribute('string', p_Option.displayText || '');
@@ -32,7 +32,7 @@ function optionsChanged(p_Control) {
 				});
 				break;
 			case 'select':
-				p_Control.options.forEach((p_Option) => {
+				(p_Control.options || []).forEach((p_Option) => {
 					const item = document.importNode(p_Control.$.selectOption.content, true);
 					const itemAccess = createQuickAccess(item, 'name');
 					itemAccess.optionLabelString.setAttribute('string', p_Option.displayText || '');
