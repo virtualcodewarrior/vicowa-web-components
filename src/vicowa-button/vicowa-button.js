@@ -65,7 +65,7 @@ class VicowaButton extends webComponentBaseClass {
 				observer: ariaLabelChanged,
 			},
 			disabled: {
-				types: Boolean,
+				type: Boolean,
 				value: false,
 				reflectToAttribute: true,
 			},
