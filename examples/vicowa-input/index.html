@@ -39,6 +39,9 @@
 		<vicowa-input label="Number" validator-name="notEmpty" top-label placeholder="Number" tooltip="Number" type="number"></vicowa-input>
 		<vicowa-input label="Search" validator-name="notEmpty" top-label placeholder="Search" tooltip="Search" type="search"></vicowa-input>
 		<vicowa-input label="url" validator-name="notEmpty" top-label placeholder="url" tooltip="url" type="url"></vicowa-input>
+		<button id="checkvalid">Check valid</button>
+		<input type="checkbox" id="static">
+		<label for="static">Toggle static</label>
 	</p>
 	<script type="module">
 		import translator from '../../src/utilities/translate.js';
@@ -52,6 +55,8 @@
 
 		document.querySelector('#english').addEventListener('click', () => { translator.language = 'en_US'; });
 		document.querySelector('#dutch').addEventListener('click', () => { translator.language = 'nl_NL'; });
+		document.querySelector('#checkvalid').addEventListener('click', () => { Array.from(document.querySelectorAll('vicowa-input')).forEach((p_Element) => p_Element.valid) });
+		document.querySelector('#static').addEventListener('click', () => { Array.from(document.querySelectorAll('vicowa-input')).forEach((p_Element) => p_Element.static = document.querySelector('#static').checked) });
 	</script>
 </body>
 

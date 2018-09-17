@@ -21,6 +21,23 @@ export function validate(p_InputControl, p_Value, p_ShowMessage) {
 }
 
 /**
+ * Handler to be called when the static setting is changed
+ * @param {VicowaInputBase} p_InputControl The control for which this handler is called
+ */
+function staticChanged(p_InputControl) {
+	p_InputControl.$.input.readOnly = p_InputControl.static || p_InputControl.readonly;
+	p_InputControl.$.input.tabIndex = (p_InputControl.static) ? -1 : 0;
+}
+
+/**
+ * Handler to be called when the static setting is changed
+ * @param {VicowaInputBase} p_InputControl The control for which this handler is called
+ */
+function readOnlyChanged(p_InputControl) {
+	p_InputControl.$.input.readOnly = p_InputControl.readonly || p_InputControl.static;
+}
+
+/**
  * Handler to be called when the type is changed
  * @param {VicowaInputBase} p_InputControl The control for which this handler is called
  */
@@ -43,7 +60,7 @@ function valueChanged(p_InputControl, p_NewValue, p_OldValue) {
 		p_InputControl.onChange(p_InputControl.value, p_OldValue);
 	}
 
-	validate(p_InputControl, p_InputControl.value, true);
+	validate(p_InputControl, p_InputControl.value, false);
 }
 
 /**
@@ -125,11 +142,7 @@ export class VicowaInputBaseClass extends webComponentBaseClass {
 				type: Boolean,
 				value: false,
 				reflectToAttribute: true,
-			},
-			index: {
-				type: Number,
-				value: 0,
-				reflectToAttribute: true,
+				observer: staticChanged,
 			},
 			tooltip: {
 				type: String,
@@ -141,6 +154,12 @@ export class VicowaInputBaseClass extends webComponentBaseClass {
 				type: Boolean,
 				value: false,
 				reflectToAttribute: true,
+			},
+			readonly: {
+				type: Boolean,
+				value: false,
+				reflectToAttribute: true,
+				observer: readOnlyChanged,
 			},
 			ariaLabel: {
 				type: String,
@@ -173,7 +192,7 @@ export class VicowaInputBaseClass extends webComponentBaseClass {
 		};
 
 		this.addAutoEventListener(this.$.input, 'blur', validateAndSet); // loosing focus
-		this.addAutoEventListener(this.$.input, 'change', validateAndSet); // applying the value
+		this.addAutoEventListener(this.$.input, 'change', validateAndSetNoErrorMessage); // applying the value
 		this.addAutoEventListener(this.$.input, 'input', validateAndSetNoErrorMessage); // inputting text
 
 		this.$.input.placeholder = this.placeholder;

@@ -82,7 +82,17 @@
 				opacity: var(--vicowa-input-placeholder-opacity, 0.3);
 			}
 
-			#error[string=''] {
+            :host([static]) #input {
+                background: transparent;
+                border-color: transparent;
+                outline: none;
+            }
+            :host([static]) #input::placeholder {
+                color: transparent;
+            }
+
+			#error[string=''],
+            :host([static]) #error {
 				display: none;
 			}
         </style>
