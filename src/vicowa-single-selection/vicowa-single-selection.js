@@ -19,6 +19,7 @@ function optionsChanged(p_Control) {
 					itemAccess.optionLabelString.setAttribute('string', p_Option.displayText || '');
 					itemAccess.optionLabel.setAttribute('for', p_Option.value);
 					itemAccess.vicowaSelectionOption.id = p_Option.value;
+					if (p_Control.value === p_Option.value) { itemAccess.optionContainer.setAttribute('checked', ''); } else { itemAccess.optionContainer.removeAttribute('checked'); }
 					itemAccess.vicowaSelectionOption.checked = p_Control.value === p_Option.value;
 					itemAccess.vicowaSelectionOption.addEventListener('change', () => { handleSelectionChange(p_Control, itemAccess.vicowaSelectionOption); });
 					const childElement = (p_Option.childElementName) ? document.createElement(p_Option.childElementName) : (p_Option.childElement || null);

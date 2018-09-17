@@ -86,6 +86,16 @@
 				position: fixed;
 				z-index: 1000;
 			}
+
+            :host([static][type="select"]) #arrow,
+            :host([static]) .option-container:not([checked]),
+            :host([static]) .option-container input {
+                display: none;
+            }
+            :host([static]) #select-option-container {
+                border: transparent;
+            }
+
         </style>
         <div id="control-container">
             <label for="input"><vicowa-string id="label"></vicowa-string></label>
