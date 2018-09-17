@@ -1,0 +1,33 @@
+<link rel="import" href="../vicowa-resize-detector/vicowa-resize-detector.html">
+<script src="../third_party/babylonjs/babylon.js"></script>
+<!DOCTYPE html>
+<div>
+    <template id="vicowa-babylon">
+        <style>
+			:host {
+				display: block;
+				position: relative;
+			}
+
+			#main,
+			#canvas {
+				position: relative;
+				width: 100%;
+				height: 100%;
+			}
+        </style>
+        <div id="main">
+            <vicowa-resize-detector id="resize-detector"></vicowa-resize-detector>
+            <canvas id="canvas"></canvas>
+        </div>
+    </template>
+    <script>
+		(function storeTemplate() {
+			const template = document.currentScript.parentNode.querySelector('template');
+			window.webComponentTemplates = window.webComponentTemplates || new Map();
+			window.webComponentTemplates.set(template.getAttribute('id'), template);
+		})();
+    </script>
+    <script type="module" src="./vicowa-babylon.js"></script>
+</div>
+
