@@ -202,5 +202,6 @@ export class VicowaInputBaseClass extends webComponentBaseClass {
 		}, this);
 	}
 
-	get valid() { return validate(this, this.value, true).valid; }
+	updateValidFeedback() { validate(this, this.value, true); }
+	get valid() { return validate(this, this.value, false).valid; }
 }

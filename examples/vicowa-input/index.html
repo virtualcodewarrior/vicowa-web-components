@@ -57,7 +57,7 @@
 
 		document.querySelector('#english').addEventListener('click', () => { translator.language = 'en_US'; });
 		document.querySelector('#dutch').addEventListener('click', () => { translator.language = 'nl_NL'; });
-		document.querySelector('#checkvalid').addEventListener('click', () => { Array.from(document.querySelectorAll('vicowa-input')).forEach((p_Element) => p_Element.valid) });
+		document.querySelector('#checkvalid').addEventListener('click', () => { Array.from(document.querySelectorAll('vicowa-input')).forEach((p_Element) => p_Element.updateValidFeedback()) });
 		document.querySelector('#static').addEventListener('click', () => { Array.from(document.querySelectorAll('vicowa-input')).forEach((p_Element) => p_Element.static = document.querySelector('#static').checked) });
 	</script>
 </body>
