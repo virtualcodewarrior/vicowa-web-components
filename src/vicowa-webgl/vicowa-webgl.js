@@ -1,14 +1,14 @@
 import { webComponentBaseClass } from '../third_party/web-component-base-class/src/webComponentBaseClass.js';
 
 const babylon = window.BABYLON;
-const componentName = 'vicowa-babylon';
+const componentName = 'vicowa-webgl';
 
 /**
  * Class to represent the vicowa-icon custom element
  * @extends webComponentBaseClass
  * @property {boolean} open Set to true to open the modal or false the close it
  */
-class VicowaBabylon extends webComponentBaseClass {
+class VicowaWebgl extends webComponentBaseClass {
 	static get is() { return componentName; }
 	constructor() {
 		super();
@@ -52,4 +52,4 @@ class VicowaBabylon extends webComponentBaseClass {
 	}
 }
 
-window.customElements.define(componentName, VicowaBabylon);
+window.customElements.define(componentName, VicowaWebgl);
