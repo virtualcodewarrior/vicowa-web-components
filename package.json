@@ -69,6 +69,7 @@
     "@webcomponents/html-imports": "git+https://git@github.com/webcomponents/html-imports.git",
     "@webcomponents/webcomponentsjs": "^2.1.1",
     "babylonjs": "^3.3.0-rc.0",
+    "babylonjs-loaders": "^3.3.0-rc.0",
     "intersection-observer": "^0.5.0",
     "jed": "^1.1.1",
     "u2f-api": "^1.0.6",

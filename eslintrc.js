@@ -152,7 +152,7 @@ module.exports = {
 		'func-names': 'off',					        //	require or disallow named function expressions
 		'func-style': 'off',					        //	enforce the consistent use of either function declarations or expressions
 		'id-blacklist': 'off',					        //	disallow specified identifiers
-		'id-length': ['error', { min: 2, exceptions: ['x', 'y', '_', '$'] }],	//	enforce minimum and maximum identifier lengths
+		'id-length': ['error', { min: 2, exceptions: ['x', 'y', 'z', '_', '$', 'r', 'g', 'b'] }],	//	enforce minimum and maximum identifier lengths
 		'id-match': ['error', '(^[A-Za-z_0-9]+$)|(^p_[A-Z]([a-z]+[0-9]*([A-Z][a-z0-9]*)*)$)|(^_?[a-zE]+[0-9]*([A-Z][a-z0-9]*)*$)|NaN'],		    //	require identifiers to match a specified regular expression
 		indent: ['error', 'tab', { VariableDeclarator: 0, SwitchCase: 1 }], //	autofixable enforce consistent indentation
 		'jsx-quotes': 'off',					        //	autofixable enforce the consistent use of either double or single quotes in JSX attributes
@@ -203,7 +203,7 @@ module.exports = {
 		'operator-linebreak': 'off',			        //	enforce consistent linebreak style for operators
 		'padded-blocks': ['error', 'never'],	        //	autofixable require or disallow padding within blocks
 		'quote-props': ['error', 'as-needed'],	        //	autofixable require quotes around object literal property names
-		quotes: ['error', 'single', { avoidEscape: true }],	//	autofixable enforce the consistent use of either backticks, double, or single quotes
+		quotes: ['error', 'double', { avoidEscape: true }],	//	autofixable enforce the consistent use of either backticks, double, or single quotes
 		'require-jsdoc': 'off', // ['error', { require: { FunctionDeclaration: true, MethodDefinition: true, ClassDeclaration: true } }],	//	require JSDoc comments
 		'semi-spacing': ['error', { before: false, after: true }],	//	autofixable enforce consistent spacing before and after semicolons
 		semi: ['error', 'always'],				        //	autofixable require or disallow semicolons instead of ASI

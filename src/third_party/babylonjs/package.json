@@ -1,0 +1,80 @@
+{
+  "_from": "babylonjs",
+  "_id": "babylonjs@3.3.0-rc.0",
+  "_inBundle": false,
+  "_integrity": "sha512-KFcAK+Aa1ou7hiB7nHyVVHWxHzWzxw++rQLrsuuhlgq46DaZ+UuffCDLz+ML88tvLXntfNoS99xZI7wWkuZl4A==",
+  "_location": "/babylonjs",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "tag",
+    "registry": true,
+    "raw": "babylonjs",
+    "name": "babylonjs",
+    "escapedName": "babylonjs",
+    "rawSpec": "",
+    "saveSpec": null,
+    "fetchSpec": "latest"
+  },
+  "_requiredBy": [
+    "#USER",
+    "/"
+  ],
+  "_resolved": "https://registry.npmjs.org/babylonjs/-/babylonjs-3.3.0-rc.0.tgz",
+  "_shasum": "7d3f6c48f08adbbfdcc2847a52fe9304624b6705",
+  "_spec": "babylonjs",
+  "_where": "/home/rodney/prj/webcomponents/vicowa-web-components",
+  "author": {
+    "name": "David CATUHE"
+  },
+  "bugs": {
+    "url": "https://github.com/BabylonJS/Babylon.js/issues"
+  },
+  "bundleDependencies": false,
+  "contributors": [
+    {
+      "name": "David ROUSSET"
+    },
+    {
+      "name": "Sebastien VANDENBERGHE"
+    },
+    {
+      "name": "Raanan Weber"
+    }
+  ],
+  "dependencies": {},
+  "deprecated": false,
+  "description": "Babylon.js is a JavaScript 3D engine based on webgl.",
+  "devDependencies": {
+    "base64-font-loader": "0.0.4",
+    "typescript": "^3.0.1"
+  },
+  "engines": {
+    "node": "*"
+  },
+  "files": [
+    "package.json",
+    "babylon.d.ts",
+    "es6.js",
+    "babylon.js",
+    "babylon.max.js",
+    "babylon.worker.js",
+    "Oimo.js",
+    "readme.md"
+  ],
+  "homepage": "https://github.com/BabylonJS/Babylon.js#readme",
+  "keywords": [
+    "3D",
+    "javascript",
+    "html5",
+    "webgl"
+  ],
+  "license": "Apache-2.0",
+  "main": "babylon.js",
+  "name": "babylonjs",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/BabylonJS/Babylon.js.git"
+  },
+  "typings": "babylon.d.ts",
+  "version": "3.3.0-rc.0"
+}
