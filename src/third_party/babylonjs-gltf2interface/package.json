@@ -1,26 +1,26 @@
 {
-  "_from": "babylonjs-gltf2interface@3.3.0-rc.0",
-  "_id": "babylonjs-gltf2interface@3.3.0-rc.0",
+  "_from": "babylonjs-gltf2interface@3.3.0-rc.1",
+  "_id": "babylonjs-gltf2interface@3.3.0-rc.1",
   "_inBundle": false,
-  "_integrity": "sha512-X/nNn5B2PHdX9aBIk27ykLYsQE4z+7RzlDjDBYlg5EGMvg05RsCW1vYxszjR/5RLlPr7qwEwzQfmeRnEXbOCgg==",
+  "_integrity": "sha512-qGLPpOTDmnhkzcQ06wvpjvL/FJjpSgUtTJ6ux+BtaOXHvPtNojGYCp1fv5bOw0UHdBMDkaRS8DCX4j/ADw92YA==",
   "_location": "/babylonjs-gltf2interface",
   "_phantomChildren": {},
   "_requested": {
     "type": "version",
     "registry": true,
-    "raw": "babylonjs-gltf2interface@3.3.0-rc.0",
+    "raw": "babylonjs-gltf2interface@3.3.0-rc.1",
     "name": "babylonjs-gltf2interface",
     "escapedName": "babylonjs-gltf2interface",
-    "rawSpec": "3.3.0-rc.0",
+    "rawSpec": "3.3.0-rc.1",
     "saveSpec": null,
-    "fetchSpec": "3.3.0-rc.0"
+    "fetchSpec": "3.3.0-rc.1"
   },
   "_requiredBy": [
     "/babylonjs-loaders"
   ],
-  "_resolved": "https://registry.npmjs.org/babylonjs-gltf2interface/-/babylonjs-gltf2interface-3.3.0-rc.0.tgz",
-  "_shasum": "393af3c0e582853965c596bc4cbf8fe5e5aa61bb",
-  "_spec": "babylonjs-gltf2interface@3.3.0-rc.0",
+  "_resolved": "https://registry.npmjs.org/babylonjs-gltf2interface/-/babylonjs-gltf2interface-3.3.0-rc.1.tgz",
+  "_shasum": "79ffd464aeffae62a27aa2432e7c9f6323e2450a",
+  "_spec": "babylonjs-gltf2interface@3.3.0-rc.1",
   "_where": "/home/rodney/prj/webcomponents/vicowa-web-components/node_modules/babylonjs-loaders",
   "bugs": {
     "url": "https://github.com/BabylonJS/Babylon.js/issues"
@@ -53,5 +53,5 @@
     "url": "git+https://github.com/BabylonJS/Babylon.js.git"
   },
   "typings": "babylon.glTF2Interface.d.ts",
-  "version": "3.3.0-rc.0"
+  "version": "3.3.0-rc.1"
 }
