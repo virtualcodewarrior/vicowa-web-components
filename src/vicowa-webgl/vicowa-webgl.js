@@ -3,6 +3,7 @@
 import { webComponentBaseClass } from "../third_party/web-component-base-class/src/webComponentBaseClass.js";
 import { toRadians } from "../utilities/mathHelpers.js";
 import * as babylon from "../third_party/babylonjs/es6.js";
+import "../third_party/babylonjs-loaders/babylonjs.loaders.js";
 import "../third_party/earcut/dist/earcut.dev.js";
 
 const componentName = "vicowa-webgl";
@@ -41,14 +42,15 @@ function convertToVector3(p_Vector) {
 
 function createShadowGenerator(p_WebGLControl, p_Light) {
 	const shadowGenerator = new babylon.ShadowGenerator(1024, p_Light);
+	shadowGenerator.getShadowMap().refreshRate = babylon.RenderTargetTexture.REFRESHRATE_RENDER_ONCE;
 	shadowGenerator.bias = 0.0001;
 	shadowGenerator.forceBackFacesOnly = true;
 	shadowGenerator.normalBias = 0.02;
 	p_Light.shadowMaxZ = 1000;
 	p_Light.shadowMinZ = -1000;
 	// remark for now for performance
-	// shadowGenerator.useContactHardeningShadow = true;
-	// shadowGenerator.contactHardeningLightSizeUVRatio = 0.05;
+	shadowGenerator.useContactHardeningShadow = true;
+	shadowGenerator.contactHardeningLightSizeUVRatio = 0.05;
 	shadowGenerator.setDarkness(0.2);
 
 	return shadowGenerator;
@@ -63,27 +65,95 @@ function addShadowCaster(p_WebGLControl, p_MeshObject) {
 	});
 }
 
+function applyRecursive(p_Mesh, p_PropertyName, p_PropertyValue) {
+	p_Mesh[p_PropertyName] = p_PropertyValue;
+	p_Mesh.getChildMeshes(true).forEach((p_Child) => { p_Child[p_PropertyName] = p_PropertyValue; });
+}
+
+function applyAllMeshes(p_Meshes, p_ExludedNames, p_PropertyName, p_PropertyValue) {
+	Object.keys(p_Meshes).forEach((p_Key) => { if (p_ExludedNames.indexOf(p_Key) === -1) { applyRecursive(p_Meshes[p_Key], p_PropertyName, p_PropertyValue); } });
+}
+
+function setPosition(p_Mesh, p_Position, p_UnitMultiplier) {
+	Object.assign(p_Mesh.position, multiplyVector(p_Position, p_UnitMultiplier));
+}
+
+function setRotation(p_Mesh, p_Rotation) {
+	Object.assign(p_Mesh.rotation, { x: toRadians(p_Rotation.x), y: toRadians(p_Rotation.y), z: toRadians(p_Rotation.z) });
+}
+
+function setScale(p_Mesh, p_Scale) {
+	Object.assign(p_Mesh.scaling, p_Scale);
+}
+
 function addMesh(p_WebGLControl, p_Name, p_MeshObject, p_Settings) {
 	p_Settings = p_Settings || {};
 	if (p_MeshObject) {
+		if (p_Settings.position) {
+			setPosition(p_MeshObject, p_Settings.position, p_WebGLControl.unitMultiplier);
+		}
+		if (p_Settings.rotation) {
+			setRotation(p_MeshObject, p_Settings.rotation);
+		}
+		if (p_Settings.scale) {
+			setScale(p_MeshObject, p_Settings.scale);
+		}
+		if (p_Settings.visible !== undefined) {
+			p_MeshObject.isVisible = p_Settings.visible;
+		}
+		if (p_Settings.material) {
+			if (typeof p_Settings.material === "string") {
+				const material = p_WebGLControl._materials[p_Settings.material];
+				if (material) {
+					p_MeshObject.material = material;
+				}
+			} else {
+				if (p_Settings.material.name) {
+					const material = p_WebGLControl.addMaterial(p_Settings.material.name, p_Settings.material);
+					if (material) {
+						p_MeshObject.material = material;
+					}
+				}
+			}
+		}
+
 		// do shadows either if explicit shadows option is set to true in the settings or when defaultShadows is set to true and the shadows property is undefined
 		if (p_Settings.shadows || (p_WebGLControl.defaultShadows && p_Settings.castShadows === undefined)) {
 			addShadowCaster(p_WebGLControl, p_MeshObject);
 			p_MeshObject.receiveShadows = true;
 		}
-		p_MeshObject.checkCollisions = p_WebGLControl._allObjectCollisions;
+		p_MeshObject.renderingGroupId = 1;
+		applyRecursive(p_MeshObject, "checkCollisions", (p_Settings.collisions === undefined) ? p_WebGLControl._allObjectCollisions : p_Settings.collisions);
 		p_WebGLControl._meshes[p_Name] = p_MeshObject;
+
+		Object.keys(p_WebGLControl._lights).forEach((p_Key) => {
+			if (p_WebGLControl._lights[p_Key].shadowGenerator) {
+				p_WebGLControl._lights[p_Key].shadowGenerator.recreateShadowMap();
+			}
+		});
 	}
 }
 
 function addClone(p_WebGLControl, p_Name, p_MeshObject, p_Settings) {
 	p_Settings = p_Settings || {};
 	if (p_MeshObject) {
+		if (p_Settings.position) {
+			setPosition(p_MeshObject, p_Settings.position, p_WebGLControl.unitMultiplier);
+		}
+		if (p_Settings.rotation) {
+			setRotation(p_MeshObject, p_Settings.rotation);
+		}
+		if (p_Settings.scale) {
+			setScale(p_MeshObject, p_Settings.scale);
+		}
+		if (p_Settings.visible !== undefined) {
+			p_MeshObject.isVisible = p_Settings.visible;
+		}
 		// do shadows either if explicit shadows option is set to true in the settings or when defaultShadows is set to true and the shadows property is undefined
 		if (p_Settings.shadows || (p_WebGLControl.defaultShadows && p_Settings.castShadows === undefined)) {
 			addShadowCaster(p_WebGLControl, p_MeshObject);
 		}
-		p_MeshObject.checkCollisions = p_WebGLControl._allObjectCollisions;
+		applyRecursive(p_MeshObject, "checkCollisions", (p_Settings.collisions === undefined) ? p_WebGLControl._allObjectCollisions : p_Settings.collisions);
 		p_WebGLControl._clones[p_Name] = p_MeshObject;
 	}
 }
@@ -117,12 +187,23 @@ class VicowaWebgl extends webComponentBaseClass {
 		};
 	}
 
-	async addMeshResource(p_Name, p_MeshName, p_FileName, p_Settings) {
+	async addObjectResource(p_Name, p_MeshName, p_FileName, p_Settings) {
 		const meshTask = this._assetsManager.addMeshTask(p_Name, p_MeshName, `${p_FileName.split("/").slice(0, -1).join("/")}/`, p_FileName.split("/").slice(-1)[0]);
 		return await new Promise((resolve, reject) => {
 			meshTask.onSuccess = (task) => {
-				task.loadedMeshes[0].position = babylon.Vector3.Zero();
-				addMesh(this, p_Name, task.loadedMeshes[0], p_Settings);
+				if (!p_Settings.position) {
+					p_Settings.position = { x: 0, y: 0, z: 0 };
+				}
+				if (task.loadedMeshes.length === 1) {
+					addMesh(this, p_Name, task.loadedMeshes[0], p_Settings);
+				} else {
+					const mesh = new babylon.Mesh(p_Name, this._scene);
+					task.loadedMeshes.forEach((p_Mesh) => {
+						p_Mesh.renderingGroupId = 1;
+						mesh.addChild(p_Mesh);
+					});
+					addMesh(this, p_Name, mesh, p_Settings);
+				}
 				resolve();
 			};
 			meshTask.onError = (p_Task, p_Message, pException) => {
@@ -147,7 +228,10 @@ class VicowaWebgl extends webComponentBaseClass {
 		skyboxMaterial.reflectionTexture.coordinatesMode = babylon.Texture.SKYBOX_MODE;
 		skyboxMaterial.diffuseColor = new babylon.Color3(0, 0, 0);
 		skyboxMaterial.specularColor = new babylon.Color3(0, 0, 0);
+		skyboxMaterial.disableLighting = true;
 		skybox.material = skyboxMaterial;
+		skybox.infiniteDistance = true;
+		skybox.renderingGroupId = 0;
 	}
 
 	addSphere(p_Name, p_Settings) {
@@ -196,12 +280,14 @@ class VicowaWebgl extends webComponentBaseClass {
 		}
 	}
 
-	cloneMesh(p_MeshNamePrefix, p_SourceName, p_Copies, p_Settings) {
+	cloneObject(p_ObjectNamePrefix, p_SourceName, p_Copies, p_Settings) {
 		const mesh = this._meshes[p_SourceName];
-		const copies = p_Copies || 1;
-		for (let index = 0; index < copies; index++) {
-			const cloneName = p_MeshNamePrefix + index;
-			addClone(this, cloneName, mesh.createInstance(cloneName), p_Settings);
+		if (mesh) {
+			const copies = p_Copies || 1;
+			for (let index = 0; index < copies; index++) {
+				const cloneName = p_ObjectNamePrefix + index;
+				addClone(this, cloneName, mesh.createInstance(cloneName), p_Settings);
+			}
 		}
 	}
 
@@ -253,24 +339,24 @@ class VicowaWebgl extends webComponentBaseClass {
 		}
 	}
 
-	setMeshPosition(p_Name, p_Position) {
+	setObjectPosition(p_Name, p_Position) {
 		const mesh = this._meshes[p_Name] || this._clones[p_Name];
 		if (mesh) {
-			Object.assign(mesh.position, multiplyVector(p_Position, this.unitMultiplier));
+			setPosition(mesh, p_Position, this.unitMultiplier);
 		}
 	}
 
-	setMeshRotation(p_Name, p_Rotation) {
+	setObjectRotation(p_Name, p_Rotation) {
 		const mesh = this._meshes[p_Name] || this._clones[p_Name];
 		if (mesh) {
-			Object.assign(mesh.rotation, { x: toRadians(p_Rotation.x), y: toRadians(p_Rotation.y), z: toRadians(p_Rotation.z) });
+			setRotation(mesh, p_Rotation);
 		}
 	}
 
-	setMeshScale(p_Name, p_Scale) {
+	setObjectScale(p_Name, p_Scale) {
 		const mesh = this._meshes[p_Name] || this._clones[p_Name];
 		if (mesh) {
-			Object.assign(mesh.scaling, p_Scale);
+			setScale(mesh, p_Scale);
 		}
 	}
 
@@ -281,15 +367,15 @@ class VicowaWebgl extends webComponentBaseClass {
 		}
 	}
 
-	setCameraTarget(p_MeshName) {
-		const mesh = this._meshes[p_MeshName];
+	setCameraTarget(p_ObjectName) {
+		const mesh = this._meshes[p_ObjectName];
 		if (mesh) {
 			this._camera.lockedTarget = mesh;
 		}
 	}
 
 	addMaterial(p_MaterialName, p_Settings) {
-		const material = this._materials[p_MaterialName] = new babylon.StandardMaterial(p_MaterialName, this._scene);
+		const material = this._materials[p_MaterialName] || new babylon.StandardMaterial(p_MaterialName, this._scene);
 		if (p_Settings.diffuse) {
 			Object.assign(material.diffuseColor, p_Settings.diffuse);
 		}
@@ -340,11 +426,13 @@ class VicowaWebgl extends webComponentBaseClass {
 				}
 			}
 		}
+		this._materials[p_MaterialName] = material;
+		return material;
 	}
 
-	setMeshMaterial(p_MeshNames, p_Material) {
+	setObjectMaterial(p_ObjectNames, p_Material) {
 		if (typeof p_Material === "string") {
-			const meshNames = Array.isArray(p_MeshNames) ? p_MeshNames : [p_MeshNames];
+			const meshNames = Array.isArray(p_ObjectNames) ? p_ObjectNames : [p_ObjectNames];
 			meshNames.forEach((p_MeshName) => {
 				const mesh = this._meshes[p_MeshName];
 				const material = this._materials[p_Material];
@@ -368,15 +456,15 @@ class VicowaWebgl extends webComponentBaseClass {
 	set cameraCollisions(p_Collisions) { this._camera.checkCollisions = p_Collisions; }
 	get cameraCollisions() { return this._camera.checkCollisions; }
 
-	setMeshVisible(p_MeshName, p_Visible) {
-		const mesh = this._meshes[p_MeshName];
+	setObjectVisibility(p_ObjectName, p_Visible) {
+		const mesh = this._meshes[p_ObjectName];
 		if (mesh) {
 			mesh.isVisible = p_Visible || false;
 		}
 	}
 
-	getMeshVisible(p_MeshName, p_Visible) {
-		const mesh = this._meshes[p_MeshName];
+	isObjectVisible(p_ObjectName) {
+		const mesh = this._meshes[p_ObjectName];
 		return (mesh) ? mesh.isVisible : undefined;
 	}
 
@@ -395,26 +483,38 @@ class VicowaWebgl extends webComponentBaseClass {
 
 	enableAllObjectCollisions(p_ExcludedNames) {
 		this._allObjectCollisions = true;
-		const excludedNames = p_ExcludedNames || [];
-		Object.keys(this._meshes).forEach((p_Key) => { if (excludedNames.indexOf(p_Key) === -1) { this._meshes[p_Key].checkCollisions = true; } });
+		applyAllMeshes(this._meshes, p_ExcludedNames || [], "checkCollisions", true);
+		applyAllMeshes(this._clones, p_ExcludedNames || [], "checkCollisions", true);
 	}
 
 	disableAllObjectCollisions(p_ExcludedNames) {
 		this._allObjectCollisions = false;
-		const excludedNames = p_ExcludedNames || [];
-		Object.keys(this._meshes).forEach((p_Key) => { if (excludedNames.indexOf(p_Key) === -1) { this._meshes[p_Key].checkCollisions = false; } });
+		applyAllMeshes(this._meshes, p_ExcludedNames || [], "checkCollisions", false);
+		applyAllMeshes(this._clones, p_ExcludedNames || [], "checkCollisions", false);
 	}
 
-	setCheckCollisionForMesh(p_MeshName, p_Enabled) {
-		const mesh = this._meshes[p_MeshName];
+	setCheckCollisionForObject(p_ObjectName, p_Enabled) {
+		const mesh = this._meshes[p_ObjectName];
 		if (mesh) {
-			mesh.checkCollisions = p_Enabled;
+			applyRecursive(mesh, "checkCollisions", p_Enabled);
 		}
 	}
 
-	getCheckCollisionForMesh(p_MeshName) {
-		const mesh = this._meshes[p_MeshName];
+	getCheckCollisionForObject(p_ObjectName) {
+		const mesh = this._meshes[p_ObjectName];
 		return (mesh) ? mesh.checkCollisions : undefined;
+	}
+
+	setFog(p_Enabled, p_Settings) {
+		// fog
+		this._scene.fogEnabled = p_Enabled;
+		this._scene.fogMode = babylon.Scene.FOGMODE_EXP;
+		if (p_Settings.density) {
+			this._scene.fogDensity = p_Settings.density;
+		}
+		if (p_Settings.color) {
+			this._scene.fogColor = new babylon.Color3(p_Settings.color.r, p_Settings.color.g, p_Settings.color.b);
+		}
 	}
 
 	/**
@@ -434,6 +534,24 @@ class VicowaWebgl extends webComponentBaseClass {
 				const target = Object.assign({}, { x: 0, y: 0, z: 0 }, p_Settings.target || {});
 				this._camera = new babylon[(p_Settings.vrEnabled) ? "VRDeviceOrientationArcRotateCamera" : "ArcRotateCamera"]("camera", toRadians(position.longitude), toRadians(position.latitude), position.distance * this.unitMultiplier, new babylon.Vector3(target.x * this.unitMultiplier, target.y * this.unitMultiplier, target.z * this.unitMultiplier), this._scene);
 				this._camera.attachControl(this.$.canvas, !(p_Settings.preventDefault || false));
+				if (p_Settings.minLongitude) {
+					this._camera.lowerAlphaLimit = p_Settings.minLongitude;
+				}
+				if (p_Settings.maxLongitude) {
+					this._camera.upperAlphaLimit = p_Settings.maxLongitude;
+				}
+				if (p_Settings.minLatitude) {
+					this._camera.lowerBetaLimit = p_Settings.minLatitude;
+				}
+				if (p_Settings.maxLatitude) {
+					this._camera.upperBetaLimit = p_Settings.maxLatitude;
+				}
+				if (p_Settings.minDistance) {
+					this._camera.lowerRadiusLimit = p_Settings.minDistance;
+				}
+				if (p_Settings.maxDistance) {
+					this._camera.upperRadiusLimit = p_Settings.maxDistance;
+				}
 				if (p_Settings.targetMesh) {
 					this._camera.lockedTarget = p_Settings.targetMesh;
 				}
@@ -476,6 +594,56 @@ class VicowaWebgl extends webComponentBaseClass {
 		// this._camera.useFramingBehavior = true;
 	}
 
+	removeObject(p_ObjectName) {
+		let mesh = this._meshes[p_ObjectName];
+		if (mesh) {
+			mesh.dispose();
+			delete this._meshed[p_ObjectName];
+		} else {
+			mesh = this._clones[p_ObjectName];
+			if (mesh) {
+				mesh.dispose();
+				delete this._clones[p_ObjectName];
+			}
+		}
+	}
+
+	selectObject(p_ObjectName) {
+		const mesh = this._meshes[p_ObjectName] || this._clones[p_ObjectName];
+		if (mesh) {
+			mesh.selected = true;
+			mesh.notSelectMaterial = mesh.material;
+			if (mesh.material) {
+				mesh.material = mesh.material.clone();
+				mesh.material.diffuseColor = new babylon.Color3(1, 0, 0);
+				mesh.material.emissiveColor = new babylon.Color3(1, 0, 0);
+				mesh.material.alpha = 1;
+			} else {
+				mesh.material = this._materials["selected"].clone();
+			}
+		}
+	}
+
+	unselectObject(p_ObjectName) {
+		const mesh = this._meshes[p_ObjectName] || this._clones[p_ObjectName];
+		if (mesh && mesh.selected) {
+			mesh.selected = false;
+			mesh.material.dispose();
+			mesh.material = mesh.notSelectMaterial;
+			delete mesh.notSelectMaterial;
+		}
+	}
+
+	unselectAll() {
+		Object.keys(this._meshes).forEach((p_Key) => this.unselectObject(p_Key));
+		Object.keys(this._clones).forEach((p_Key) => this.unselectObject(p_Key));
+	}
+
+	isObjectSelected(p_ObjectName) {
+		const mesh = this._meshes[p_ObjectName] || this._clones[p_ObjectName];
+		return mesh && mesh.selected;
+	}
+
 	attached() {
 		// create the engine
 		this._engine = new babylon.Engine(this.$.canvas, true, { preserveDrawingBuffer: true, stencil: true });
@@ -485,15 +653,45 @@ class VicowaWebgl extends webComponentBaseClass {
 			this._scene.collisionsEnabled = true;
 			this._scene.workerCollisions = true; // use web workers for collisions
 
+			this.addMaterial("selected", { diffuse: { r: 1, g: 0, b: 0 }, emissive: { r: 1, g: 0, b: 0 } });
+
 			this._assetsManager = new babylon.AssetsManager(this._scene);
 			this._assetsManager.useDefaultLoadingScreen = this.loadingScreen;
 
+			const options = new babylon.SceneOptimizerOptions();
+			options.addOptimization(new babylon.HardwareScalingOptimization(0, 1));
+
+			// Optimizer
+			this.optimizer = new babylon.SceneOptimizer(this._scene, options);
+
 			this._assetsManager.onFinish = () => {
+				this.stopRendering();
 				this.startRendering();
 			};
 		};
 
 		createScene();
+
+		this._scene.onPointerObservable.add((p_Event) => {
+			if (p_Event.pickInfo.hit) {
+				if (this.onObjectClicked) {
+					const path = [p_Event.pickInfo.pickedMesh.name];
+					let parent = p_Event.pickInfo.pickedMesh.parent;
+					while (parent) {
+						path.unshift(parent.name);
+						parent = parent.parent;
+					}
+					this.onObjectClicked({
+						distance: p_Event.pickInfo.distance / this.unitMultiplier,
+						object: p_Event.pickInfo.pickedMesh.name,
+						mainObject: path[0],
+						parent: path[path.length - 2] || null,
+						path,
+						location: { x: p_Event.pickInfo.pickedPoint.x / this.unitMultiplier, y: p_Event.pickInfo.pickedPoint.y / this.unitMultiplier, z: p_Event.pickInfo.pickedPoint.z / this.unitMultiplier },
+					});
+				}
+			}
+		}, babylon.PointerEventTypes.POINTERPICK);
 
 		const resizeDetector = this.$.resizeDetector;
 		resizeDetector.addObserver(() => {

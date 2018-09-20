@@ -13,7 +13,7 @@ const meshResources = [
 meshResources.forEach((p_Resource) => {
 	controls[p_Resource.addControl].addEventListener('click', async() => {
 		try {
-			p_Resource.meshGroup = await controls.gl1.addMeshResource(p_Resource.name, '', p_Resource.path);
+			p_Resource.meshGroup = await controls.gl1.addObjectResource(p_Resource.name, '', p_Resource.path);
 			controls[p_Resource.removeControl].disabled = false;
 			controls[p_Resource.addControl].disabled = true;
 		} catch (p_Error) {
