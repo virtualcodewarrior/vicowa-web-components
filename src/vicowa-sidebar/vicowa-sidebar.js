@@ -1,6 +1,6 @@
-import { webComponentBaseClass } from '../third_party/web-component-base-class/src/webComponentBaseClass.js';
+import { webComponentBaseClass } from "../third_party/web-component-base-class/src/webComponentBaseClass.js";
 
-const componentName = 'vicowa-sidebar';
+const componentName = "vicowa-sidebar";
 
 /**
  * Class that represents the vicowa-sidebar custom element
@@ -21,7 +21,7 @@ class VicowaSideBar extends webComponentBaseClass {
 		return {
 			location: {
 				type: String,
-				value: 'left',
+				value: "left",
 				reflectToAttribute: true,
 			},
 			expanded: {
@@ -75,23 +75,23 @@ class VicowaSideBar extends webComponentBaseClass {
 		};
 
 		const handleDragEnd = () => {
-			this.classList.toggle('resizing', false);
-			this.removeAutoEventListener(window, 'mouseup', handleDragEnd);
-			this.removeAutoEventListener(window, 'touchend', handleDragEnd);
-			this.removeAutoEventListener(window, 'mousemove', handleDrag);
-			this.removeAutoEventListener(window, 'touchmove', handleTouchDrag);
+			this.classList.toggle("resizing", false);
+			this.removeAutoEventListener(window, "mouseup", handleDragEnd);
+			this.removeAutoEventListener(window, "touchend", handleDragEnd);
+			this.removeAutoEventListener(window, "mousemove", handleDrag);
+			this.removeAutoEventListener(window, "touchmove", handleTouchDrag);
 		};
 
 		const handleDragStart = (p_Event) => {
-			vertical = this.location === 'top' || this.location === 'bottom';
-			invertFactor = (this.location === 'bottom' || this.location === 'right') ? -1 : 1;
+			vertical = this.location === "top" || this.location === "bottom";
+			invertFactor = (this.location === "bottom" || this.location === "right") ? -1 : 1;
 			maxSize = (vertical) ? this.$.main.getBoundingClientRect().height : this.getBoundingClientRect().width;
 			startSize = (vertical) ? this.$.sideContent.getBoundingClientRect().height : this.$.sideContent.getBoundingClientRect().width;
-			this.addAutoEventListener(window, 'mouseup', handleDragEnd);
-			this.addAutoEventListener(window, 'touchend', handleDragEnd);
-			this.addAutoEventListener(window, 'mousemove', handleDrag);
-			this.addAutoEventListener(window, 'touchmove', handleTouchDrag);
-			this.classList.toggle('resizing', true);
+			this.addAutoEventListener(window, "mouseup", handleDragEnd);
+			this.addAutoEventListener(window, "touchend", handleDragEnd);
+			this.addAutoEventListener(window, "mousemove", handleDrag);
+			this.addAutoEventListener(window, "touchmove", handleTouchDrag);
+			this.classList.toggle("resizing", true);
 			startPos = (vertical) ? p_Event.clientY : p_Event.clientX;
 			console.log(`start ${startPos}`);
 		};
@@ -101,8 +101,8 @@ class VicowaSideBar extends webComponentBaseClass {
 			handleDragStart(p_Event);
 		};
 
-		this.addAutoEventListener(this.$.resizeHandle, 'mousedown', handleDragStart);
-		this.addAutoEventListener(this.$.resizeHandle, 'touchstart', handleTouchDragStart);
+		this.addAutoEventListener(this.$.resizeHandle, "mousedown", handleDragStart);
+		this.addAutoEventListener(this.$.resizeHandle, "touchstart", handleTouchDragStart);
 	}
 }
 

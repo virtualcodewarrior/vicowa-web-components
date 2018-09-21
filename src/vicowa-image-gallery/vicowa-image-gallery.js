@@ -1,6 +1,6 @@
-import { webComponentBaseClass } from '../third_party/web-component-base-class/src/webComponentBaseClass.js';
+import { webComponentBaseClass } from "../third_party/web-component-base-class/src/webComponentBaseClass.js";
 
-const componentName = 'vicowa-image-gallery';
+const componentName = "vicowa-image-gallery";
 
 async function retrieveImages(p_GalleryControl) {
 	const images = await p_GalleryControl._imageProvider.getImages();
@@ -10,19 +10,19 @@ async function retrieveImages(p_GalleryControl) {
 		let tile = document.querySelector(`[carousel-index="${p_Index}]"`);
 		let imageContainer = null;
 		if (!tile) {
-			imageContainer = (tile) ? tile.querySelector('vicowa-image-container') : null;
+			imageContainer = (tile) ? tile.querySelector("vicowa-image-container") : null;
 			if (!imageContainer) {
-				tile = imageContainer = document.createElement('vicowa-image-container');
-				tile.setAttribute('lazyload', '');
+				tile = imageContainer = document.createElement("vicowa-image-container");
+				tile.setAttribute("lazyload", "");
 			}
 			p_GalleryControl.$.images.appendChild(tile);
 		}
 
-		tile.setAttribute('carousel-index', p_Index);
+		tile.setAttribute("carousel-index", p_Index);
 		imageContainer.alternates = p_GalleryControl._imageInfo[p_Index].thumbNail.slice();
 		imageContainer.description = p_ImageInfo.description;
 		imageContainer.tooltip = p_ImageInfo.tooltip;
-		imageContainer.alt = (p_ImageInfo.alt || p_ImageInfo.description || p_ImageInfo.tooltip || '').trim();
+		imageContainer.alt = (p_ImageInfo.alt || p_ImageInfo.description || p_ImageInfo.tooltip || "").trim();
 	});
 
 	p_GalleryControl.$.carousel.images = p_GalleryControl._imageInfo.map((p_Info) => ({ alternates: p_Info.fullSize.slice(), description: p_Info.description, alt: p_Info.alt, tooltip: p_Info.tooltip }));
@@ -71,18 +71,18 @@ class VicowaImageGallery extends webComponentBaseClass {
 	setImageProvider(p_Provider) {
 		this._imageProvider = p_Provider;
 
-		this.addAutoEventListener(this.$.images, 'click', (p_Event) => {
+		this.addAutoEventListener(this.$.images, "click", (p_Event) => {
 			// get the item under the mouse
-			const container = (p_Event.target) ? p_Event.target.closest('[carousel-index]') : null;
+			const container = (p_Event.target) ? p_Event.target.closest("[carousel-index]") : null;
 			if (container) {
 				this.$.modal.open = true;
-				this.$.carousel.startIndex = parseInt(container.getAttribute('carousel-index'), 10);
+				this.$.carousel.startIndex = parseInt(container.getAttribute("carousel-index"), 10);
 			}
 		});
-		this.addAutoEventListener(this.$.closeCarousel, 'click', () => {
+		this.addAutoEventListener(this.$.closeCarousel, "click", () => {
 			this.$.modal.open = false;
 		});
-		this.$.images.innerHTML = '';
+		this.$.images.innerHTML = "";
 		if (this._imageProvider) {
 			retrieveImages(this);
 		}

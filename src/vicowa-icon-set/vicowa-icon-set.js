@@ -1,10 +1,10 @@
-import { webComponentBaseClass } from '../third_party/web-component-base-class/src/webComponentBaseClass.js';
+import { webComponentBaseClass } from "../third_party/web-component-base-class/src/webComponentBaseClass.js";
 
 // all icon sets will go here, there should be only one instance in the current web page
 const iconSets = {};
 const callbacks = {};
 
-const componentName = 'vicowa-icon-set';
+const componentName = "vicowa-icon-set";
 
 /**
  * Class that represents the vicowa-icon-set custom element
@@ -21,7 +21,7 @@ class VicowaIconSet extends webComponentBaseClass {
 		return {
 			name: {
 				type: String,
-				value: '',
+				value: "",
 				reflectToAttribute: true,
 			},
 		};
@@ -31,7 +31,7 @@ class VicowaIconSet extends webComponentBaseClass {
 		const activeSet = iconSets[this.name] = iconSets[this.name] || {};
 		const childNodes = Array.from(this.$.icons.assignedNodes());
 		Array.from(childNodes).forEach((p_ChildNode) => {
-			Array.from(p_ChildNode.querySelectorAll('defs > g[id]')).forEach((p_SVGElement) => {
+			Array.from(p_ChildNode.querySelectorAll("defs > g[id]")).forEach((p_SVGElement) => {
 				activeSet[p_SVGElement.id] = p_SVGElement;
 			});
 		});
@@ -54,7 +54,7 @@ class VicowaIconSet extends webComponentBaseClass {
 	 * @param {function} p_Callback Function that will be called when the icon is found or changes
 	 */
 	static getIcon(p_CallbackOwner, p_Name, p_Callback) {
-		const parts = p_Name ? p_Name.trim().split(':') : [];
+		const parts = p_Name ? p_Name.trim().split(":") : [];
 
 		if (parts.length > 1) {
 			const iconInfo = { group: parts[0], name: parts[1] };
@@ -67,7 +67,7 @@ class VicowaIconSet extends webComponentBaseClass {
 				p_Callback(iconSets[iconInfo.group][iconInfo.name]);
 			}
 		} else if (p_Name) {
-			throw new Error('icon names should have the format group:name');
+			throw new Error("icon names should have the format group:name");
 		}
 	}
 

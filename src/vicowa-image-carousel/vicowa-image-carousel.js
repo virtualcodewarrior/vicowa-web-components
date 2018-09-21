@@ -1,8 +1,8 @@
-import { webComponentBaseClass } from '../third_party/web-component-base-class/src/webComponentBaseClass.js';
+import { webComponentBaseClass } from "../third_party/web-component-base-class/src/webComponentBaseClass.js";
 
 function updateControls(p_ImageControl) {
-	p_ImageControl.classList.toggle('start', p_ImageControl._activeImage === 0);
-	p_ImageControl.classList.toggle('end', p_ImageControl._activeImage === p_ImageControl.images.length - 1);
+	p_ImageControl.classList.toggle("start", p_ImageControl._activeImage === 0);
+	p_ImageControl.classList.toggle("end", p_ImageControl._activeImage === p_ImageControl.images.length - 1);
 }
 
 function updateActiveImages(p_ImageControl) {
@@ -11,24 +11,24 @@ function updateActiveImages(p_ImageControl) {
 		const active = p_ImageControl.images[p_ImageControl._activeImage];
 		if (active) {
 			p_ImageControl.$.currentImage.alternates = active.alternates;
-			p_ImageControl.$.currentImage.description = active.description || '';
-			p_ImageControl.$.currentImage.alt = (active.alt || active.description || active.tooltip || '').trim();
-			p_ImageControl.$.currentImage.tooltip = active.tooltip || '';
+			p_ImageControl.$.currentImage.description = active.description || "";
+			p_ImageControl.$.currentImage.alt = (active.alt || active.description || active.tooltip || "").trim();
+			p_ImageControl.$.currentImage.tooltip = active.tooltip || "";
 		}
 		const previous = (p_ImageControl._activeImage > 0) ? p_ImageControl.images[p_ImageControl._activeImage - 1] : p_ImageControl.images[p_ImageControl.images.length - 1];
 		if (previous) {
 			p_ImageControl.$.previousImage.alternates = previous.alternates;
-			p_ImageControl.$.previousImage.description = previous.description || '';
-			p_ImageControl.$.previousImage.alt = (previous.alt || previous.description || previous.tooltip || '').trim();
-			p_ImageControl.$.previousImage.tooltip = previous.tooltip || '';
+			p_ImageControl.$.previousImage.description = previous.description || "";
+			p_ImageControl.$.previousImage.alt = (previous.alt || previous.description || previous.tooltip || "").trim();
+			p_ImageControl.$.previousImage.tooltip = previous.tooltip || "";
 		}
 
 		const next = (p_ImageControl._activeImage < p_ImageControl.images.length - 1) ? p_ImageControl.images[p_ImageControl._activeImage + 1] : p_ImageControl.images[0];
 		if (next) {
 			p_ImageControl.$.nextImage.alternates = next.alternates;
-			p_ImageControl.$.nextImage.description = next.description || '';
-			p_ImageControl.$.nextImage.alt = (next.alt || next.description || next.tooltip || '').trim();
-			p_ImageControl.$.nextImage.tooltip = next.tooltip || '';
+			p_ImageControl.$.nextImage.description = next.description || "";
+			p_ImageControl.$.nextImage.alt = (next.alt || next.description || next.tooltip || "").trim();
+			p_ImageControl.$.nextImage.tooltip = next.tooltip || "";
 		}
 	}
 }
@@ -57,7 +57,7 @@ function autoChanged(p_ImageControl) {
 	}
 }
 
-const componentName = 'vicowa-image-carousel';
+const componentName = "vicowa-image-carousel";
 
 /**
  * Class that represents the vicowa-input custom element
@@ -102,42 +102,42 @@ class VicowaImageCarousel extends webComponentBaseClass {
 	}
 
 	attached() {
-		this.addAutoEventListener(this.$.previous, 'click', () => {
+		this.addAutoEventListener(this.$.previous, "click", () => {
 			this.goToPrevious();
 		});
-		this.addAutoEventListener(this.$.next, 'click', () => {
+		this.addAutoEventListener(this.$.next, "click", () => {
 			this.goToNext();
 		});
 	}
 
 	goToNext() {
-		this.classList.toggle('transitioning', true);
-		this.classList.toggle('next', true);
+		this.classList.toggle("transitioning", true);
+		this.classList.toggle("next", true);
 		this._autoTimer = 0;
 		const handleNextEnd = () => {
 			this._activeImage = (this._activeImage < this.images.length - 1) ? this._activeImage + 1 : 0;
-			this.classList.toggle('transitioning', false);
-			this.classList.toggle('next', false);
+			this.classList.toggle("transitioning", false);
+			this.classList.toggle("next", false);
 			updateActiveImages(this);
-			this.removeAutoEventListener(this.$.pictures, 'transitionend', handleNextEnd);
+			this.removeAutoEventListener(this.$.pictures, "transitionend", handleNextEnd);
 			if (this.auto) {
 				this._autoTimer = setTimeout(() => { this.goToNext(); }, this.auto);
 			}
 		};
-		this.addAutoEventListener(this.$.pictures, 'transitionend', handleNextEnd);
+		this.addAutoEventListener(this.$.pictures, "transitionend", handleNextEnd);
 	}
 
 	goToPrevious() {
-		this.classList.toggle('transitioning', true);
-		this.classList.toggle('previous', true);
+		this.classList.toggle("transitioning", true);
+		this.classList.toggle("previous", true);
 		const handlePreviousEnd = () => {
 			this._activeImage = (this._activeImage > 0) ? this._activeImage - 1 : this.images.length - 1;
-			this.classList.toggle('transitioning', false);
-			this.classList.toggle('previous', false);
+			this.classList.toggle("transitioning", false);
+			this.classList.toggle("previous", false);
 			updateActiveImages(this);
-			this.removeAutoEventListener(this.$.pictures, 'transitionend', handlePreviousEnd);
+			this.removeAutoEventListener(this.$.pictures, "transitionend", handlePreviousEnd);
 		};
-		this.addAutoEventListener(this.$.pictures, 'transitionend', handlePreviousEnd);
+		this.addAutoEventListener(this.$.pictures, "transitionend", handlePreviousEnd);
 	}
 
 	goToIndex(p_Index) {

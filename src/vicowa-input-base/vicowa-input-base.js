@@ -1,9 +1,9 @@
-import { webComponentBaseClass } from '../third_party/web-component-base-class/src/webComponentBaseClass.js';
-import translator from '../utilities/translate.js';
-import validators from '../utilities/validators.js';
+import { webComponentBaseClass } from "../third_party/web-component-base-class/src/webComponentBaseClass.js";
+import translator from "../utilities/translate.js";
+import validators from "../utilities/validators.js";
 
 function ariaLabelChanged(p_InputControl) {
-	p_InputControl.$.input.setAttribute('aria-label', p_InputControl.ariaLabel);
+	p_InputControl.$.input.setAttribute("aria-label", p_InputControl.ariaLabel);
 }
 
 /**
@@ -15,8 +15,8 @@ function ariaLabelChanged(p_InputControl) {
  */
 export function validate(p_InputControl, p_Value, p_ShowMessage) {
 	const validation = (validators[p_InputControl.validatorName] || p_InputControl.validator || (() => ({ valid: true })))(p_Value);
-	p_InputControl.$.error.string = (!validation.valid && p_ShowMessage) ? validation.error || 'something is wrong' : '';
-	p_InputControl.classList.toggle('invalid', !validation.valid && p_ShowMessage);
+	p_InputControl.$.error.string = (!validation.valid && p_ShowMessage) ? validation.error || "something is wrong" : "";
+	p_InputControl.classList.toggle("invalid", !validation.valid && p_ShowMessage);
 	return validation;
 }
 
@@ -42,8 +42,8 @@ function readOnlyChanged(p_InputControl) {
  * @param {VicowaInputBase} p_InputControl The control for which this handler is called
  */
 function typeChanged(p_InputControl) {
-	if (['text', 'password', 'email', 'number', 'search', 'url'].indexOf(p_InputControl.type) === -1) {
-		p_InputControl.type = 'text';
+	if (["text", "password", "email", "number", "search", "url"].indexOf(p_InputControl.type) === -1) {
+		p_InputControl.type = "text";
 	}
 	p_InputControl.$.input.type = p_InputControl.type;
 }
@@ -108,23 +108,23 @@ export class VicowaInputBaseClass extends webComponentBaseClass {
 		return {
 			validatorName: {
 				type: String,
-				value: '',
+				value: "",
 			},
 			type: {
 				type: String,
-				value: 'text',
+				value: "text",
 				reflectToAttribute: true,
 				observer: typeChanged,
 			},
 			value: {
 				type: String,
-				value: '',
+				value: "",
 				reflectToAttribute: true,
 				observer: valueChanged,
 			},
 			label: {
 				type: String,
-				value: '',
+				value: "",
 				reflectToAttribute: true,
 				observer: labelChanged,
 			},
@@ -146,7 +146,7 @@ export class VicowaInputBaseClass extends webComponentBaseClass {
 			},
 			tooltip: {
 				type: String,
-				value: '',
+				value: "",
 				reflectToAttribute: true,
 				observer: tooltipChanged,
 			},
@@ -163,7 +163,7 @@ export class VicowaInputBaseClass extends webComponentBaseClass {
 			},
 			ariaLabel: {
 				type: String,
-				value: '',
+				value: "",
 				observer: ariaLabelChanged,
 			},
 		};
@@ -176,10 +176,10 @@ export class VicowaInputBaseClass extends webComponentBaseClass {
 	attached() {
 		this.$.label.onTranslationUpdated = (p_String) => {
 			if (!this.ariaLabel) {
-				this.$.input.setAttribute('aria-label', p_String);
+				this.$.input.setAttribute("aria-label", p_String);
 			}
 		};
-		this.$.input.setAttribute('aria-label', this.$.label.displayString);
+		this.$.input.setAttribute("aria-label", this.$.label.displayString);
 
 		const validateAndSet = () => {
 			validate(this, this.value, true);
@@ -191,9 +191,9 @@ export class VicowaInputBaseClass extends webComponentBaseClass {
 			validate(this, this.value, false);
 		};
 
-		this.addAutoEventListener(this.$.input, 'blur', validateAndSet); // loosing focus
-		this.addAutoEventListener(this.$.input, 'change', validateAndSetNoErrorMessage); // applying the value
-		this.addAutoEventListener(this.$.input, 'input', validateAndSetNoErrorMessage); // inputting text
+		this.addAutoEventListener(this.$.input, "blur", validateAndSet); // loosing focus
+		this.addAutoEventListener(this.$.input, "change", validateAndSetNoErrorMessage); // applying the value
+		this.addAutoEventListener(this.$.input, "input", validateAndSetNoErrorMessage); // inputting text
 
 		this.$.input.placeholder = this.placeholder;
 		translator.addTranslationUpdatedObserver((p_Translator) => {

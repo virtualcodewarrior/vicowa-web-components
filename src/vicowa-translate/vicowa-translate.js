@@ -1,7 +1,7 @@
-import { webComponentBaseClass } from '../third_party/web-component-base-class/src/webComponentBaseClass.js';
-import translator from '../utilities/translate.js';
+import { webComponentBaseClass } from "../third_party/web-component-base-class/src/webComponentBaseClass.js";
+import translator from "../utilities/translate.js";
 
-const componentName = 'vicowa-translate';
+const componentName = "vicowa-translate";
 
 function translationLocationChanged(p_Control) {
 	translator.addTranslationLocation(p_Control.translationLocation);
@@ -25,7 +25,7 @@ class VicowaTranslate extends webComponentBaseClass {
 		return {
 			translationLocation: {
 				type: String,
-				value: '',
+				value: "",
 				reflectToAttribute: true,
 				observer: translationLocationChanged,
 			},

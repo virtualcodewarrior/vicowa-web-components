@@ -1,11 +1,11 @@
-import { webComponentBaseClass } from '../third_party/web-component-base-class/src/webComponentBaseClass.js';
+import { webComponentBaseClass } from "../third_party/web-component-base-class/src/webComponentBaseClass.js";
 
-const componentName = 'vicowa-icon';
+const componentName = "vicowa-icon";
 
 function iconChanged(p_IconControl) {
-	p_IconControl.$.iconContainer.innerHTML = '';
+	p_IconControl.$.iconContainer.innerHTML = "";
 	p_IconControl.$.iconSource.constructor.getIcon(p_IconControl, p_IconControl.icon, (p_Icon) => {
-		p_IconControl.$.iconContainer.innerHTML = '';
+		p_IconControl.$.iconContainer.innerHTML = "";
 		if (p_Icon) {
 			p_IconControl.$.iconContainer.appendChild(p_Icon.cloneNode(true));
 		}
@@ -29,7 +29,7 @@ class VicowaIcon extends webComponentBaseClass {
 			icon: {
 				type: String,
 				reflectToAttribute: true,
-				value: '',
+				value: "",
 				observer: iconChanged,
 			},
 		};

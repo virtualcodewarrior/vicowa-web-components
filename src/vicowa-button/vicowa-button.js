@@ -1,9 +1,9 @@
-import { webComponentBaseClass } from '../third_party/web-component-base-class/src/webComponentBaseClass.js';
+import { webComponentBaseClass } from "../third_party/web-component-base-class/src/webComponentBaseClass.js";
 
-const componentName = 'vicowa-button';
+const componentName = "vicowa-button";
 
 function ariaLabelChanged(p_ButtonControl) {
-	p_ButtonControl.$.button.setAttribute('aria-label', p_ButtonControl.ariaLabel);
+	p_ButtonControl.$.button.setAttribute("aria-label", p_ButtonControl.ariaLabel);
 }
 
 function stringChanged(p_ButtonControl) {
@@ -41,7 +41,7 @@ class VicowaButton extends webComponentBaseClass {
 		return {
 			string: {
 				type: String,
-				value: '',
+				value: "",
 				observer: stringChanged,
 			},
 			parameters: {
@@ -56,12 +56,12 @@ class VicowaButton extends webComponentBaseClass {
 			},
 			icon: {
 				type: String,
-				value: '',
+				value: "",
 				observer: iconChanged,
 			},
 			ariaLabel: {
 				type: String,
-				value: '',
+				value: "",
 				observer: ariaLabelChanged,
 			},
 			disabled: {
@@ -75,10 +75,10 @@ class VicowaButton extends webComponentBaseClass {
 	attached() {
 		this.$.string.onTranslationUpdated = (p_String) => {
 			if (!this.ariaLabel) {
-				this.$.button.setAttribute('aria-label', p_String);
+				this.$.button.setAttribute("aria-label", p_String);
 			}
 		};
-		this.$.button.setAttribute('aria-label', this.$.string.displayString);
+		this.$.button.setAttribute("aria-label", this.$.string.displayString);
 	}
 }
 

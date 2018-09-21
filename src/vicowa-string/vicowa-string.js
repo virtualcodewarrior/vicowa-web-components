@@ -1,7 +1,7 @@
-import { webComponentBaseClass } from '../third_party/web-component-base-class/src/webComponentBaseClass.js';
-import translator from '../utilities/translate.js';
+import { webComponentBaseClass } from "../third_party/web-component-base-class/src/webComponentBaseClass.js";
+import translator from "../utilities/translate.js";
 
-const componentName = 'vicowa-string';
+const componentName = "vicowa-string";
 
 function updateString(p_StringElement, p_NewValue, p_OldValue) {
 	if (p_OldValue === undefined && !p_NewValue && p_StringElement.innerHTML.trim()) {
@@ -41,7 +41,7 @@ class VicowaString extends webComponentBaseClass {
 		return {
 			string: {
 				type: String,
-				value: '',
+				value: "",
 				reflectToAttribute: true,
 				observer: updateString,
 			},

@@ -1,10 +1,10 @@
-import { webComponentBaseClass } from '../third_party/web-component-base-class/src/webComponentBaseClass.js';
+import { webComponentBaseClass } from "../third_party/web-component-base-class/src/webComponentBaseClass.js";
 
 function headerChanged(p_PanelControl) {
 	p_PanelControl.$.title = p_PanelControl.header;
 }
 
-const componentName = 'vicowa-panel';
+const componentName = "vicowa-panel";
 
 /**
  * @extends webComponentBaseClass
@@ -23,7 +23,7 @@ class VicowaPanel extends webComponentBaseClass {
 		return {
 			header: {
 				type: String,
-				value: '',
+				value: "",
 				reflectToAttribute: true,
 				observer: headerChanged,
 			},
@@ -39,14 +39,14 @@ class VicowaPanel extends webComponentBaseClass {
 			},
 			expandControlAnimation: {
 				type: String,
-				value: 'rotate',
+				value: "rotate",
 				reflectToAttribute: true,
 			},
 		};
 	}
 
 	attached() {
-		this.addAutoEventListener(this.$.collapseControl, 'click', () => {
+		this.addAutoEventListener(this.$.collapseControl, "click", () => {
 			this.expanded = !this.expanded;
 		});
 	}

@@ -1,7 +1,7 @@
-import { webComponentBaseClass } from '../third_party/web-component-base-class/src/webComponentBaseClass.js';
-import translator from '../utilities/translate.js';
+import { webComponentBaseClass } from "../third_party/web-component-base-class/src/webComponentBaseClass.js";
+import translator from "../utilities/translate.js";
 
-const componentName = 'vicowa-google-maps';
+const componentName = "vicowa-google-maps";
 
 const mapQueue = [];
 
@@ -28,7 +28,7 @@ function initializeMap(p_MapsControl, p_Callback) {
 				}
 			}
 		};
-		if ('google' in window && window.google.maps && window.google.maps.LatLng) {
+		if ("google" in window && window.google.maps && window.google.maps.LatLng) {
 			doMap();
 		} else {
 			mapQueue.push(() => {
@@ -63,14 +63,14 @@ function zoomUpdated(p_MapsControl) {
 
 function mapTypeUpdated(p_MapsControl) {
 	initializeMap(p_MapsControl, (p_Map) => {
-		if (p_Map && p_MapsControl.type in ['roadmap', 'satellite', 'hybrid', 'terrain']) {
+		if (p_Map && p_MapsControl.type in ["roadmap", "satellite", "hybrid", "terrain"]) {
 			p_Map.setMapTypeId(p_MapsControl.type);
 		}
 	});
 }
 
 function loadMapAPI(p_MapControl) {
-	if (!('google' in window)) {
+	if (!("google" in window)) {
 		let googleAPI = document.querySelector('head script[src*="https://maps.googleapis.com"]');
 		mapQueue.push(() => { locationUpdated(p_MapControl); });
 		if (p_MapControl.apiKey && !googleAPI) {
@@ -80,11 +80,11 @@ function loadMapAPI(p_MapControl) {
 				});
 			};
 
-			if (!('google' in window)) {
+			if (!("google" in window)) {
 				if (!googleAPI) {
-					googleAPI = document.createElement('script');
+					googleAPI = document.createElement("script");
 					googleAPI.src = `https://maps.googleapis.com/maps/api/js?key=${p_MapControl.apiKey}`;
-					document.querySelector('head').appendChild(googleAPI);
+					document.querySelector("head").appendChild(googleAPI);
 					googleAPI.onload = () => {
 						googleAPI.notifyList.forEach((p_Callback) => { p_Callback(); });
 					};
@@ -142,25 +142,25 @@ class VicowaGoogleMaps extends webComponentBaseClass {
 			},
 			marker: {
 				type: String,
-				value: '',
+				value: "",
 				reflectToAttribute: true,
 				observer: locationUpdated,
 			},
 			info: {
 				type: String,
-				value: '',
+				value: "",
 				reflectToAttribute: true,
 				observer: locationUpdated,
 			},
 			type: {
 				type: String,
-				value: 'roadmap',
+				value: "roadmap",
 				reflectToAttribute: true,
 				observer: mapTypeUpdated,
 			},
 			apiKey: {
 				type: String,
-				value: '',
+				value: "",
 				reflectToAttribute: false,
 				observer: loadMapAPI,
 			},
@@ -192,7 +192,7 @@ class VicowaGoogleMaps extends webComponentBaseClass {
 				content: p_Content,
 			});
 			this.updateTranslation();
-			if (infoWindow && typeof p_LatitudeOrMarker !== 'number') {
+			if (infoWindow && typeof p_LatitudeOrMarker !== "number") {
 				infoWindow.open(p_Map, p_LatitudeOrMarker);
 			} else if (p_LatitudeOrMarker && p_Longitude) {
 				infoWindow.setPosition(new window.google.maps.LatLng(p_LatitudeOrMarker, p_Longitude));

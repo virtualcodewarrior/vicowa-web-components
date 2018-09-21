@@ -1,6 +1,6 @@
-import { webComponentBaseClass } from '../third_party/web-component-base-class/src/webComponentBaseClass.js';
+import { webComponentBaseClass } from "../third_party/web-component-base-class/src/webComponentBaseClass.js";
 
-const componentName = 'vicowa-data-grid';
+const componentName = "vicowa-data-grid";
 
 function updateSizes(p_Control) {
 	if (p_Control._dataInfo.length) {
@@ -15,22 +15,22 @@ function updateSizes(p_Control) {
 		const hScrollActive = p_Control.$.hscrollcontent.getBoundingClientRect().width > rect.width;
 		const vScrollActive = p_Control.$.vscrollcontent.getBoundingClientRect().height > rect.height;
 
-		p_Control.$.hscrollarea.style.flexBasis = (hScrollActive) ? '10px' : '0';
-		p_Control.$.vscrollarea.style.flexBasis = (vScrollActive) ? '15px' : '0';
+		p_Control.$.hscrollarea.style.flexBasis = (hScrollActive) ? "10px" : "0";
+		p_Control.$.vscrollarea.style.flexBasis = (vScrollActive) ? "15px" : "0";
 	}
 }
 
 function updateData(p_Control, p_StartRow, p_StartColumn) {
-	const rows = p_Control.$$$('#rows > .row');
+	const rows = p_Control.$$$("#rows > .row");
 	rows.forEach((p_Row, p_RowIndex) => {
 		const rowOffset = (p_RowIndex < p_Control.fixedHeaderRows) ? 0 : p_StartRow;
 		const data = p_Control._dataInfo[Math.min(p_RowIndex + rowOffset, p_Control._dataInfo.length - 1)];
-		p_Row.querySelector('.force-height').style.maxHeight = p_Row.style.minHeight = `${data.height | p_Control.defaultHeight}px`;
-		p_Row.classList.toggle('fixed', p_RowIndex < p_Control.fixedHeaderRows);
-		Array.from(p_Row.querySelectorAll('.cell')).forEach((p_Cell, p_CellIndex) => {
+		p_Row.querySelector(".force-height").style.maxHeight = p_Row.style.minHeight = `${data.height | p_Control.defaultHeight}px`;
+		p_Row.classList.toggle("fixed", p_RowIndex < p_Control.fixedHeaderRows);
+		Array.from(p_Row.querySelectorAll(".cell")).forEach((p_Cell, p_CellIndex) => {
 			const columnOffset = (p_CellIndex < p_Control.fixedStartColumns) ? 0 : p_StartColumn;
-			p_Cell.querySelector('.cell-content').innerHTML = data.subData[Math.min(p_CellIndex + columnOffset, data.subData.length - 1)].value;
-			p_Cell.classList.toggle('fixed', p_CellIndex < p_Control.fixedStartColumns);
+			p_Cell.querySelector(".cell-content").innerHTML = data.subData[Math.min(p_CellIndex + columnOffset, data.subData.length - 1)].value;
+			p_Cell.classList.toggle("fixed", p_CellIndex < p_Control.fixedStartColumns);
 			if (p_RowIndex === 0) {
 				p_Cell.style.minWidth = p_Cell.style.maxWidth = `${p_Control._dataInfo[0].subData[p_CellIndex].width || p_Control.defaultWidth}px`;
 			}
@@ -54,7 +54,7 @@ function updateVScroll(p_Control, p_ScrollArea) {
 
 	updateData(p_Control, startIndex, p_Control._startColumnIndex);
 
-	p_Control.$.contentMain.style.top = (p_Control.snapToCellBoundaries) ? '0' : `-${(dist) ? p_ScrollArea.scrollTop % dist : p_ScrollArea.scrollTop}px`;
+	p_Control.$.contentMain.style.top = (p_Control.snapToCellBoundaries) ? "0" : `-${(dist) ? p_ScrollArea.scrollTop % dist : p_ScrollArea.scrollTop}px`;
 }
 
 function updateHScroll(p_Control, p_ScrollArea) {
@@ -71,7 +71,7 @@ function updateHScroll(p_Control, p_ScrollArea) {
 
 	updateData(p_Control, p_Control._startRowIndex, startIndex);
 
-	p_Control.$.contentMain.style.left = (p_Control.snapToCellBoundaries) ? '0' : `-${(dist) ? p_ScrollArea.scrollLeft % dist : p_ScrollArea.scrollLeft}px`;
+	p_Control.$.contentMain.style.left = (p_Control.snapToCellBoundaries) ? "0" : `-${(dist) ? p_ScrollArea.scrollLeft % dist : p_ScrollArea.scrollLeft}px`;
 }
 
 export function nestedArrayToDataInfo(p_Data) {
@@ -88,7 +88,7 @@ export function arrayToDataInfo(p_Data) {
 
 function dataChanged(p_Control) {
 	const controlRect = p_Control.$.verMain.getBoundingClientRect();
-	p_Control.$.rows.innerHTML = '';
+	p_Control.$.rows.innerHTML = "";
 
 	p_Control._dataInfo = p_Control.data.map(p_Control.dataToDataInfo);
 	let totalHeight = 0;
@@ -98,8 +98,8 @@ function dataChanged(p_Control) {
 	for (let index = 0; index < p_Control._dataInfo.length && totalHeight < controlRect.height; index++) {
 		const rowInfo = p_Control._dataInfo[index];
 		const rowTemplate = document.importNode(p_Control.$.row.content, true);
-		const row = rowTemplate.querySelector('.row');
-		const forceHeight = rowTemplate.querySelector('.force-height');
+		const row = rowTemplate.querySelector(".row");
+		const forceHeight = rowTemplate.querySelector(".force-height");
 		const height = rowInfo.height || p_Control.defaultHeight;
 		totalHeight += height;
 		forceHeight.style.minHeight = forceHeight.style.maxHeight = `${height}px`;
@@ -107,7 +107,7 @@ function dataChanged(p_Control) {
 		for (let columnIndex = 0; columnIndex < rowInfo.subData.length && ((!first && columnIndex <= maxColumns) || (first && totalWidth < controlRect.width + p_Control.defaultWidth)); columnIndex++) { /* eslint-disable-line */
 			const cellInfo = rowInfo.subData[columnIndex];
 			const cellTemplate = document.importNode(p_Control.$.cell.content, true);
-			const cell = cellTemplate.querySelector('.cell');
+			const cell = cellTemplate.querySelector(".cell");
 
 			if (first) {
 				const width = cellInfo.width || p_Control.defaultWidth;
@@ -212,8 +212,8 @@ class VicowaDataGrid extends webComponentBaseClass {
 		this.$.resizeDetector.addObserver((p_ResizeResult) => {
 			updateSizes(this, p_ResizeResult.newRect);
 		}, this);
-		this.addAutoEventListener(this.$.vscrollarea, 'scroll', () => { updateVScroll(this, this.$.vscrollarea); });
-		this.addAutoEventListener(this.$.hscrollarea, 'scroll', () => { updateHScroll(this, this.$.hscrollarea); });
+		this.addAutoEventListener(this.$.vscrollarea, "scroll", () => { updateVScroll(this, this.$.vscrollarea); });
+		this.addAutoEventListener(this.$.hscrollarea, "scroll", () => { updateHScroll(this, this.$.hscrollarea); });
 	}
 
 	detached() {

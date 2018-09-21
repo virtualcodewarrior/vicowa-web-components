@@ -1,6 +1,6 @@
-import { webComponentBaseClass } from '../third_party/web-component-base-class/src/webComponentBaseClass.js';
-import translator from '../utilities/translate.js';
-import '../third_party/intersection-observer/intersection-observer.js';
+import { webComponentBaseClass } from "../third_party/web-component-base-class/src/webComponentBaseClass.js";
+import translator from "../utilities/translate.js";
+import "../third_party/intersection-observer/intersection-observer.js";
 
 /**
  * Handler to be called when the tooltip text is changed
@@ -11,7 +11,7 @@ function tooltipChanged(p_ImageControl) {
 		p_ImageControl.$.image.title = p_ImageControl.tooltip;
 		p_ImageControl.updateTranslation();
 	} else {
-		p_ImageControl.$.image.removeAttribute('title');
+		p_ImageControl.$.image.removeAttribute("title");
 	}
 }
 
@@ -24,7 +24,7 @@ function altChanged(p_ImageControl) {
 		p_ImageControl.$.image.alt = p_ImageControl.alt;
 		p_ImageControl.updateTranslation();
 	} else {
-		p_ImageControl.$.image.removeAttribute('alt');
+		p_ImageControl.$.image.removeAttribute("alt");
 	}
 }
 
@@ -38,22 +38,22 @@ function descriptionChanged(p_ImageControl) {
 }
 
 function alternatesChanged(p_ImageControl) {
-	if (!p_ImageControl.hasAttribute('lazyload') || p_ImageControl._visible) {
+	if (!p_ImageControl.hasAttribute("lazyload") || p_ImageControl._visible) {
 		const alternates = (p_ImageControl.alternates || []).slice();
-		p_ImageControl.$$$('picture source').forEach((p_Source) => { p_Source.parentNode.removeChild(p_Source); });
+		p_ImageControl.$$$("picture source").forEach((p_Source) => { p_Source.parentNode.removeChild(p_Source); });
 		if (alternates.length || p_ImageControl.src) {
 			if ((!alternates.length || alternates[alternates.length - 1] !== p_ImageControl.src) && p_ImageControl.src) {
 				alternates.push(p_ImageControl.src);
 			}
 			alternates.slice(0, -1).forEach((p_Alternate) => {
-				const source = document.createElement('source');
-				source.setAttribute('srcset', p_Alternate.replace(/ /g, '%20'));
+				const source = document.createElement("source");
+				source.setAttribute("srcset", p_Alternate.replace(/ /g, "%20"));
 				if (/\./.test(p_Alternate)) {
-					source.setAttribute('type', `image/${p_Alternate.split('.').slice(-1)[0]}`);
+					source.setAttribute("type", `image/${p_Alternate.split(".").slice(-1)[0]}`);
 				}
 				p_ImageControl.$.picture.insertBefore(source, p_ImageControl.$.image);
 			});
-			p_ImageControl.$.image.src = alternates.slice(-1)[0].replace(/ /g, '%20');
+			p_ImageControl.$.image.src = alternates.slice(-1)[0].replace(/ /g, "%20");
 		}
 	}
 }
@@ -83,7 +83,7 @@ function lazyloadChanged(p_ImageControl) {
 	}
 }
 
-const componentName = 'vicowa-image-container';
+const componentName = "vicowa-image-container";
 
 /**
  * Class that represents the vicowa-input custom element
@@ -104,31 +104,31 @@ class VicowaImageContainer extends webComponentBaseClass {
 		return Object.assign({}, super.properties, {
 			tooltip: {
 				type: String,
-				value: '',
+				value: "",
 				reflectToAttribute: true,
 				observer: tooltipChanged,
 			},
 			alt: {
 				type: String,
-				value: '',
+				value: "",
 				reflectToAttribute: true,
 				observer: altChanged,
 			},
 			description: {
 				type: String,
-				value: '',
+				value: "",
 				reflectToAttribute: true,
 				observer: descriptionChanged,
 			},
 			src: {
 				type: String,
-				value: '',
+				value: "",
 				reflectToAttribute: true,
 				observer: srcChanged,
 			},
 			galleryGroup: {
 				type: String,
-				value: '',
+				value: "",
 				reflectToAttribute: true,
 			},
 			alternates: {

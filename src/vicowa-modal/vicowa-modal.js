@@ -1,6 +1,6 @@
-import { webComponentBaseClass } from '../third_party/web-component-base-class/src/webComponentBaseClass.js';
+import { webComponentBaseClass } from "../third_party/web-component-base-class/src/webComponentBaseClass.js";
 
-const componentName = 'vicowa-modal';
+const componentName = "vicowa-modal";
 
 /**
  * Class to represent the vicowa-icon custom element
@@ -30,12 +30,12 @@ class VicowaModal extends webComponentBaseClass {
 	}
 
 	attached() {
-		this.addAutoEventListener(this, 'click', () => {
+		this.addAutoEventListener(this, "click", () => {
 			if (this.outsideCloses) {
 				this.open = false;
 			}
 		});
-		this.addAutoEventListener(this.$.modalBox, 'click', (p_Event) => {
+		this.addAutoEventListener(this.$.modalBox, "click", (p_Event) => {
 			p_Event.cancelBubble = true;
 		});
 	}
