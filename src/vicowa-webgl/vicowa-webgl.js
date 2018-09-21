@@ -40,6 +40,26 @@ function convertToVector3(p_Vector) {
 	return new babylon.Vector3(p_Vector.x, p_Vector.y, p_Vector.z);
 }
 
+function flattenMeshes(p_Mesh) {
+	return [p_Mesh].concat(p_Mesh.getChildMeshes(false));
+}
+
+function getMeshObject(p_WebGLControl, p_MeshNameOrPath) {
+	let mesh = null;
+	if (Array.isArray(p_MeshNameOrPath)) {
+		// this is a path to the mesh, maybe because we clicked a child mesh
+		mesh = p_WebGLControl._meshes[p_MeshNameOrPath[0]] || p_WebGLControl._clones[p_MeshNameOrPath[0]];
+		p_MeshNameOrPath.slice(1).forEach((p_Name) => {
+			if (mesh) {
+				mesh = mesh.getChildMeshes(true, (p_ChildMesh) => p_ChildMesh.name === p_Name)[0];
+			}
+		});
+	} else {
+		mesh = p_WebGLControl._meshes[p_MeshNameOrPath] || p_WebGLControl._clones[p_MeshNameOrPath];
+	}
+	return mesh;
+}
+
 function createShadowGenerator(p_WebGLControl, p_Light) {
 	const shadowGenerator = new babylon.ShadowGenerator(1024, p_Light);
 	shadowGenerator.getShadowMap().refreshRate = babylon.RenderTargetTexture.REFRESHRATE_RENDER_ONCE;
@@ -530,27 +550,27 @@ class VicowaWebgl extends webComponentBaseClass {
 		switch (p_Type) {
 			case CAMERA_TYPES.ORBITAL: {
 				// if no positions are specified, the camera will be positioned at a distance of 10 a longitude of 0 and a latitude of 45 degrees and point at 0, 0, 0
-				const position = Object.assign({}, { logitude: 0, latitude: 45, distance: 10 }, p_Settings.position);
+				const position = Object.assign({}, { longitude: 0, latitude: 45, distance: 10 }, p_Settings.position);
 				const target = Object.assign({}, { x: 0, y: 0, z: 0 }, p_Settings.target || {});
 				this._camera = new babylon[(p_Settings.vrEnabled) ? "VRDeviceOrientationArcRotateCamera" : "ArcRotateCamera"]("camera", toRadians(position.longitude), toRadians(position.latitude), position.distance * this.unitMultiplier, new babylon.Vector3(target.x * this.unitMultiplier, target.y * this.unitMultiplier, target.z * this.unitMultiplier), this._scene);
 				this._camera.attachControl(this.$.canvas, !(p_Settings.preventDefault || false));
 				if (p_Settings.minLongitude) {
-					this._camera.lowerAlphaLimit = p_Settings.minLongitude;
+					this._camera.lowerAlphaLimit = toRadians(p_Settings.minLongitude);
 				}
 				if (p_Settings.maxLongitude) {
-					this._camera.upperAlphaLimit = p_Settings.maxLongitude;
+					this._camera.upperAlphaLimit = toRadians(p_Settings.maxLongitude);
 				}
 				if (p_Settings.minLatitude) {
-					this._camera.lowerBetaLimit = p_Settings.minLatitude;
+					this._camera.lowerBetaLimit = toRadians(p_Settings.minLatitude);
 				}
 				if (p_Settings.maxLatitude) {
-					this._camera.upperBetaLimit = p_Settings.maxLatitude;
+					this._camera.upperBetaLimit = toRadians(p_Settings.maxLatitude);
 				}
 				if (p_Settings.minDistance) {
-					this._camera.lowerRadiusLimit = p_Settings.minDistance;
+					this._camera.lowerRadiusLimit = p_Settings.minDistance * this.unitMultiplier;
 				}
 				if (p_Settings.maxDistance) {
-					this._camera.upperRadiusLimit = p_Settings.maxDistance;
+					this._camera.upperRadiusLimit = p_Settings.maxDistance * this.unitMultiplier;
 				}
 				if (p_Settings.targetMesh) {
 					this._camera.lockedTarget = p_Settings.targetMesh;
@@ -608,29 +628,62 @@ class VicowaWebgl extends webComponentBaseClass {
 		}
 	}
 
+	ungroupObject(p_ObjectName) {
+		const mesh = this._meshes[p_ObjectName];
+		const newObjects = [];
+		const childMeshes = (mesh) ? mesh.getChildMeshes(true) : [];
+		childMeshes.forEach((p_Mesh) => {
+			mesh.removeChild(p_Mesh);
+			newObjects.push(p_Mesh.name);
+			this._meshes[p_Mesh.name] = p_Mesh;
+		});
+		return newObjects;
+	}
+
+	groupObjects(p_ObjectNames, p_NewName) {
+		const meshes = [];
+		let newMesh = null;
+		p_ObjectNames.forEach((p_Name) => { const mesh = this._meshes[p_Name]; if (mesh) { meshes.push(mesh); } });
+		if (meshes.length) {
+			newMesh = new babylon.Mesh(p_NewName, this._scene);
+			meshes.forEach((p_NewChild) => { newMesh.addChild(p_NewChild); delete this._meshes[p_NewChild.name]; });
+			this._meshes[p_NewName] = newMesh;
+		}
+		return (newMesh) ? newMesh.name : null;
+	}
+
 	selectObject(p_ObjectName) {
-		const mesh = this._meshes[p_ObjectName] || this._clones[p_ObjectName];
+		const mesh = getMeshObject(this, p_ObjectName);
 		if (mesh) {
-			mesh.selected = true;
-			mesh.notSelectMaterial = mesh.material;
-			if (mesh.material) {
-				mesh.material = mesh.material.clone();
-				mesh.material.diffuseColor = new babylon.Color3(1, 0, 0);
-				mesh.material.emissiveColor = new babylon.Color3(1, 0, 0);
-				mesh.material.alpha = 1;
-			} else {
-				mesh.material = this._materials["selected"].clone();
-			}
+			const allMeshes = flattenMeshes(mesh);
+			allMeshes.forEach((p_Mesh) => {
+				p_Mesh.selected = true;
+				p_Mesh.showBoundingBox = true;
+				p_Mesh.notSelectMaterial = p_Mesh.material;
+				if (p_Mesh.material && p_Mesh.material.hasOwnProperty("diffuseColor")) {
+					p_Mesh.material = p_Mesh.material.clone("temp");
+					p_Mesh.material.diffuseColor = this._materials["selected"].diffuseColor;
+					p_Mesh.material.alpha = Math.max(0.5, p_Mesh.material.alpha);
+				} else {
+					p_Mesh.material = this._materials["selected"].clone();
+				}
+			});
 		}
 	}
 
 	unselectObject(p_ObjectName) {
-		const mesh = this._meshes[p_ObjectName] || this._clones[p_ObjectName];
-		if (mesh && mesh.selected) {
-			mesh.selected = false;
-			mesh.material.dispose();
-			mesh.material = mesh.notSelectMaterial;
-			delete mesh.notSelectMaterial;
+		const mesh = getMeshObject(this, p_ObjectName);
+		if (mesh) {
+			const allMeshes = flattenMeshes(mesh);
+			allMeshes.forEach((p_Mesh) => {
+				if (p_Mesh.selected) {
+					p_Mesh.selected = false;
+					p_Mesh.showBoundingBox = false;
+					p_Mesh.material.dispose();
+					p_Mesh.material = p_Mesh.notSelectMaterial;
+					delete p_Mesh.notSelectMaterial;
+				}
+			});
 		}
 	}
 
@@ -640,9 +693,12 @@ class VicowaWebgl extends webComponentBaseClass {
 	}
 
 	isObjectSelected(p_ObjectName) {
-		const mesh = this._meshes[p_ObjectName] || this._clones[p_ObjectName];
+		const mesh = getMeshObject(this, p_ObjectName);
 		return mesh && mesh.selected;
 	}
+
+	set selectColor(p_Color) { Object.assign(this._materials["selected"].diffuseColor, p_Color); }
+	get selectColor() { const color = (this._materials["selected"] || {}).diffuseColor; return { r: color.r || 1, g: color.g || 0, b: color.b || 0 }; }
 
 	attached() {
 		// create the engine
@@ -653,7 +709,7 @@ class VicowaWebgl extends webComponentBaseClass {
 			this._scene.collisionsEnabled = true;
 			this._scene.workerCollisions = true; // use web workers for collisions
 
-			this.addMaterial("selected", { diffuse: { r: 1, g: 0, b: 0 }, emissive: { r: 1, g: 0, b: 0 } });
+			this.addMaterial("selected", { diffuse: { r: 1, g: 0, b: 0 } });
 
 			this._assetsManager = new babylon.AssetsManager(this._scene);
 			this._assetsManager.useDefaultLoadingScreen = this.loadingScreen;
