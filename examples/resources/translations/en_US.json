@@ -1,7 +1,11 @@
 {
 	"locale_data": {
 		"strings": {
+			"Address": { "translations": ["Address"], "description": "input label for Address" },
 			"Canadian Postal Code": { "translations": ["Canadian Postal code"], "description": "input label for Canadian Postal code" },
+			"Channel": { "translations": ["Channel"], "description": "input label for channel" },
+			"City": { "translations": ["City"], "description": "input label for channel" },
+			"Country": { "translations": ["Country"], "description": "input label for channel" },
 		  	"Depicts something else": { "translations": ["Depicts something else"], "description": "alt text for an image" },
 			"Dutch Postal Code": { "translations": ["Dutch Postal code"], "description": "input label for Dutch Postal code" },
 		  	"Edwards Gardens information<br/>A nice place to visit outside of the winter season": { "translations": ["Edwards Gardens information<br/>A nice place to visit outside of the winter season"], "description": "info label on google maps" },
@@ -24,12 +28,14 @@
 			"Make sure the EMail address is valid": { "translations": ["Make sure the EMail address is valid"], "description": "error message when an invalidly formatted email address is entered" },
 			"Make sure the postal code format is valid": { "translations": ["Make sure the postal code format is valid"], "description": "error message when an invalidly formatted postal code is entered" },
 			"not empty": { "translations": ["not empty"], "description": "label for example input field showing not empty validation" },
+			"Name": { "translations": ["Name"], "description": "label for input" },
 			"Number": { "translations": ["Number"], "description": "label for input" },
 		  	"One": { "translations": ["One"], "description": "label for example radio button" },
 			"Password": { "translations": ["Password"], "description": "Password label" },
 			"postal code": { "translations": ["postal code"], "description": "placeholder text for postal codes" },
 			"Search": { "translations": ["Search"], "description": "label for input" },
 			"Some image depicting something": { "translations": ["Some image depicting something"], "description": "image alt text" },
+			"State": { "translations": ["State"], "description": "label for input" },
 			"test string 1": { "translations": ["test string 1"], "description": "Just a test string" },
 			"test string 2 %1$s element": { "translations": ["test string 2 %1$s element", "test string 2 %1$s elements"], "description": "Just a test string" },
 			"test string %2$s %1$s %3$s": { "translations": ["test string %2$s %1$s %3$s"], "description": "Just a test string" },

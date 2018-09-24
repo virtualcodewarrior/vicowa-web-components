@@ -16,6 +16,7 @@
             }
 
 			#control-container {
+				position: relative;
 				display: flex;
 				flex-direction: row;
 			}
@@ -36,12 +37,16 @@
 
 			label {
 				flex: 0 0 auto;
+			}
+
+			#label {
 				margin-right: 1em;
 			}
 
 			#input {
 				position: relative;
 				flex: 1 1 auto;
+				overflow: hidden;
 			}
 
 			#dropdown-control {
@@ -92,10 +97,23 @@
             :host([static]) .option-container input {
                 display: none;
             }
-            :host([static]) #select-option-container {
+			:host([static]) #select-option-container,
+			:host([static]) #radio-option-container {
+				width: 100%;
                 border: transparent;
+				overflow: hidden;
+				text-overflow: ellipsis;
             }
+			:host([static]) label[name="option-label"] {
+				max-width: 100%;
+				overflow: hidden;
+				text-overflow: ellipsis;
+				display: inline-block;
+			}
 
+            :host([hide-label]) #label {
+                display: none;
+            }
         </style>
         <div id="control-container">
             <label for="input"><vicowa-string id="label"></vicowa-string></label>

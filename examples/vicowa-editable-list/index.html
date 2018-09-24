@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>ViCoWa Web Components - vicowa-button</title>
+    <script src="../../node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js"></script>
+    <script src="../../node_modules/@webcomponents/html-imports/html-imports.min.js"></script>
+    <link rel="import" href="../../src/vicowa-editable-list/vicowa-editable-list.html">
+	<link rel="import" href="./customer-settings/customer-settings.html">
+
+	<style>
+		body {
+			font-family: sans-serif;
+		}
+		body[lang="en_US"] #english,
+		body[lang="nl_NL"] #dutch {
+			background-color: blue;
+			color: white;
+		}
+		vicowa-editable-list {
+			--vicowa-input-label-width: 100px;
+			--vicowa-single-selection-width: 100px;
+			white-space: nowrap;
+		}
+
+	</style>
+</head>
+<body lang="en_US">
+	<div id="translations">
+		<button id="english">English</button>
+		<button id="dutch">Nederlands</button>
+	</div>
+	<vicowa-editable-list id="customerList"></vicowa-editable-list>
+	<script type="module">
+		import translator from '../../src/utilities/translate.js';
+		import { createQuickAccess } from '../../src/third_party/web-component-base-class/src/tools.js';
+
+		const controls = createQuickAccess(document, "id");
+
+		const data = {
+			customers: [
+				{
+					id: 120911,
+					name: "A Customer",
+					email: "customer@email.com",
+					channel: "website",
+					address: "12 Main St.",
+					postal: "M1M 1M1",
+					city: "Toronto",
+					province: "ON",
+					country: "CA"
+				},
+				{
+					id: 146633,
+					name: "Another Customer",
+					email: "customer2@email.com",
+					channel: "phone",
+					address: "12 Yonge St. #23",
+					postal: "M2M 2M2",
+					city: "Toronto",
+					province: "ON",
+					country: "CA"
+				},
+				{
+					id: 171981,
+					name: "A Great Customer",
+					email: "customerplusplus@email.com",
+					channel: "word-of-mouth",
+					address: "2312 Eglinton Ave.",
+					postal: "M3M 3M3",
+					city: "Toronto",
+					province: "ON",
+					country: "CA"
+				}
+			]
+		};
+
+		controls.customerList.onAttached = () => {
+			controls.customerList.factory = () => document.createElement('customer-settings');
+			controls.customerList.items = data.customers;
+			controls.customerList.onChange = (p_Settings) => {
+				console.log(`post updated settings for customers: ${JSON.stringify(p_Settings, null, 4)}`);
+			};
+		};
+
+		// setup the translator
+		translator.addTranslationLocation('../resources/translations');
+		translator.addTranslationUpdatedObserver((p_Translator) => {
+			document.body.setAttribute('lang', p_Translator.language);
+		}, null);
+		translator.language = document.body.getAttribute('lang');
+
+		controls.english.addEventListener('click', () => { translator.language = 'en_US'; });
+		controls.dutch.addEventListener('click', () => { translator.language = 'nl_NL'; });
+	</script>
+</body>
+
+</html>

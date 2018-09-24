@@ -3,7 +3,9 @@
 <div>
     <template id="vicowa-input">
         <style>
-			label {
+			#label {
+                position: relative;
+                display: inline-block;
 				margin-right: 10px;
 				font-family: var(--vicowa-input-label-font-family, inherit);
 				font-size: var(--vicowa-input-label-font-size, inherit);
@@ -86,6 +88,8 @@
                 background: transparent;
                 border-color: transparent;
                 outline: none;
+                overflow: hidden;
+                text-overflow: ellipsis;
             }
             :host([static]) #input::placeholder {
                 color: transparent;

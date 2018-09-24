@@ -61,6 +61,9 @@ function valueChanged(p_InputControl, p_NewValue, p_OldValue) {
 	}
 
 	validate(p_InputControl, p_InputControl.value, false);
+	if (p_InputControl._handleValueChange) {
+		p_InputControl._handleValueChange();
+	}
 }
 
 /**

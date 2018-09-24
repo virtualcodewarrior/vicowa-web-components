@@ -1,7 +1,11 @@
 {
 	"locale_data": {
 		"strings": {
+			"Address": { "translations": ["Adres"], "description": "input label for Address" },
 			"Canadian Postal Code": { "translations": ["Canadese Postcode"], "description": "input label for Canadian Postal code" },
+			"Channel": { "translations": ["Kanaal"], "description": "input label for channel" },
+			"City": { "translations": ["Stad"], "description": "input label for channel" },
+			"Country": { "translations": ["Land"], "description": "input label for channel" },
 		  	"Depicts something else": { "translations": ["Laat iets anders zien"], "description": "alt text for an image" },
 			"Dutch Postal Code": { "translations": ["Nederlandse Postcode"], "description": "input label for Dutch Postal code" },
 		    "Edwards Gardens information<br/>A nice place to visit outside of the winter season": { "translations": ["Edwards Gardens informatie<br/>Een mooie plaats om te bezoeken buiten het winter seizoen"], "description": "input label for Dutch Postal code" },
@@ -24,12 +28,14 @@
 			"Make sure the EMail address is valid": { "translations": ["Zorg ervoor dat het EMail adres correct is"], "description": "error message when an invalidly formatted email address is entered" },
 			"Make sure the postal code format is valid": { "translations": ["Zorg ervoor dat de postcode correct is"], "description": "error message when an invalidly formatted postal code is entered" },
 			"not empty": { "translations": ["niet leeg"], "description": "label for example input field showing not empty validation" },
+			"Name": { "translations": ["Naam"], "description": "label for input" },
 			"Number": { "translations": ["Nummer"], "description": "label for input" },
 			"One": { "translations": ["Een"], "description": "label for example radio button" },
 			"Password": { "translations": ["wachtwoord"], "description": "Password label" },
 			"postal code": { "translations": ["postcode"], "description": "placeholder text for postal codes" },
 			"Search": { "translations": ["Zoeken"], "description": "label for input" },
 		  	"Some image depicting something": { "translations": ["Een plaatje dat iets laat zien"], "description": "image alt text" },
+			"State": { "translations": ["Provincie"], "description": "label for input" },
 			"test string 1": { "translations": ["test tekst 1"], "description": "Just a test string" },
 			"test string 2 %1$s element": { "translations": ["test tekst 2 %1$s element", "test tekst 2 %1$s elementen"], "description": "Just a test string" },
 			"test string %2$s %1$s %3$s": { "translations": ["test text %1$s %2$s %3$s"], "description": "Just a test string" },

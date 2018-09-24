@@ -21,7 +21,17 @@ function optionsChanged(p_Control) {
 					itemAccess.vicowaSelectionOption.id = p_Option.value;
 					if (p_Control.value === p_Option.value) { itemAccess.optionContainer.setAttribute("checked", ""); } else { itemAccess.optionContainer.removeAttribute("checked"); }
 					itemAccess.vicowaSelectionOption.checked = p_Control.value === p_Option.value;
-					itemAccess.vicowaSelectionOption.addEventListener("change", () => { handleSelectionChange(p_Control, itemAccess.vicowaSelectionOption); });
+					itemAccess.vicowaSelectionOption.addEventListener("change", () => {
+						handleSelectionChange(p_Control, itemAccess.vicowaSelectionOption);
+						p_Control.$$$('[name="option-container"] input').forEach((p_RadioOption) => {
+							p_RadioOption.checked = p_Control.value === p_RadioOption.id;
+							if (p_Control.value === p_RadioOption.id) {
+								p_RadioOption.parentNode.setAttribute("checked", "");
+							} else {
+								p_RadioOption.parentNode.removeAttribute("checked");
+							}
+						});
+					});
 					const childElement = (p_Option.childElementName) ? document.createElement(p_Option.childElementName) : (p_Option.childElement || null);
 					if (childElement) {
 						itemAccess.childContainer.appendChild(childElement);
@@ -89,6 +99,11 @@ class VicowaSingleSelection extends VicowaInputBaseClass {
 				value: false,
 				reflectToAttribute: true,
 			},
+			hideLabel: {
+				type: Boolean,
+				value: false,
+				reflectToAttribute: true,
+			},
 		});
 	}
 
@@ -110,6 +125,30 @@ class VicowaSingleSelection extends VicowaInputBaseClass {
 			};
 			this.addAutoEventListener(window, "click", handleOutsideClick);
 		});
+	}
+
+	_handleValueChange() {
+		if (this.type) {
+			switch (this.type) {
+				case "radio":
+					this.$$$('[name="option-container"] input').forEach((p_RadioOption) => {
+						p_RadioOption.checked = this.value === p_RadioOption.id;
+						if (this.value === p_RadioOption.id) {
+							p_RadioOption.parentNode.setAttribute("checked", "");
+						} else {
+							p_RadioOption.parentNode.removeAttribute("checked");
+						}
+					});
+					break;
+				case "select":
+					this.$$$('[name="option-container"]').forEach((p_OptionContainer) => {
+						if (this.value === p_OptionContainer.id) { p_OptionContainer.setAttribute("checked", ""); } else { p_OptionContainer.removeAttribute("checked"); }
+					});
+					break;
+				default:
+					throw new Error("Invalid type specified");
+			}
+		}
 	}
 }
 

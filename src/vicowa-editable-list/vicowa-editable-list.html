@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<link rel="import" href="../vicowa-string/vicowa-string.html">
+<div>
+    <template id="vicowa-editable-list">
+        <style>
+            :host {
+                display: block;
+                position: relative;
+                overflow: auto;
+            }
+
+            :host([static]) #add {
+                display: none;
+            }
+            div[name="edit-area"].editing [name="edit"],
+            div[name="edit-area"].editing [name="delete"],
+            :host([static]) [name="edit"],
+            :host([static]) [name="delete"],
+            :host([static]) [name="save"],
+            div[name="edit-area"]:not(.editing) [name="save"],
+            div[name="edit-area"]:not(.editing) [name="cancel"] {
+                display: none;
+            }
+
+            .edit-area,
+            .button-area {
+                display: flex;
+                flex-direction: row;
+                margin-right: 5px;
+            }
+
+            .edit-area.editing {
+                flex-direction: column;
+                margin: 1em;
+                padding: 1em;
+                box-shadow: 0 0 6px gray;
+            }
+
+            .edit-area.editing .button-area {
+                order: 2;
+            }
+
+            #add {
+                margin-top: 5px;
+            }
+
+        </style>
+        <div>
+            <div class="item-area">
+                <p><vicowa-string id="heading" string=""></vicowa-string></p>
+                <div id="items">
+
+                </div>
+                <div class="button-area">
+                    <button id="add">
+                        <vicowa-string string="Add"></vicowa-string>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <template id="item">
+            <div name="edit-area" class="edit-area">
+                <div class="button-area">
+                    <button name="edit">
+                        <vicowa-string string="Edit"></vicowa-string>
+                    </button>
+                    <button name="delete">
+                        <vicowa-string string="Delete"></vicowa-string>
+                    </button>
+                    <button name="save">
+                        <vicowa-string string="Save"></vicowa-string>
+                    </button>
+                    <button name="cancel">
+                        <vicowa-string string="Cancel"></vicowa-string>
+                    </button>
+                </div>
+                <div name="editable-item">
+                </div>
+            </div>
+        </template>
+    </template>
+    <script>
+		(function storeTemplate(){
+			const template = document.currentScript.parentNode.querySelector('template');
+			window.webComponentTemplates = window.webComponentTemplates || new Map();
+			window.webComponentTemplates.set(template.getAttribute('id'), template);
+		})();
+    </script>
+    <script type="module" src="./vicowa-editable-list.js"></script>
+</div>

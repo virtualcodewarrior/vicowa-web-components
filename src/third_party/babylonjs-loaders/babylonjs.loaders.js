@@ -4,7 +4,7 @@
     var amdDependencies = [];
     var BABYLON = root.BABYLON || this.BABYLON;
     if(typeof exports === 'object' && typeof module === 'object') {
-         BABYLON = BABYLON || require("babylonjs");
+         BABYLON = BABYLON || require("babylonjs"); 
 
         module.exports = factory(BABYLON);
     } else if(typeof define === 'function' && define.amd) {
@@ -12,13 +12,13 @@
 
         define("babylonjs-loaders", amdDependencies, factory);
     } else if(typeof exports === 'object') {
-         BABYLON = BABYLON || require("babylonjs");
+         BABYLON = BABYLON || require("babylonjs"); 
 
         exports["babylonjs-loaders"] = factory(BABYLON);
     } else {
         root["BABYLON"] = factory(BABYLON);
     }
-})(window, function(BABYLON) {
+})(this, function(BABYLON) {
   BABYLON = BABYLON || this.BABYLON;
 
 var __decorate=this&&this.__decorate||function(e,t,r,c){var o,f=arguments.length,n=f<3?t:null===c?c=Object.getOwnPropertyDescriptor(t,r):c;if("object"==typeof Reflect&&"function"==typeof Reflect.decorate)n=Reflect.decorate(e,t,r,c);else for(var l=e.length-1;l>=0;l--)(o=e[l])&&(n=(f<3?o(n):f>3?o(t,r,n):o(t,r))||n);return f>3&&n&&Object.defineProperty(t,r,n),n};
@@ -886,7 +886,7 @@ var BABYLON;
                 else if (this.group.test(line) || this.obj.test(line)) {
                     //Create a new mesh corresponding to the name of the group.
                     //Definition of the mesh
-                    var objMesh =
+                    var objMesh = 
                     //Set the name of the current obj mesh
                     {
                         name: line.substring(2).trim(),
@@ -913,7 +913,7 @@ var BABYLON;
                         //Set the data for the previous mesh
                         addPreviousObjMesh();
                         //Create a new mesh
-                        var objMesh =
+                        var objMesh = 
                         //Set the name of the current obj mesh
                         {
                             name: objMeshName + "_mm" + increment.toString(),
@@ -6947,7 +6947,7 @@ var BABYLON;
 
 //# sourceMappingURL=EXT_lights_image_based.js.map
 
-
+    
 
     return BABYLON;
 });
