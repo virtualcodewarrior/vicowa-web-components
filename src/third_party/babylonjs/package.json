@@ -1,27 +1,27 @@
 {
-  "_from": "babylonjs@3.3.0-rc.1",
-  "_id": "babylonjs@3.3.0-rc.1",
+  "_from": "babylonjs@3.3.0-rc.4",
+  "_id": "babylonjs@3.3.0-rc.4",
   "_inBundle": false,
-  "_integrity": "sha512-yNJ6mTQz7QPgAdLP7THoXFQV+SfFcgFQdOo8EBE8f+uc8zYKXzwhZo4a7Wqz0fCnU8/mi3Gf2lvXrqi1BgGJOg==",
+  "_integrity": "sha512-qo5PaWZwfyAjNJvH7w3Hth44g10BbKD3S8Gq3e6pZQInwsTmumXerhyRazw4e196EF6z4NFjDB+dAFHr5R+WVg==",
   "_location": "/babylonjs",
   "_phantomChildren": {},
   "_requested": {
     "type": "version",
     "registry": true,
-    "raw": "babylonjs@3.3.0-rc.1",
+    "raw": "babylonjs@3.3.0-rc.4",
     "name": "babylonjs",
     "escapedName": "babylonjs",
-    "rawSpec": "3.3.0-rc.1",
+    "rawSpec": "3.3.0-rc.4",
     "saveSpec": null,
-    "fetchSpec": "3.3.0-rc.1"
+    "fetchSpec": "3.3.0-rc.4"
   },
   "_requiredBy": [
     "#USER",
     "/"
   ],
-  "_resolved": "https://registry.npmjs.org/babylonjs/-/babylonjs-3.3.0-rc.1.tgz",
-  "_shasum": "76f822149b0c7de1f0c7fb1719acc80392eac345",
-  "_spec": "babylonjs@3.3.0-rc.1",
+  "_resolved": "https://registry.npmjs.org/babylonjs/-/babylonjs-3.3.0-rc.4.tgz",
+  "_shasum": "303873a2ce310c6ad7aef704e6f5d8ac7289ed2c",
+  "_spec": "babylonjs@3.3.0-rc.4",
   "_where": "/home/rodney/prj/webcomponents/vicowa-web-components",
   "author": {
     "name": "David CATUHE"
@@ -76,5 +76,5 @@
     "url": "git+https://github.com/BabylonJS/Babylon.js.git"
   },
   "typings": "babylon.d.ts",
-  "version": "3.3.0-rc.1"
+  "version": "3.3.0-rc.4"
 }

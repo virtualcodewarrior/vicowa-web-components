@@ -1,27 +1,27 @@
 {
-  "_from": "babylonjs-loaders@3.3.0-rc.1",
-  "_id": "babylonjs-loaders@3.3.0-rc.1",
+  "_from": "babylonjs-loaders@3.3.0-rc.4",
+  "_id": "babylonjs-loaders@3.3.0-rc.4",
   "_inBundle": false,
-  "_integrity": "sha512-U5cIGHHyaa4rK50jdkyA3I31kQC7aJjyq1MZEJDnuEwwzu1eWyGHnz6VhMj53oUCmf00MenwPFb59UoLKBxSmg==",
+  "_integrity": "sha512-HQbGyph7en9a88q0JEcl/gVHiT4pNOhtR2w2HccF5v8CCRRTwZlRIh8BqrT6QAUPBovkCOODOyFmSCf6/hHvdg==",
   "_location": "/babylonjs-loaders",
   "_phantomChildren": {},
   "_requested": {
     "type": "version",
     "registry": true,
-    "raw": "babylonjs-loaders@3.3.0-rc.1",
+    "raw": "babylonjs-loaders@3.3.0-rc.4",
     "name": "babylonjs-loaders",
     "escapedName": "babylonjs-loaders",
-    "rawSpec": "3.3.0-rc.1",
+    "rawSpec": "3.3.0-rc.4",
     "saveSpec": null,
-    "fetchSpec": "3.3.0-rc.1"
+    "fetchSpec": "3.3.0-rc.4"
   },
   "_requiredBy": [
     "#USER",
     "/"
   ],
-  "_resolved": "https://registry.npmjs.org/babylonjs-loaders/-/babylonjs-loaders-3.3.0-rc.1.tgz",
-  "_shasum": "6755a72065a8f8b592f2b3e67d03036084cd31e9",
-  "_spec": "babylonjs-loaders@3.3.0-rc.1",
+  "_resolved": "https://registry.npmjs.org/babylonjs-loaders/-/babylonjs-loaders-3.3.0-rc.4.tgz",
+  "_shasum": "59bc4b36a62dbc88033eefaf63d2f6a7123921ea",
+  "_spec": "babylonjs-loaders@3.3.0-rc.4",
   "_where": "/home/rodney/prj/webcomponents/vicowa-web-components",
   "author": {
     "name": "David CATUHE"
@@ -31,7 +31,7 @@
   },
   "bundleDependencies": false,
   "dependencies": {
-    "babylonjs-gltf2interface": "3.3.0-rc.1"
+    "babylonjs-gltf2interface": "3.3.0-rc.4"
   },
   "deprecated": false,
   "description": "The Babylon.js file loaders library is an extension you can use to load different 3D file types into a Babylon scene.",
@@ -64,5 +64,5 @@
     "url": "git+https://github.com/BabylonJS/Babylon.js.git"
   },
   "typings": "babylonjs.loaders.module.d.ts",
-  "version": "3.3.0-rc.1"
+  "version": "3.3.0-rc.4"
 }
