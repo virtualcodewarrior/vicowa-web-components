@@ -57,6 +57,26 @@ function createItem(p_EditableList, p_Done) {
 	}
 }
 
+function headingChanged(p_EditableList) {
+	p_EditableList.$.heading.string = p_EditableList.heading;
+}
+
+function itemsChanged(p_EditableList) {
+	p_EditableList.$.items.innerHTML = "";
+
+	if (p_EditableList.items) {
+		p_EditableList._workList = window._.cloneDeep(p_EditableList.items);
+		p_EditableList._workList.forEach((p_ItemData) => {
+			createItem(p_EditableList, (p_Item) => {
+				if (p_ItemData) {
+					p_Item.settings = window._.cloneDeep(p_ItemData);
+				}
+			});
+		});
+	}
+}
+
+
 const componentName = "vicowa-editable-list";
 class VicowaEditableList extends webComponentBaseClass {
 	/**
@@ -84,12 +104,12 @@ class VicowaEditableList extends webComponentBaseClass {
 		return {
 			items: {
 				type: Array,
-				observer: "_itemsChanged",
+				observer: itemsChanged,
 			},
 			heading: {
 				type: String,
 				value: "",
-				observer: "_headingChanged",
+				observer: headingChanged,
 			},
 			static: {
 				type: Boolean,
@@ -97,25 +117,6 @@ class VicowaEditableList extends webComponentBaseClass {
 				reflectToAttribute: true,
 			},
 		};
-	}
-
-	_headingChanged() {
-		this.$.heading.string = this.heading;
-	}
-
-	_itemsChanged() {
-		this.$.items.innerHTML = "";
-
-		if (this.items) {
-			this._workList = window._.cloneDeep(this.items);
-			this._workList.forEach((p_ItemData) => {
-				createItem(this, (p_Item) => {
-					if (p_ItemData) {
-						p_Item.settings = p_ItemData;
-					}
-				});
-			});
-		}
 	}
 
 	attached() {
