@@ -14,9 +14,9 @@ function handleChangeLocation(p_Control) {
 			// only push a new state if we are changing the location not if we are just initializing
 			if (p_Control._currentElement && p_Control._currentLocation && p_Control._currentTitle !== undefined && !p_Control.noPush) {
 				if (!window.history.state) {
-					window.history.replaceState({ location: p_Control._currentLocation, id: p_Control.getAttribute("id"), title: p_Control._currentTitle }, p_Control._currentTitle, (p_Control.addLocationToUrl) ? `#${p_Control._currentLocation.replace(p_Control.contentBaseLocation, "")}` : undefined);
+					window.history.replaceState({ location: p_Control._currentLocation.replace(p_Control.contentBaseLocation, ""), id: p_Control.getAttribute("id"), title: p_Control._currentTitle }, p_Control._currentTitle, (p_Control.addLocationToUrl) ? `#${p_Control._currentLocation.replace(p_Control.contentBaseLocation, "")}` : undefined);
 				}
-				window.history.pushState({ location, id: p_Control.getAttribute("id"), title: p_Control.getAttribute("page-title") }, p_Control.getAttribute("page-title"), (p_Control.addLocationToUrl) ? `#${location.replace(p_Control.contentBaseLocation, "")}` : undefined);
+				window.history.pushState({ location: location.replace(p_Control.contentBaseLocation, ""), id: p_Control.getAttribute("id"), title: p_Control.getAttribute("page-title") }, p_Control.getAttribute("page-title"), (p_Control.addLocationToUrl) ? `#${location.replace(p_Control.contentBaseLocation, "")}` : undefined);
 			}
 			p_Control._currentElement = element;
 			p_Control._currentLocation = location;
