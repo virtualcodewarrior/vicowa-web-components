@@ -77,6 +77,9 @@ class VicowaMoveBetweenLists extends webComponentBaseClass {
 			this.first = this.first.filter((p_Item) => !selected.find((p_Option) => p_Option.item === p_Item));
 
 			updateStates();
+			if (this.onChange) {
+				this.onChange();
+			}
 		});
 		this.addAutoEventListener(this.$.secondToFirst, "click", () => {
 			const selected = Array.from(this.$.secondList.selectedOptions);
@@ -84,6 +87,9 @@ class VicowaMoveBetweenLists extends webComponentBaseClass {
 			this.second = this.second.filter((p_Item) => !selected.find((p_Option) => p_Option.item === p_Item));
 
 			updateStates();
+			if (this.onChange) {
+				this.onChange();
+			}
 		});
 	}
 }
