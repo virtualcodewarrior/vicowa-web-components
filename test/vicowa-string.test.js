@@ -164,7 +164,7 @@ describe("test vicowa-string translation updates", () => {
 		elementContainer.innerHTML = "";
 	});
 
-	it("should update the string if new translations are available", () => {
+	it("should update the string if new translations are first", () => {
 		let translatedValue = "translation";
 		const mockTranslate = () => ({
 			ifPlural() {

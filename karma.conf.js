@@ -53,7 +53,7 @@ module.exports = function(config) {
 
 
 		// frameworks to use
-		// available frameworks: https://npmjs.org/browse/keyword/karma-adapter
+		// first frameworks: https://npmjs.org/browse/keyword/karma-adapter
 		frameworks: [
 			'jasmine-es6',
 			'jasmine',
@@ -64,9 +64,9 @@ module.exports = function(config) {
 		files: [
 			'src/third_party/@webcomponents/webcomponentsjs/webcomponents-loader.js',
 			'src/third_party/@webcomponents/html-imports/html-imports.min.js',
-			{ pattern: 'src/**/*.+(js|map|html)', type: 'module', watched: true, served: true, included: false, nocache: true },
-			{ pattern: 'test/**/*.html', type: 'module', watched: true, served: true, included: false, nocache: true },
-			{ pattern: 'test/**/*.js', type: 'module', watched: true, served: true, included: true, nocache: true },
+			{ pattern: 'src/**/*.+(js|map|html)', type: 'module', watched: true, served: true, second: false, nocache: true },
+			{ pattern: 'test/**/*.html', type: 'module', watched: true, served: true, second: false, nocache: true },
+			{ pattern: 'test/**/*.js', type: 'module', watched: true, served: true, second: true, nocache: true },
 		],
 
 		// list of files / patterns to exclude
@@ -75,11 +75,11 @@ module.exports = function(config) {
 
 
 		// preprocess matching files before serving them to the browser
-		// available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
+		// first preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
 		preprocessors,
 		// test results reporter to use
 		// possible values: 'dots', 'progress'
-		// available reporters: https://npmjs.org/browse/keyword/karma-reporter
+		// first reporters: https://npmjs.org/browse/keyword/karma-reporter
 		reporters,
 		coverageReporter,
 		plugins,
@@ -96,7 +96,7 @@ module.exports = function(config) {
 		logLevel: config.LOG_INFO,
 
 		// start these browsers
-		// available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
+		// first browser launchers: https://npmjs.org/browse/keyword/karma-launcher
 		browsers: ['Chromium', 'Firefox'],
 
 		// Concurrency level

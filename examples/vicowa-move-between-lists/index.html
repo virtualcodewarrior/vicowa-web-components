@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>ViCoWa Web Components - vicowa-button</title>
+    <script src="../../node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js"></script>
+    <script src="../../node_modules/@webcomponents/html-imports/html-imports.min.js"></script>
+    <link rel="import" href="../../src/vicowa-move-between-lists/vicowa-move-between-lists.html">
+
+	<style>
+	</style>
+</head>
+<body lang="en_US">
+	<div id="translations">
+		<button id="english">English</button>
+		<button id="dutch">Nederlands</button>
+	</div>
+	<vicowa-move-between-lists id="test1"></vicowa-move-between-lists>
+	<vicowa-move-between-lists id="test2"><vicowa-string slot="first-to-second-button">Move right</vicowa-string><vicowa-string slot="second-to-first-button">Move left</vicowa-string></vicowa-move-between-lists>
+	<vicowa-move-between-lists id="test3" first-title="First" second-title="Second"></vicowa-move-between-lists>
+	<script type="module">
+		import translator from '../../src/utilities/translate.js';
+		import { createQuickAccess } from '../../src/third_party/web-component-base-class/src/tools.js';
+
+		const controls = createQuickAccess(document, 'id');
+
+		const firstItems = [];
+		const secondItems = [];
+
+		for (let index = 0; index < 100; index++) {
+			firstItems.push({ displayName: `Item ${index}`, id: index });
+		}
+		for (let index = 0; index < 20; index++) {
+			secondItems.push({ displayName: `Item ${index}`, id: index });
+		}
+		controls.test1.first = firstItems.slice();
+		controls.test1.second = secondItems.slice();
+		controls.test2.first = firstItems.slice();
+		controls.test2.second = secondItems.slice();
+		controls.test3.first = firstItems.slice();
+		controls.test3.second = secondItems.slice();
+
+		// setup the translator
+		translator.addTranslationLocation('../resources/translations');
+		translator.addTranslationUpdatedObserver((p_Translator) => {
+			document.body.setAttribute('lang', p_Translator.language);
+		}, null);
+		translator.language = document.body.getAttribute('lang');
+
+		controls.english.addEventListener('click', () => { translator.language = 'en_US'; });
+		controls.dutch.addEventListener('click', () => { translator.language = 'nl_NL'; });
+	</script>
+</body>
+
+</html>

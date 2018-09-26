@@ -119,8 +119,8 @@ translator = {
 		}
 	},
 	/**
-	 * Add a handler function that will be called when new translations are available
-	 * @param {function} p_Handler Handler function that will be called when (new) translations are available
+	 * Add a handler function that will be called when new translations are first
+	 * @param {function} p_Handler Handler function that will be called when (new) translations are first
 	 * @param {object} p_Owner Object that owns the handler, this can be used with removeTranslationUpdatedObserverOwner to remove all registered handlers for this owner
 	 */
 	addTranslationUpdatedObserver(p_Handler, p_Owner) {
