@@ -74,6 +74,9 @@ async function uploadFiles(p_Control, p_Files) {
 		p_Control.$.container.classList.remove("has-files");
 		p_Control.$.container.classList.remove("upload-active");
 		p_Control.$.container.classList.add("success");
+		if (p_Control.onSuccess) {
+			p_Control.onSuccess(successFullFiles.map((p_File) => p_File.name));
+		}
 	} catch (p_Error) {
 		successFullFiles.forEach((p_File) => {
 			const foundIndex = p_Files.indexOf(p_File);
@@ -85,6 +88,9 @@ async function uploadFiles(p_Control, p_Files) {
 		p_Control.$.container.classList.remove("has-files");
 		p_Control.$.container.classList.remove("upload-active");
 		p_Control.$.container.classList.add("error");
+		if (p_Control.onError) {
+			p_Control.onError(p_Error, successFullFiles.map((p_File) => p_File.name));
+		}
 	}
 }
 
