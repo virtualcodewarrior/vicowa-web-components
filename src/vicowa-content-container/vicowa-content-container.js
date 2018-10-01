@@ -24,6 +24,9 @@ function handleChangeLocation(p_Control) {
 			const createElement = () => {
 				p_Control.$.container.innerHTML = "";
 				p_Control.$.container.appendChild(document.createElement(element));
+				if (p_Control.onChange) {
+					p_Control.onChange();
+				}
 			};
 
 			if (!window.webComponentTemplates.get(element)) {
