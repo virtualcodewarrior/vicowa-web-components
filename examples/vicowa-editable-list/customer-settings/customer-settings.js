@@ -13,6 +13,17 @@ const channelOptions = [
 	{ value: "other", displayText: "Other" },
 ];
 
+function fillData(p_Control) {
+	p_Control.$.channel.onAttached = () => {
+		p_Control.$.channel.options = channelOptions;
+		Object.keys(p_Control.data).forEach((p_Key) => {
+			if (p_Control.$[p_Key]) {
+				p_Control.$[p_Key].value = p_Control.data[p_Key];
+			}
+		});
+	};
+}
+
 window.customElements.define(customElementName, class extends webComponentBaseClass {
 	/**
 	 * return this web components name
@@ -32,7 +43,7 @@ window.customElements.define(customElementName, class extends webComponentBaseCl
 	 */
 	static get properties() {
 		return {
-			settings: {
+			data: {
 				type: Object,
 				value: {
 					id: "",
@@ -45,7 +56,7 @@ window.customElements.define(customElementName, class extends webComponentBaseCl
 					province: "",
 					country: "",
 				},
-				observer: "_settingsChanged",
+				observer: fillData,
 			},
 			expanded: {
 				type: Boolean,
@@ -55,7 +66,7 @@ window.customElements.define(customElementName, class extends webComponentBaseCl
 		};
 	}
 
-	get hasData() { return Object.keys(this.settings).length > 0 && Object.keys(this.settings).every((p_Key) => this.settings[p_Key] !== ""); }
+	get hasData() { return Object.keys(this.data).length > 0 && Object.keys(this.data).every((p_Key) => this.data[p_Key] !== ""); }
 
 	startEdit() {
 		this.$$$(".customer-card .input").forEach((p_Input) => {
@@ -65,40 +76,29 @@ window.customElements.define(customElementName, class extends webComponentBaseCl
 		this.expanded = true;
 	}
 
-	_fillSettings() {
-		this.$.channel.onAttached = () => {
-			this.$.channel.options = channelOptions;
-			Object.keys(this.settings).forEach((p_Key) => {
-				if (this.$[p_Key]) {
-					this.$[p_Key].value = this.settings[p_Key];
-				}
-			});
-		};
-	}
-
 	get valid() {
-		return Object.keys(this.settings).every((p_Key) => !this.$[p_Key] || this.$[p_Key].valid);
+		return Object.keys(this.data).every((p_Key) => !this.$[p_Key] || this.$[p_Key].valid);
 	}
 
 	doSave() {
 		if (this.valid) {
 			let changed = false;
-			Object.keys(this.settings).forEach((p_Key) => {
-				if (this.$[p_Key] && this.settings[p_Key] !== this.$[p_Key].value) {
-					this.settings[p_Key] = this.$[p_Key].value;
+			Object.keys(this.data).forEach((p_Key) => {
+				if (this.$[p_Key] && this.data[p_Key] !== this.$[p_Key].value) {
+					this.data[p_Key] = this.$[p_Key].value;
 					changed = true;
 				}
 			});
 
 			if (changed && this.onChanged) {
-				this.onChanged(this.settings);
+				this.onChanged(this.data);
 			}
 		}
 		return this.valid;
 	}
 
 	doCancel() {
-		this._fillSettings();
+		fillData(this);
 	}
 
 	stopEdit() {
@@ -119,9 +119,5 @@ window.customElements.define(customElementName, class extends webComponentBaseCl
 		this.$.channel.options = channelOptions;
 		this.$.country.onAttached = () => { if (this.onReady) { this.onReady(); } };
 		this.$$$(".input").forEach((p_Control) => { p_Control.onChange = handleChanged; p_Control.onInput = handleChanged; });
-	}
-
-	_settingsChanged() {
-		this._fillSettings();
 	}
 });

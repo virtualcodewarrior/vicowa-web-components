@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <title>ViCoWa Web Components - vicowa-button</title>
+	<script>window.develop = true;</script>
     <script src="../../node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js"></script>
     <script src="../../node_modules/@webcomponents/html-imports/html-imports.min.js"></script>
     <link rel="import" href="../../src/vicowa-editable-list/vicowa-editable-list.html">
@@ -19,11 +20,29 @@
 			color: white;
 		}
 		vicowa-editable-list {
-			--vicowa-input-label-width: 100px;
-			--vicowa-single-selection-width: 100px;
+			--vicowa-input-label-width: 150px;
+			--vicowa-single-selection-width: 150px;
 			white-space: nowrap;
+			margin: 1em;
+			padding: 1em;
+			box-shadow: 3px 3px 8px grey;
 		}
 
+		[slot="header"] span {
+			display: inline-block;
+			position: relative;
+			width: 150px;
+		}
+		[slot="header"] span:first-child {
+			width: 110px;
+		}
+
+		#customerList2 {
+			--vicowa-editable-list-button-area-width: 110px;
+			--vicowa-editable-list-item-background: #eef;
+			--vicowa-editable-list-item-even-background: #efe;
+			--vicowa-editable-list-item-border: 1px dotted #aaa;
+		}
 	</style>
 </head>
 <body lang="en_US">
@@ -31,7 +50,14 @@
 		<button id="english">English</button>
 		<button id="dutch">Nederlands</button>
 	</div>
-	<vicowa-editable-list id="customerList"></vicowa-editable-list>
+	<h2>Small list</h2>
+	<vicowa-editable-list id="customerList1">
+		<div slot="header"><span>Action</span><span>Name</span><span>EMail</span><span>Source</span><span>Address</span><span>Postal code</span><span>City</span><span>Province</span><span>Country Code</span></div>
+	</vicowa-editable-list>
+	<h2>List with lots of items requiring pagination, also enabled search on name item</h2>
+	<vicowa-editable-list id="customerList2" filter><div slot="header"><span>Action</span><span>Name</span><span>EMail</span><span>Source</span><span>Address</span><span>Postal code</span><span>City</span><span>Province</span><span>Country Code</span></div></vicowa-editable-list>
+	<h2>Very simple list with only one column and no edit possibility</h2>
+	<vicowa-editable-list id="simpleData1" filter no-edit max-page-items="10"><div slot="header"><span>Action</span><span>Name</span></div></vicowa-editable-list>
 	<script type="module">
 		import translator from '../../src/utilities/translate.js';
 		import { createQuickAccess } from '../../src/third_party/web-component-base-class/src/tools.js';
@@ -76,12 +102,118 @@
 			]
 		};
 
-		controls.customerList.onAttached = () => {
-			controls.customerList.factory = () => document.createElement('customer-settings');
-			controls.customerList.items = data.customers;
-			controls.customerList.onChange = (p_Settings) => {
+		const getData = async(p_Start, p_Count, p_Filter) => {
+			return {
+				items: data.customers.slice(p_Start, p_Count),
+				totalItemCount: data.customers.length,
+			};
+		};
+
+		const getData2 = async(p_Start, p_Count, p_Filter) => {
+			const items = [];
+			const totalItemCount = 1345;
+			let testIndex = -1;
+			const regExp = (p_Filter) ? new RegExp(p_Filter) : null;
+
+			for (let index = 0; index < totalItemCount; index++) {
+				const customer = Object.assign({}, data.customers[index % data.customers.length]);
+				customer.name = `customer${index}`;
+				if (!regExp || regExp.test(customer.name)) {
+					testIndex++;
+				}
+				if (testIndex >= p_Start && items.length < p_Count) {
+					items.push(customer);
+					p_Start++;
+				}
+			}
+
+			// simulate server retrieval delay between 0 and 1s
+			return await new Promise((resolve) => {
+				setTimeout(() => {
+					resolve({
+						items,
+						totalItemCount: testIndex + 1,
+					});
+				}, 1000 * Math.random());
+			});
+		};
+
+		controls.customerList1.onAttached = () => {
+			controls.customerList1.factory = () => document.createElement('customer-settings');
+			controls.customerList1.getData = getData;
+
+			controls.customerList1.onChange = (p_Settings) => {
 				console.log(`post updated settings for customers: ${JSON.stringify(p_Settings, null, 4)}`);
 			};
+			controls.customerList1.initialize();
+		};
+
+		controls.customerList2.onAttached = () => {
+			controls.customerList2.factory = () => document.createElement('customer-settings');
+			controls.customerList2.getData = getData2;
+			controls.customerList2.onChange = (p_Settings) => {
+				console.log(`post updated settings for customers: ${JSON.stringify(p_Settings, null, 4)}`);
+			};
+			controls.customerList2.initialize({
+				startEdit(p_Item) { p_Item.startEdit(); },
+				stopEdit(p_Item) { p_Item.stopEdit(); },
+				doSave(p_Item) { return p_Item.doSave(); },
+				doCancel(p_Item) { p_Item.doCancel(); },
+				setItemData(p_Item, p_Data) { p_Item.data = p_Data; },
+				getItemData(p_Item) { return p_Item.data; },
+				isValid(p_Item) { return p_Item.valid; },
+				hasData(p_Item) { return p_Item.hasData; },
+				setReadyHandler(p_Item, p_Callback) { p_Item.onReady = p_Callback; },
+				setChangeHandler(p_Item, p_Callback) { p_Item.onChange = p_Callback; },
+			});
+		};
+
+		const getData3 = async(p_Start, p_Count, p_Filter) => {
+			const items = [];
+			const totalItemCount = 43;
+			let testIndex = -1;
+			const regExp = (p_Filter) ? new RegExp(p_Filter) : null;
+
+			for (let index = 0; index < totalItemCount; index++) {
+				const item = `test item-${index}`;
+				if (!regExp || regExp.test(item)) {
+					testIndex++;
+				}
+				if (testIndex >= p_Start && items.length < p_Count) {
+					items.push(item);
+					p_Start++;
+				}
+			}
+
+			// simulate server retrieval delay between 0 and 1s
+			return await new Promise((resolve) => {
+				setTimeout(() => {
+					resolve({
+						items,
+						totalItemCount: testIndex + 1,
+					});
+				}, 1000 * Math.random());
+			});
+		};
+
+		controls.simpleData1.onAttached = () => {
+			controls.simpleData1.factory = () => { const element = document.createElement("vicowa-input"); element.label = "Name"; element.hideLabel = true; element.static = true; return element };
+			controls.simpleData1.getData = getData3;
+			controls.simpleData1.onChange = (p_Data) => {
+				console.log(`post updated data: ${JSON.stringify(p_Data, null, 4)}`);
+			};
+			controls.simpleData1.initialize({
+				startEdit(p_Item) { p_Item.hideLabel = false; p_Item.static = false; },
+				stopEdit(p_Item) { p_Item.hideLabel = true; p_Item.static = true; },
+				doSave(p_Item) { return p_Item.valid; },
+				doCancel(p_Item) { },
+				setItemData(p_Item, p_Data) { p_Item.value = p_Data; },
+				getItemData(p_Item) { return p_Item.value; },
+				isValid(p_Item) { return !!p_Item.textContent; },
+				hasData(p_Item) { return !!p_Item.textContent; },
+				setReadyHandler(p_Item, p_Callback) { p_Callback(); },
+				setChangeHandler(p_Item, p_Callback) { p_Item.onChanged = p_Callback; },
+			});
 		};
 
 		// setup the translator
