@@ -142,8 +142,12 @@
 			controls.customerList1.factory = () => document.createElement('customer-settings');
 			controls.customerList1.getData = getData;
 
-			controls.customerList1.onChange = (p_Settings) => {
-				console.log(`post updated settings for customers: ${JSON.stringify(p_Settings, null, 4)}`);
+			controls.customerList1.onChange = (p_Data, p_OldData, p_Modified) => {
+				console.log(`current data: ${JSON.stringify(p_Data, null, 4)}`);
+				console.log(`old data: ${JSON.stringify(p_OldData, null, 4)}`);
+				console.log(`modified data: ${JSON.stringify(p_Modified.modifiedItems, null, 4)}`);
+				console.log(`added data: ${JSON.stringify(p_Modified.newItems, null, 4)}`);
+				console.log(`removed data: ${JSON.stringify(p_Modified.removedItems, null, 4)}`);
 			};
 			controls.customerList1.initialize();
 		};
@@ -151,8 +155,12 @@
 		controls.customerList2.onAttached = () => {
 			controls.customerList2.factory = () => document.createElement('customer-settings');
 			controls.customerList2.getData = getData2;
-			controls.customerList2.onChange = (p_Settings) => {
-				console.log(`post updated settings for customers: ${JSON.stringify(p_Settings, null, 4)}`);
+			controls.customerList2.onChange = (p_Data, p_OldData, p_Modified) => {
+				console.log(`current data: ${JSON.stringify(p_Data, null, 4)}`);
+				console.log(`old data: ${JSON.stringify(p_OldData, null, 4)}`);
+				console.log(`modified data: ${JSON.stringify(p_Modified.modifiedItems, null, 4)}`);
+				console.log(`added data: ${JSON.stringify(p_Modified.newItems, null, 4)}`);
+				console.log(`removed data: ${JSON.stringify(p_Modified.removedItems, null, 4)}`);
 			};
 			controls.customerList2.initialize({
 				startEdit(p_Item) { p_Item.startEdit(); },
@@ -175,8 +183,8 @@
 			const regExp = (p_Filter) ? new RegExp(p_Filter) : null;
 
 			for (let index = 0; index < totalItemCount; index++) {
-				const item = `test item-${index}`;
-				if (!regExp || regExp.test(item)) {
+				const item = { name: `test item-${index}` };
+				if (!regExp || regExp.test(item.name)) {
 					testIndex++;
 				}
 				if (testIndex >= p_Start && items.length < p_Count) {
@@ -199,16 +207,21 @@
 		controls.simpleData1.onAttached = () => {
 			controls.simpleData1.factory = () => { const element = document.createElement("vicowa-input"); element.label = "Name"; element.hideLabel = true; element.static = true; return element };
 			controls.simpleData1.getData = getData3;
-			controls.simpleData1.onChange = (p_Data) => {
-				console.log(`post updated data: ${JSON.stringify(p_Data, null, 4)}`);
+			controls.simpleData1.onChange = (p_Data, p_OldData, p_Modified) => {
+				console.log(`current data: ${JSON.stringify(p_Data, null, 4)}`);
+				console.log(`old data: ${JSON.stringify(p_OldData, null, 4)}`);
+				console.log(`modified data: ${JSON.stringify(p_Modified.modifiedItems, null, 4)}`);
+				console.log(`added data: ${JSON.stringify(p_Modified.newItems, null, 4)}`);
+				console.log(`removed data: ${JSON.stringify(p_Modified.removedItems, null, 4)}`);
 			};
 			controls.simpleData1.initialize({
+				data: Symbol("data"),
 				startEdit(p_Item) { p_Item.hideLabel = false; p_Item.static = false; },
 				stopEdit(p_Item) { p_Item.hideLabel = true; p_Item.static = true; },
 				doSave(p_Item) { return p_Item.valid; },
 				doCancel(p_Item) { },
-				setItemData(p_Item, p_Data) { p_Item.value = p_Data; },
-				getItemData(p_Item) { return p_Item.value; },
+				setItemData(p_Item, p_Data) { p_Item[this.data] = p_Data; p_Item.value = p_Data.name; },
+				getItemData(p_Item) { p_Item[this.data] = p_Item[this.data] || { name: p_Item.value }; p_Item[this.data].name = p_Item.value; return p_Item[this.data]; },
 				isValid(p_Item) { return !!p_Item.textContent; },
 				hasData(p_Item) { return !!p_Item.textContent; },
 				setReadyHandler(p_Item, p_Callback) { p_Callback(); },

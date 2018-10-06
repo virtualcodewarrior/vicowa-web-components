@@ -6,6 +6,7 @@ import "../third_party/lodash/lodash.js";
 import debug from "../utilities/debug.js";
 
 const privateData = Symbol("privateData");
+const originalItem = Symbol("originalItem");
 
 function createItem(p_Control, p_Done) {
 	if (p_Control.factory) {
@@ -20,9 +21,14 @@ function createItem(p_Control, p_Done) {
 			const newWorkList = Array.from(p_Control.$.items.querySelectorAll(".edit-area")).map((p_Item) => p_Control.itemInterface.getItemData(p_Item.item));
 			// compare work list with real list
 			if (!window._.isEqual(newWorkList, listData.workList)) {
+				const oldItems = listData.retrievedData.items;
 				listData.retrievedData.items = listData.workList = newWorkList;
 				if (p_Control.onChange) {
-					p_Control.onChange(listData.retrievedData.items);
+					const newOrModifiedItems = window._.differenceWith(newWorkList, oldItems, window._.isEqual);
+					const newItems = newOrModifiedItems.filter((p_Item) => p_Item[originalItem] === undefined);
+					const modifiedItems = newOrModifiedItems.filter((p_Item) => p_Item[originalItem] !== undefined);
+					const removedItems = window._.differenceWith(oldItems, newWorkList, window._.isEqual).filter((p_Item) => !modifiedItems.find((p_TestItem) => p_TestItem[originalItem] === p_Item[originalItem]));
+					p_Control.onChange(listData.retrievedData.items, oldItems, { newItems, modifiedItems, removedItems });
 				}
 			}
 		};
@@ -68,6 +74,7 @@ function updateJumpButton(p_Control) {
 async function fillList(p_Control, p_Start, p_Count, p_Filter) {
 	const listData = p_Control[privateData];
 	listData.retrievedData = await p_Control.getData(p_Start, p_Count, p_Filter);
+	listData.retrievedData.items = listData.retrievedData.items.map((p_Item, p_Index) => { p_Item[originalItem] = p_Index; return p_Item; });
 	p_Control.classList.toggle("pages", listData.retrievedData.totalItemCount > p_Control.maxPageItems);
 	const pageContainer = p_Control.$.pageLinks;
 	pageContainer.innerHTML = "";
@@ -136,7 +143,7 @@ async function fillList(p_Control, p_Start, p_Count, p_Filter) {
 	}
 
 	if (listData.retrievedData.items) {
-		listData.workList = window._.cloneDeep(listData.retrievedData.items);
+		listData.workList = window._.cloneDeepWith(listData.retrievedData.items);
 		const editAreas = Array.from(p_Control.$.items.children);
 		for (let index = listData.retrievedData.items.length; index < editAreas.length; index++) {
 			p_Control.$.items.removeChild(editAreas[index]);
