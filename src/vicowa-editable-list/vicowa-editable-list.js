@@ -73,6 +73,7 @@ function updateJumpButton(p_Control) {
 
 async function fillList(p_Control, p_Start, p_Count, p_Filter) {
 	const listData = p_Control[privateData];
+	listData.startItem = p_Start;
 	listData.retrievedData = await p_Control.getData(p_Start, p_Count, p_Filter);
 	listData.retrievedData.items = listData.retrievedData.items.map((p_Item, p_Index) => { p_Item[originalItem] = p_Index; return p_Item; });
 	p_Control.classList.toggle("pages", listData.retrievedData.totalItemCount > p_Control.maxPageItems);
@@ -177,6 +178,7 @@ class VicowaEditableList extends webComponentBaseClass {
 	constructor() {
 		super();
 		this[privateData] = {
+			startItem: 0,
 			workList: [],
 			retrievedData: {
 				items: [],
@@ -288,10 +290,14 @@ class VicowaEditableList extends webComponentBaseClass {
 		const required = ["setItemData", "getItemData", "startEdit", "stopEdit", "doSave", "doCancel", "hasData", "setReadyHandler", "setChangeHandler", "isValid"];
 		debug.assert(!p_ItemInterface || required.every((p_Key) => typeof p_ItemInterface[p_Key] === "function"), "setItemData, startEdit, stopEdit, doSave, doCancel, hasData, setReadyHandler, setChangeHandler and isValid should be functions");
 
-		fillList(this, 0, this.maxPageItems, "");
 		this.$.filter.onChange = window._.debounce(() => { fillList(this, 0, this.maxPageItems, this.$.filter.value); }, 250);
-
 		this.itemInterface = p_ItemInterface || this.itemInterface;
+		this.reloadData();
+	}
+
+	reloadData() {
+		const listData = this[privateData];
+		fillList(this, listData.startItem, this.maxPageItems, this.$.filter.value || "");
 	}
 }
 
