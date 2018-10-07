@@ -52,9 +52,12 @@ function createItem(p_Control, p_Done) {
 				editArea.parentElement.removeChild(editArea);
 			}
 		});
-		p_Control.addAutoEventListener(itemClone.querySelector('[name="delete"]'), "click", () => {
-			editArea.parentElement.removeChild(editArea);
-			listUpdate();
+		p_Control.addAutoEventListener(itemClone.querySelector('[name="delete"]'), "click", async() => {
+			const continueDelete = await p_Control.continueDelete(editArea.item);
+			if (continueDelete) {
+				editArea.parentElement.removeChild(editArea);
+				listUpdate();
+			}
 		});
 		p_Control.itemInterface.setReadyHandler(item, () => { p_Done(item, editArea); });
 		p_Control.itemInterface.setChangeHandler(item, () => { save.disabled = !p_Control.itemInterface.isValid(item); });
@@ -187,6 +190,7 @@ class VicowaEditableList extends webComponentBaseClass {
 		};
 		this.factory = null;
 		this.getData = null;
+		this.continueDelete = async() => true;
 		this.itemInterface = {
 			setItemData(p_Item, p_Data) { p_Item.data = p_Data; },
 			getItemData(p_Item) { return p_Item.data; },
@@ -230,6 +234,11 @@ class VicowaEditableList extends webComponentBaseClass {
 				reflectToAttribute: true,
 			},
 			noDelete: {
+				type: Boolean,
+				value: false,
+				reflectToAttribute: true,
+			},
+			noAdd: {
 				type: Boolean,
 				value: false,
 				reflectToAttribute: true,
