@@ -18,7 +18,7 @@
     } else {
         root["BABYLON"] = factory(BABYLON);
     }
-})(this || window, function(BABYLON) {
+})(this, function(BABYLON) {
   BABYLON = BABYLON || this.BABYLON;
 
 var __decorate=this&&this.__decorate||function(e,t,r,c){var o,f=arguments.length,n=f<3?t:null===c?c=Object.getOwnPropertyDescriptor(t,r):c;if("object"==typeof Reflect&&"function"==typeof Reflect.decorate)n=Reflect.decorate(e,t,r,c);else for(var l=e.length-1;l>=0;l--)(o=e[l])&&(n=(f<3?o(n):f>3?o(t,r,n):o(t,r))||n);return f>3&&n&&Object.defineProperty(t,r,n),n};
