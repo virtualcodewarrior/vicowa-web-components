@@ -2,10 +2,8 @@
 /* switching this off for this file because babylon uses almost all uppercase starting function names */
 import { webComponentBaseClass } from "../third_party/web-component-base-class/src/webComponentBaseClass.js";
 import { toRadians } from "../utilities/mathHelpers.js";
-import * as babylon from "../third_party/babylonjs/es6.js";
-import "../third_party/babylonjs-loaders/babylonjs.loaders.js";
-import "../third_party/earcut/dist/earcut.dev.js";
 
+const babylon = window.BABYLON;
 const componentName = "vicowa-webgl";
 
 /**
