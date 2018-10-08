@@ -94,7 +94,24 @@
 				display: none;
 			}
 
-        </style>
+			:host([select]) .edit-area,
+			:host([select]) vicowa-input {
+				cursor: pointer;
+			}
+
+			:host([select]) .edit-area:hover {
+				cursor: pointer;
+			}
+
+			:host([select]) #items .edit-area:not(.editing):hover {
+				background: var(--vicowa-editable-list-hover-background, #88f);
+				color: var(--vicowa-editable-list-hover-color, white);
+			}
+			:host([select]) #items .edit-area:not(.editing).selected {
+				background: var(--vicowa-editable-list-select-background, blue);
+				color: var(--vicowa-editable-list-select-color, white);
+			}
+		</style>
         <div>
             <div class="item-area">
 				<vicowa-input class="filter" id="filter" label="Filter items"></vicowa-input>

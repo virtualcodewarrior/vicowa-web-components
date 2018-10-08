@@ -243,6 +243,21 @@ class VicowaEditableList extends webComponentBaseClass {
 				value: false,
 				reflectToAttribute: true,
 			},
+			select: {
+				type: Boolean,
+				value: false,
+				reflectToAttribute: true,
+			},
+			single: {
+				type: Boolean,
+				value: false,
+				reflectToAttribute: true,
+			},
+			multi: {
+				type: Boolean,
+				value: false,
+				reflectToAttribute: true,
+			},
 		};
 	}
 
@@ -261,6 +276,25 @@ class VicowaEditableList extends webComponentBaseClass {
 		this.addAutoEventListener(this.$.jump, "click", () => {
 			const value = parseInt(this.$.jumpTo.value, 10);
 			fillList(this, (value - 1) * this.maxPageItems, this.maxPageItems, this.$.filter.value);
+		});
+
+		this.addAutoEventListener(this.$.items, "click", (p_Event) => {
+			if (this.select) {
+				const item = p_Event.target.closest(".edit-area");
+				if (item) {
+					if (this.single) {
+						this.$$$("#items .edit-area").forEach((p_Item) => {
+							p_Item.classList.remove("selected");
+						});
+						item.classList.add("selected");
+					} else if (this.multi) {
+						item.classList.toggle("selected");
+					}
+				}
+				if (this.onSelect) {
+					this.onSelect(this.$$$("#items .edit-area").filter((p_Item) => p_Item.classList.contains("selected")).map((p_Item) => this.itemInterface.getItemData(p_Item.item)));
+				}
+			}
 		});
 
 		updateJumpButton(this);

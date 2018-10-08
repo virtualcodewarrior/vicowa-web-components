@@ -79,6 +79,10 @@
 	<vicowa-editable-list id="customerList2" filter><div slot="header"><span>Action</span><span>Name</span><span>EMail</span><span>Source</span><span>Address</span><span>Postal code</span><span>City</span><span>Province</span><span>Country Code</span></div></vicowa-editable-list>
 	<h2>Very simple list with only one column and no edit possibility</h2>
 	<vicowa-editable-list id="simpleData1" filter no-edit max-page-items="10"><div slot="header"><span>Action</span><span>Name</span></div></vicowa-editable-list>
+	<h2>simple list with single selection option</h2>
+	<vicowa-editable-list id="simpleData2" filter no-edit no-delete max-page-items="10" select single><div slot="header"><span>Action</span><span>Name</span></div></vicowa-editable-list>
+	<h2>simple list with multi selection option</h2>
+	<vicowa-editable-list id="simpleData3" filter no-edit no-delete max-page-items="10" select multi><div slot="header"><span>Action</span><span>Name</span></div></vicowa-editable-list>
 	<vicowa-modal></vicowa-modal>
 	<script type="module">
 		import translator from '../../src/utilities/translate.js';
@@ -263,6 +267,49 @@
 			});
 		};
 
+		controls.simpleData2.onAttached = () => {
+			controls.simpleData2.factory = () => { const element = document.createElement("vicowa-input"); element.label = "Name"; element.hideLabel = true; element.static = true; return element };
+			controls.simpleData2.getData = getData3;
+			controls.simpleData2.onChange = () => {};
+			controls.simpleData2.onSelect = (p_SelectedItems) => {
+				console.log(`selected items: ${JSON.stringify(p_SelectedItems, null, 4)}`);
+			};
+			controls.simpleData2.initialize({
+				data: Symbol("data"),
+				startEdit(p_Item) { p_Item.hideLabel = false; p_Item.static = false; },
+				stopEdit(p_Item) { p_Item.hideLabel = true; p_Item.static = true; },
+				doSave(p_Item) { return p_Item.valid; },
+				doCancel(p_Item) { },
+				setItemData(p_Item, p_Data) { p_Item[this.data] = p_Data; p_Item.value = p_Data.name; },
+				getItemData(p_Item) { p_Item[this.data] = p_Item[this.data] || { name: p_Item.value }; p_Item[this.data].name = p_Item.value; return p_Item[this.data]; },
+				isValid(p_Item) { return !!p_Item.textContent; },
+				hasData(p_Item) { return !!p_Item.textContent; },
+				setReadyHandler(p_Item, p_Callback) { p_Callback(); },
+				setChangeHandler(p_Item, p_Callback) { p_Item.onChanged = p_Callback; },
+			});
+		};
+
+		controls.simpleData3.onAttached = () => {
+			controls.simpleData3.factory = () => { const element = document.createElement("vicowa-input"); element.label = "Name"; element.hideLabel = true; element.static = true; return element };
+			controls.simpleData3.getData = getData3;
+			controls.simpleData3.onChange = () => {};
+			controls.simpleData3.onSelect = (p_SelectedItems) => {
+				console.log(`selected items: ${JSON.stringify(p_SelectedItems, null, 4)}`);
+			};
+			controls.simpleData3.initialize({
+				data: Symbol("data"),
+				startEdit(p_Item) { p_Item.hideLabel = false; p_Item.static = false; },
+				stopEdit(p_Item) { p_Item.hideLabel = true; p_Item.static = true; },
+				doSave(p_Item) { return p_Item.valid; },
+				doCancel(p_Item) { },
+				setItemData(p_Item, p_Data) { p_Item[this.data] = p_Data; p_Item.value = p_Data.name; },
+				getItemData(p_Item) { p_Item[this.data] = p_Item[this.data] || { name: p_Item.value }; p_Item[this.data].name = p_Item.value; return p_Item[this.data]; },
+				isValid(p_Item) { return !!p_Item.textContent; },
+				hasData(p_Item) { return !!p_Item.textContent; },
+				setReadyHandler(p_Item, p_Callback) { p_Callback(); },
+				setChangeHandler(p_Item, p_Callback) { p_Item.onChanged = p_Callback; },
+			});
+		};
 		// setup the translator
 		translator.addTranslationLocation('../resources/translations');
 		translator.addTranslationUpdatedObserver((p_Translator) => {
