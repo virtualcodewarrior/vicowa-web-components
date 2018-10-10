@@ -22,7 +22,8 @@ function createItem(p_Control, p_Done) {
 			// compare work list with real list
 			if (!window._.isEqual(newWorkList, listData.workList)) {
 				const oldItems = listData.retrievedData.items;
-				listData.retrievedData.items = listData.workList = newWorkList;
+				listData.retrievedData.items = window._.cloneDeepWith(newWorkList);
+				listData.workList = window._.cloneDeepWith(listData.retrievedData.items);
 				if (p_Control.onChange) {
 					const newOrModifiedItems = window._.differenceWith(newWorkList, oldItems, window._.isEqual);
 					const newItems = newOrModifiedItems.filter((p_Item) => p_Item[originalItem] === undefined);
