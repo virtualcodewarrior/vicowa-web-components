@@ -58,6 +58,10 @@
 		#delete-popup > div {
 			padding: 1em;
 		}
+
+		.hidden {
+			 display: none;
+		}
 	</style>
 </head>
 <body lang="en_US">
@@ -83,6 +87,8 @@
 	<vicowa-editable-list id="simpleData2" filter no-edit no-delete max-page-items="10" select single><div slot="header"><span>Action</span><span>Name</span></div></vicowa-editable-list>
 	<h2>simple list with multi selection option</h2>
 	<vicowa-editable-list id="simpleData3" filter no-edit no-delete max-page-items="10" select multi><div slot="header"><span>Action</span><span>Name</span></div></vicowa-editable-list>
+	<h2>simple list with custom save and cancel handling</h2>
+	<vicowa-editable-list id="simpleData4" filter no-save no-cancel max-page-items="10" ><div slot="header"><span>Action</span><span>Name</span></div></vicowa-editable-list>
 	<vicowa-modal></vicowa-modal>
 	<script type="module">
 		import translator from '../../src/utilities/translate.js';
@@ -309,6 +315,79 @@
 				setReadyHandler(p_Item, p_Callback) { p_Callback(); },
 				setChangeHandler(p_Item, p_Callback) { p_Item.onChanged = p_Callback; },
 			});
+		};
+
+		controls.simpleData4.onAttached = () => {
+			controls.simpleData4.factory = () => {
+				const element = document.createElement("div");
+				const input = document.createElement("vicowa-input");
+				input.label = "Name";
+				input.hideLabel = true;
+				input.static = true;
+				element.appendChild(input);
+				const saveButton = document.createElement("button");
+				const cancelButton = document.createElement("button");
+				saveButton.textContent = "Custom save";
+				saveButton.style.display = "none";
+				cancelButton.textContent = "Custom cancel";
+				cancelButton.style.display = "none";
+				element.appendChild(saveButton);
+				element.appendChild(cancelButton);
+
+				element.dataStore = Symbol("data");
+
+				let readyCallback = null;
+				let changeCallback = null;
+
+				Object.defineProperty(element, "data", {
+					get(){ this[this.dataStore] = this[this.dataStore] || { name: input.value }; this[this.dataStore].name = input.value; return this[this.dataStore]; },
+					set(p_Data){ this[this.dataStore] = p_Data; input.value = p_Data.name; }
+				});
+				element.startEdit = () => { input.hideLabel = false; input.static = false; saveButton.style.display = ""; cancelButton.style.display = ""; };
+				element.stopEdit = () => { input.hideLabel = true; input.static = true; saveButton.style.display = "none"; cancelButton.style.display = "none"; };
+				element.doSave = () => { return true; };
+				element.doCancel = () => { };
+				element.isValid = () => { return input.valid; };
+				element.hasData = () => { return input.valid; };
+				Object.defineProperty(element, "onReady", {
+					set(p_Callback) { readyCallback = p_Callback; readyCallback(); },
+					get() { return readyCallback; }
+				});
+				Object.defineProperty(element, "onChange", {
+					set(p_Callback) { changeCallback = p_Callback; },
+					get() { return changeCallback; }
+				});
+
+				saveButton.addEventListener("click", () => {
+					if (element.doSave()) {
+						element.stopEdit();
+						element.applyActions.stopEditing();
+						element.applyActions.update();
+					}
+				});
+				cancelButton.addEventListener("click", () => {
+					element.doCancel();
+					element.stopEdit();
+					element.applyActions.stopEditing();
+					if (!element.hasData()) {
+						element.applyActions.removeEditArea();
+					}
+				});
+
+				return element;
+			};
+			controls.simpleData4.getData = getData3;
+			controls.simpleData4.onChange = (p_Data, p_OldData, p_Modified) => {
+				console.log(`current data: ${JSON.stringify(p_Data, null, 4)}`);
+				console.log(`old data: ${JSON.stringify(p_OldData, null, 4)}`);
+				console.log(`modified data: ${JSON.stringify(p_Modified.modifiedItems, null, 4)}`);
+				console.log(`added data: ${JSON.stringify(p_Modified.newItems, null, 4)}`);
+				console.log(`removed data: ${JSON.stringify(p_Modified.removedItems, null, 4)}`);
+			};
+			controls.simpleData4.onSelect = (p_SelectedItems) => {
+				console.log(`selected items: ${JSON.stringify(p_SelectedItems, null, 4)}`);
+			};
+			controls.simpleData4.initialize();
 		};
 		// setup the translator
 		translator.addTranslationLocation('../resources/translations');

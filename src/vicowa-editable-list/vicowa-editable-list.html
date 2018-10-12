@@ -9,9 +9,7 @@
                 overflow: auto;
             }
 
-            :host([static]) #add {
-                display: none;
-            }
+            :host([static]) #add,
             div[name="edit-area"].editing [name="edit"],
             div[name="edit-area"].editing [name="delete"],
             :host([static]) [name="edit"],
@@ -59,16 +57,18 @@
 				margin-bottom: 1em;
 			}
 
-			:host(:not([filter])) .filter {
-				display: none;
-			}
-
 			#pages {
 				margin-bottom: 1em;
 				display: flex;
 			}
 
-			:host(:not(.pages)) #pages {
+			:host(:not([filter])) .filter,
+			:host(:not(.pages)) #pages,
+			:host([no-edit]) button[name="edit"],
+			:host([no-delete]) button[name="delete"],
+			:host([no-save]) button[name="save"],
+			:host([no-cancel]) button[name="cancel"],
+			:host([no-add]) #add {
 				display: none;
 			}
 
@@ -84,21 +84,8 @@
                 margin-top: 5px;
             }
 
-			:host([no-edit]) button[name="edit"] {
-				display: none;
-			}
-			:host([no-delete]) button[name="delete"] {
-				display: none;
-			}
-			:host([no-add]) #add {
-				display: none;
-			}
-
 			:host([select]) .edit-area,
-			:host([select]) vicowa-input {
-				cursor: pointer;
-			}
-
+			:host([select]) vicowa-input,
 			:host([select]) .edit-area:hover {
 				cursor: pointer;
 			}

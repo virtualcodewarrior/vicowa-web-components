@@ -33,31 +33,39 @@ function createItem(p_Control, p_Done) {
 				}
 			}
 		};
+		const applyActions = {
+			startEditing() { editArea.classList.add("editing"); },
+			update() { listUpdate(); },
+			stopEditing() { editArea.classList.remove("editing"); },
+			removeEditArea() { editArea.parentElement.removeChild(editArea); },
+		};
+
 		itemClone.querySelector('[name="editable-item"]').appendChild(item);
+		item.applyActions = applyActions;
 		p_Control.addAutoEventListener(itemClone.querySelector('[name="edit"]'), "click", () => {
 			p_Control.itemInterface.startEdit(item);
-			editArea.classList.add("editing");
+			applyActions.startEditing();
 		});
 		p_Control.addAutoEventListener(save, "click", () => {
 			if (p_Control.itemInterface.doSave(item)) {
 				p_Control.itemInterface.stopEdit(item);
-				editArea.classList.remove("editing");
-				listUpdate();
+				applyActions.stopEditing();
+				applyActions.update();
 			}
 		});
 		p_Control.addAutoEventListener(itemClone.querySelector('[name="cancel"]'), "click", () => {
 			p_Control.itemInterface.doCancel(item);
 			p_Control.itemInterface.stopEdit(item);
-			editArea.classList.remove("editing");
+			applyActions.stopEditing();
 			if (!p_Control.itemInterface.hasData(item)) {
-				editArea.parentElement.removeChild(editArea);
+				applyActions.removeEditArea();
 			}
 		});
 		p_Control.addAutoEventListener(itemClone.querySelector('[name="delete"]'), "click", async() => {
 			const continueDelete = await p_Control.continueDelete(editArea.item);
 			if (continueDelete) {
-				editArea.parentElement.removeChild(editArea);
-				listUpdate();
+				applyActions.removeEditArea();
+				applyActions.update();
 			}
 		});
 		p_Control.itemInterface.setReadyHandler(item, () => { p_Done(item, editArea); });
@@ -240,6 +248,16 @@ class VicowaEditableList extends webComponentBaseClass {
 				reflectToAttribute: true,
 			},
 			noAdd: {
+				type: Boolean,
+				value: false,
+				reflectToAttribute: true,
+			},
+			noSave: {
+				type: Boolean,
+				value: false,
+				reflectToAttribute: true,
+			},
+			noCancel: {
 				type: Boolean,
 				value: false,
 				reflectToAttribute: true,
