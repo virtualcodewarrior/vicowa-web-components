@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>ViCoWa Web Components - vicowa-button</title>
+    <script src="../../node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js"></script>
+    <script src="../../node_modules/@webcomponents/html-imports/html-imports.min.js"></script>
+    <link rel="import" href="../../src/vicowa-hierarchical-palette/vicowa-hierarchical-palette.html">
+
+	<style>
+		body {
+			font-family: sans-serif;
+		}
+		#palette1 {
+			position: absolute;
+			height: 80%;
+			width: 50px;
+			top: 50px;
+		}
+		#palette2 {
+			position: absolute;
+			height: 50px;
+			width: 80%;
+			left: 50px;
+		}
+		#palette3 {
+			position: absolute;
+			height: 80%;
+			width: 50px;
+			left: 150px;
+			top: 50px;
+		}
+
+		#palette4 {
+			position: absolute;
+			height: 80%;
+			width: 50px;
+			left: 300px;
+			top: 50px;
+			--vicowa-hierarchical-palette-hover-background: transparent;
+			--vicowa-hierarchical-palette-hover-color: black;
+		}
+
+		#main {
+			position: relative;
+			margin: 1em;
+			box-shadow: 3px 3px 8px grey;
+			display: flex;
+			border: 1px solid grey;
+			box-sizing: border-box;
+			width: calc(100vw - 2em);
+			height: calc(100vh - 2em);
+		}
+
+		vicowa-hierarchical-palette {
+			border: 1px solid grey;
+			box-shadow: 3px 3px 6px grey;
+		}
+
+		.mybutton {
+			background: #aaeeff;
+			padding: 1em;
+		}
+		.mybutton:hover {
+			background: blue;
+			color: white;
+		}
+
+		#palette4 > div {
+			margin: 3px;
+			border: 2px solid transparent;
+			padding: 3px;
+			box-sizing: border-box;
+			height: calc(100% - 6px);
+			overflow: hidden
+		}
+
+		#palette4 > div:hover
+		{
+			border: 2px solid blue;
+		}
+
+	</style>
+</head>
+<body lang="en_US">
+	<div id="main">
+		<vicowa-hierarchical-palette id="palette1"></vicowa-hierarchical-palette>
+		<vicowa-hierarchical-palette id="palette2" horizontal></vicowa-hierarchical-palette>
+		<vicowa-hierarchical-palette id="palette3" search><div class="mybutton" slot="move-to-start">Up</div><div class="mybutton" slot="move-to-end">Down</div><div class="mybutton" slot="back-button">Back</div></vicowa-hierarchical-palette>
+		<vicowa-hierarchical-palette id="palette4" search></vicowa-hierarchical-palette>
+	</div>
+	<script type="module">
+		import { createQuickAccess } from "../../node_modules/web-component-base-class/src/tools.js";
+		let seed = 1;
+		function fakeRandom() {
+			const x = Math.sin(seed++) * 10000;
+			return x - Math.floor(x);
+		}
+
+		const controls = createQuickAccess(document, "id");
+
+		// we will create some items to fill our palette with
+		const items = [];
+		const levels = 2;
+		const createSubItems = (p_Level, p_LevelString, p_Path, p_Type) => {
+			const result = [];
+			if (p_Type === 1 && p_Level < levels) {
+				const length = fakeRandom() * 20;
+				for (let index = 0; index < length; index++) {
+					const name = `sub-${p_LevelString}-L${p_Level}-I${index}`;
+					const path = `${p_Path}${(p_Path) ? "/" : ""}${name}`;
+					result.push({
+						name,
+						displayName: `sub ${p_LevelString} L${p_Level} I${index}`,
+						description: `sub ${p_LevelString} L${p_Level} I${index}`,
+						path,
+						subLevel: true,
+						items: createSubItems(p_Level + 1, `L${p_Level}I${index}`, path, 1).concat(createSubItems(p_Level + 1, `L${p_Level}I${index}`, path, 0)),
+					});
+				}
+			} else {
+				const length = fakeRandom() * 20;
+				for (let index = 0; index < length; index++) {
+					const name = `item-${p_LevelString}-L${p_Level}-I${index}`;
+					const path = `${p_Path}${(p_Path) ? "/" : ""}${name}`;
+					result.push({
+						name,
+						displayName: `Item ${p_LevelString} L${p_Level} I${index}`,
+						description: `Item ${p_LevelString} L${p_Level} I${index}`,
+						path,
+					});
+				}
+			}
+			return result;
+		};
+
+		createSubItems(0, "", "", 1).forEach((p_Item) => items.push(p_Item));
+		createSubItems(0, "", "", 0).forEach((p_Item) => items.push(p_Item));
+
+		const getData = async(p_Root, p_Start, p_Count, p_Filter) => {
+			let result = {
+				items: [],
+				totalItemCount: 0,
+			};
+			if (p_Root === null) {
+				result.totalItemCount = items.length;
+				result.items = items.filter((p_Item) => true).slice(p_Start, p_Start + p_Count).map((p_Item) => p_Item);
+			} else {
+				const path = p_Root.split("/");
+				const itemRoot = path.reduce((p_Previous, p_PathItem) => (p_Previous) ? p_Previous.items.find((p_Item) => p_Item.name === p_PathItem && p_Item.subLevel) : p_Previous, { items }) || { items: [] };
+				result.totalItemCount = itemRoot.items.length;
+				result.items = itemRoot.items.filter((p_Item) => true).slice(p_Start, p_Start + p_Count).map((p_Item) => p_Item);
+			}
+			return new Promise((resolve) => {
+				setTimeout(() => { resolve(result); }, Math.random() * 1000);
+			});
+		};
+
+		controls.palette1.onAttached = () => {
+			controls.palette1.getData = getData;
+			controls.palette1.factory = (p_Item) => {
+				const div = document.createElement("div");
+				const span = document.createElement("span");
+				span.textContent = p_Item.displayName;
+				div.appendChild(span);
+				return div;
+			};
+
+			controls.palette1.initialize();
+			controls.palette1.onClick = (p_Item) => {
+				alert(`handle click ${p_Item.displayName}`);
+			}
+		};
+
+		controls.palette2.onAttached = () => {
+			controls.palette2.getData = getData;
+			controls.palette2.factory = (p_Item) => {
+				const div = document.createElement("div");
+				const span = document.createElement("span");
+				span.textContent = p_Item.displayName;
+				div.appendChild(span);
+				return div;
+			};
+
+			controls.palette2.initialize();
+			controls.palette2.onClick = (p_Item) => {
+				alert(`handle click ${p_Item.displayName}`);
+			}
+		};
+
+		controls.palette3.onAttached = () => {
+			controls.palette3.getData = getData;
+			controls.palette3.factory = (p_Item) => {
+				const div = document.createElement("div");
+				const span = document.createElement("span");
+				span.textContent = p_Item.displayName;
+				div.appendChild(span);
+				return div;
+			};
+
+			controls.palette3.initialize();
+			controls.palette3.onClick = (p_Item) => {
+				alert(`handle click ${p_Item.displayName}`);
+			}
+		};
+
+		controls.palette4.onAttached = () => {
+			controls.palette4.getData = getData;
+			controls.palette4.factory = (p_Item) => {
+				const div = document.createElement("div");
+				const span = document.createElement("span");
+				span.textContent = p_Item.displayName;
+				div.appendChild(span);
+				return div;
+			};
+
+			controls.palette4.initialize({ topLevel: items[4].name });
+			controls.palette4.onClick = (p_Item) => {
+				alert(`handle click ${p_Item.displayName}`);
+			}
+		};
+
+	</script>
+</body>
+
+</html>
