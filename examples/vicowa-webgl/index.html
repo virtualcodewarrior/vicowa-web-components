@@ -19,17 +19,17 @@
 </head>
 
 <body>
+	<label for="orbital">Orbital</label><input type="radio" name="camera" id="orbital" checked>
+	<label for="first-person">First Person</label><input type="radio" name="camera" id="first-person">
+	<label for="vr">Virtual Reality</label><input type="radio" name="camera" id="vr">
+	<label for="object">Add Object</label><select id="object">
+		<option value="sphere">Sphere</option>
+		<option value="box">Box</option>
+		<option value="plane">Plane</option>
+		<option value="extrudedPolygon">ExtrudedPolygon</option>
+	</select><button id="add">Add</button><button id="delete">Delete</button>
 	<vicowa-webgl id="gl1" loading-screen="false"></vicowa-webgl>
-	<button id="tree">Add tree</button>
-	<button id="house1">Add house 1</button>
-	<button id="house2">Add house 2</button>
-	<button id="house3">Add house 3</button>
-	<button id="house4">Add house 4</button>
-	<button id="del_tree" disabled>Remove tree</button>
-	<button id="del_house1" disabled>Remove house 1</button>
-	<button id="del_house2" disabled>Remove house 2</button>
-	<button id="del_house3" disabled>Remove house 3</button>
-	<button id="del_house4" disabled>Remove house 4</button>
+
 </body>
 <script type="module" src="index.js">
 </script>
