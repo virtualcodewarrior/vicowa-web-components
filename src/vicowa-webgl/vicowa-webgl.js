@@ -1,13 +1,25 @@
 /* eslint new-cap: ["off"] */
 /* switching this off for this file because babylon uses almost all uppercase starting function names */
 import { webComponentBaseClass } from "../third_party/web-component-base-class/src/webComponentBaseClass.js";
-import { CAMERA_TYPES, MANIPULATOR_TYPES } from "./vicowa-webgl-definitions.js";
+import { CAMERA_TYPES/* , MANIPULATOR_TYPES*/ } from "./vicowa-webgl-definitions.js";
 import { toRadians } from "../utilities/mathHelpers.js";
+import debug from "../utilities/debug.js";
 
 const privateData = Symbol["privateData"];
 
 const babylon = window.BABYLON;
 const componentName = "vicowa-webgl";
+
+let nameID = 0;
+// validate the name or create a name when none is specified
+function ensureName(p_Name) {
+	debug.assert(!p_Name || !/--/.test(p_Name), "names containing a double dash '--' are reserved for internal use only");
+	if (!p_Name) {
+		nameID++;
+		p_Name = `objectID--${nameID}`;
+	}
+	return p_Name;
+}
 
 function handleLoadingScreenChange(p_WebGLControl) {
 	const controlData = p_WebGLControl[privateData];
@@ -75,10 +87,9 @@ function createShadowGenerator(p_WebGLControl, p_Light) {
 	return shadowGenerator;
 }
 
-function addShadowCaster(p_WebGLControl, p_MeshObject) {
-	const controlData = p_WebGLControl[privateData];
-	Object.keys(controlData.lights).forEach((p_Light) => {
-		const light = controlData.lights[p_Light];
+function addShadowCaster(p_ControlData, p_MeshObject) {
+	Object.keys(p_ControlData.lights).forEach((p_Light) => {
+		const light = p_ControlData.lights[p_Light];
 		if (light.shadowGenerator) {
 			light.shadowGenerator.addShadowCaster(p_MeshObject);
 		}
@@ -106,12 +117,75 @@ function setScale(p_Mesh, p_Scale) {
 	Object.assign(p_Mesh.scaling, p_Scale);
 }
 
-function addMesh(p_WebGLControl, p_Name, p_MeshObject, p_Settings) {
+function addDefaultSettings(p_WebGLControl, p_Settings) {
 	const controlData = p_WebGLControl[privateData];
+	return Object.assign({
+		collisions: controlData.allObjectCollisions,
+		shadows: p_WebGLControl.defaultShadows,
+	}, p_Settings);
+}
+
+function addMaterial(p_ControlData, p_MaterialName, p_Settings) {
+	const material = p_ControlData.materials[p_MaterialName] || new babylon.StandardMaterial(p_MaterialName, p_ControlData.scene);
+	if (p_Settings.diffuse) {
+		Object.assign(material.diffuseColor, p_Settings.diffuse);
+	}
+	if (p_Settings.specular) {
+		Object.assign(material.specularColor, p_Settings.specular);
+	}
+	if (p_Settings.emissive) {
+		Object.assign(material.emissiveColor, p_Settings.emissive);
+	}
+	if (p_Settings.ambient) {
+		Object.assign(material.ambientColor, p_Settings.ambient);
+	}
+	if (p_Settings.alpha !== undefined) {
+		material.alpha = p_Settings.alpha;
+	}
+	if (p_Settings.texture && p_Settings.texture.src) {
+		material.invertNormalMapY = material.invertNormalMapX = p_Settings.texture.invertBump || false;
+		if (p_Settings.texture.src) {
+			material.diffuseTexture = new babylon.Texture(p_Settings.texture.src, p_ControlData.scene);
+			material.diffuseTexture.hasAlpha = p_Settings.texture.alpha || false;
+		}
+		if (p_Settings.texture.bumpSrc) {
+			material.bumpTexture = new babylon.Texture(p_Settings.texture.bumpSrc, p_ControlData.scene);
+		}
+		if (p_Settings.texture.opacitySrc) {
+			material.opacityTexture = new babylon.Texture(p_Settings.texture.opacitySrc, p_ControlData.scene);
+		}
+		if (p_Settings.texture.xScale) {
+			if (material.diffuseTexture) {
+				material.diffuseTexture.uScale = p_Settings.texture.xScale;
+			}
+			if (material.bumpTexture) {
+				material.bumpTexture.uScale = p_Settings.texture.xScale;
+			}
+			if (material.opacityTexture) {
+				material.opacityTexture.uScale = p_Settings.texture.xScale;
+			}
+		}
+		if (p_Settings.texture.yScale) {
+			if (material.diffuseTexture) {
+				material.diffuseTexture.vScale = p_Settings.texture.yScale;
+			}
+			if (material.bumpTexture) {
+				material.bumpTexture.vScale = p_Settings.texture.yScale;
+			}
+			if (material.opacityTexture) {
+				material.opacityTexture.vScale = p_Settings.texture.yScale;
+			}
+		}
+	}
+	p_ControlData.materials[p_MaterialName] = material;
+	return material;
+}
+
+function applySettings(p_ControlData, p_MeshObject, p_Settings) {
 	p_Settings = p_Settings || {};
 	if (p_MeshObject) {
 		if (p_Settings.position) {
-			setPosition(p_MeshObject, p_Settings.position, p_WebGLControl.unitMultiplier);
+			setPosition(p_MeshObject, p_Settings.position, p_ControlData.multiplier);
 		}
 		if (p_Settings.rotation) {
 			setRotation(p_MeshObject, p_Settings.rotation);
@@ -120,32 +194,40 @@ function addMesh(p_WebGLControl, p_Name, p_MeshObject, p_Settings) {
 			setScale(p_MeshObject, p_Settings.scale);
 		}
 		if (p_Settings.visible !== undefined) {
-			p_MeshObject.isVisible = p_Settings.visible;
+			applyRecursive(p_MeshObject, "isVisible", p_Settings.visible);
 		}
 		if (p_Settings.material) {
 			if (typeof p_Settings.material === "string") {
-				const material = controlData.materials[p_Settings.material];
+				const material = p_ControlData.materials[p_Settings.material];
 				if (material) {
 					p_MeshObject.material = material;
 				}
 			} else {
 				if (p_Settings.material.name) {
-					const material = p_WebGLControl.addMaterial(p_Settings.material.name, p_Settings.material);
+					const material = addMaterial(p_ControlData, p_Settings.material.name, p_Settings.material);
 					if (material) {
 						p_MeshObject.material = material;
 					}
 				}
 			}
 		}
+		p_MeshObject.renderingGroupId = (p_Settings.renderingGroupId === undefined) ? 1 : p_Settings.renderingGroupId;
+		applyRecursive(p_MeshObject, "checkCollisions", p_Settings.collisions);
 
-		// do shadows either if explicit shadows option is set to true in the settings or when defaultShadows is set to true and the shadows property is undefined
-		if (p_Settings.shadows || (p_WebGLControl.defaultShadows && p_Settings.castShadows === undefined)) {
-			addShadowCaster(p_WebGLControl, p_MeshObject);
+		// do shadows
+		if (p_Settings.shadows) {
+			addShadowCaster(p_ControlData, p_MeshObject);
 			p_MeshObject.receiveShadows = true;
 		}
-		p_MeshObject.renderingGroupId = 1;
-		applyRecursive(p_MeshObject, "checkCollisions", (p_Settings.collisions === undefined) ? controlData.allObjectCollisions : p_Settings.collisions);
-		controlData.meshes[p_Name] = p_MeshObject;
+	}
+
+	return p_MeshObject;
+}
+
+function addMesh(p_WebGLControl, p_MeshObject) {
+	const controlData = p_WebGLControl[privateData];
+	if (p_MeshObject) {
+		controlData.meshes[p_MeshObject.name] = p_MeshObject;
 
 		Object.keys(controlData.lights).forEach((p_Key) => {
 			if (controlData.lights[p_Key].shadowGenerator) {
@@ -173,7 +255,7 @@ function addClone(p_WebGLControl, p_Name, p_MeshObject, p_Settings) {
 		}
 		// do shadows either if explicit shadows option is set to true in the settings or when defaultShadows is set to true and the shadows property is undefined
 		if (p_Settings.shadows || (p_WebGLControl.defaultShadows && p_Settings.castShadows === undefined)) {
-			addShadowCaster(p_WebGLControl, p_MeshObject);
+			addShadowCaster(controlData, p_MeshObject);
 		}
 		applyRecursive(p_MeshObject, "checkCollisions", (p_Settings.collisions === undefined) ? controlData.allObjectCollisions : p_Settings.collisions);
 		controlData.clones[p_Name] = p_MeshObject;
@@ -192,151 +274,143 @@ function handleSelectionBoundingBoxChange(p_WebGLControl) {
 	Object.keys(controlData.clones).forEach(updateBoundingBox);
 }
 
-function createMoveMesh(p_Name, p_ControlData) {
-	const mesh = new babylon.Mesh(p_Name, p_ControlData.scene);
-	const sphere = babylon.MeshBuilder.CreateSphere(`${p_Name}-sphere`, { diameter: 2 }, p_ControlData.scene);
-	setRotation(sphere, { x: 90, y: 0, z: 0 });
-	sphere.material = p_ControlData.materials["manipulator-unselected"].clone();
-	mesh.addChild(sphere);
-	const arrow1Cylinder = babylon.MeshBuilder.CreateCylinder(`${p_Name}-left`, { diameter: 0.5, height: 1.5 }, p_ControlData.scene);
-	const arrow1Cone = babylon.MeshBuilder.CreateCylinder(`${p_Name}-left`, { diameterTop: 0, diameterBottom: 1, height: 1 }, p_ControlData.scene);
-	mesh.addChild(arrow1Cylinder);
-	mesh.addChild(arrow1Cone);
-	const arrow2Cylinder = babylon.MeshBuilder.CreateCylinder(`${p_Name}-right`, { diameter: 0.5, height: 1.5 }, p_ControlData.scene);
-	const arrow2Cone = babylon.MeshBuilder.CreateCylinder(`${p_Name}-right`, { diameterTop: 0, diameterBottom: 1, height: 1 }, p_ControlData.scene);
-	mesh.addChild(arrow2Cylinder);
-	mesh.addChild(arrow2Cone);
-	setPosition(arrow1Cylinder, { y: -2 }, 1);
-	setPosition(arrow2Cylinder, { y: 2 }, 1);
-	setPosition(arrow1Cone, { y: -3 }, 1);
-	setRotation(arrow1Cone, { x: 0, y: 0, z: 180 });
-	setPosition(arrow2Cone, { y: 3 }, 1);
-	setVisibility(mesh, false);
-	applyRecursive(mesh, "renderingGroupId", 1);
-
-	return mesh;
-}
-
-function createScaleMesh(p_Name, p_ControlData) {
-	const mesh = new babylon.Mesh(p_Name, p_ControlData.scene);
-	const sphere = babylon.MeshBuilder.CreateSphere(`${p_Name}-sphere`, { diameter: 2 }, p_ControlData.scene);
-	setRotation(sphere, { x: 90, y: 0, z: 0 });
-	sphere.material = p_ControlData.materials["manipulator-unselected"].clone();
-	mesh.addChild(sphere);
-	const arrow1Cylinder = babylon.MeshBuilder.CreateCylinder(`${p_Name}-left`, { diameter: 0.5, height: 1.5 }, p_ControlData.scene);
-	const arrow1Cone = babylon.MeshBuilder.CreateCylinder(`${p_Name}-left`, { diameterTop: 0, diameterBottom: 1, height: 1 }, p_ControlData.scene);
-	mesh.addChild(arrow1Cylinder);
-	mesh.addChild(arrow1Cone);
-	const arrow2Cylinder = babylon.MeshBuilder.CreateCylinder(`${p_Name}-right`, { diameter: 0.5, height: 1.5 }, p_ControlData.scene);
-	const arrow2Cone = babylon.MeshBuilder.CreateCylinder(`${p_Name}-right`, { diameterTop: 0, diameterBottom: 1, height: 1 }, p_ControlData.scene);
-	mesh.addChild(arrow2Cylinder);
-	mesh.addChild(arrow2Cone);
-	setPosition(arrow1Cylinder, { y: -2 }, 1);
-	setPosition(arrow2Cylinder, { y: 2 }, 1);
-	setPosition(arrow1Cone, { y: -3 }, 1);
-	setRotation(arrow1Cone, { x: 0, y: 0, z: 180 });
-	setPosition(arrow2Cone, { y: 3 }, 1);
-	setVisibility(mesh, false);
-	applyRecursive(mesh, "renderingGroupId", 1);
-
-	return mesh;
-}
-
-function createRotateMesh(p_Name, p_ControlData) {
-	const mesh = new babylon.Mesh(p_Name, p_ControlData.scene);
-	const sphere = babylon.MeshBuilder.CreateSphere(`${p_Name}-sphere`, { diameter: 2 }, p_ControlData.scene);
-	setRotation(sphere, { x: 90, y: 0, z: 0 });
-	sphere.material = p_ControlData.materials["manipulator-unselected"].clone();
-	mesh.addChild(sphere);
-	const arrow1Cylinder = babylon.MeshBuilder.CreateCylinder(`${p_Name}-left`, { diameter: 0.5, height: 1.5 }, p_ControlData.scene);
-	const arrow1Cone = babylon.MeshBuilder.CreateCylinder(`${p_Name}-left`, { diameterTop: 0, diameterBottom: 1, height: 1 }, p_ControlData.scene);
-	mesh.addChild(arrow1Cylinder);
-	mesh.addChild(arrow1Cone);
-	const arrow2Cylinder = babylon.MeshBuilder.CreateCylinder(`${p_Name}-right`, { diameter: 0.5, height: 1.5 }, p_ControlData.scene);
-	const arrow2Cone = babylon.MeshBuilder.CreateCylinder(`${p_Name}-right`, { diameterTop: 0, diameterBottom: 1, height: 1 }, p_ControlData.scene);
-	mesh.addChild(arrow2Cylinder);
-	mesh.addChild(arrow2Cone);
-	setPosition(arrow1Cylinder, { y: -2 }, 1);
-	setPosition(arrow2Cylinder, { y: 2 }, 1);
-	setPosition(arrow1Cone, { y: -3 }, 1);
-	setRotation(arrow1Cone, { x: 0, y: 0, z: 180 });
-	setPosition(arrow2Cone, { y: 3 }, 1);
-	setVisibility(mesh, false);
-	applyRecursive(mesh, "renderingGroupId", 1);
-
-	return mesh;
-}
-
-function createManipulatorTemplates(p_WebGLControl) {
-	const controlData = p_WebGLControl[privateData];
-	controlData.manipulators[MANIPULATOR_TYPES.MOVE_X] = controlData.manipulators[MANIPULATOR_TYPES.MOVE_Y] = controlData.manipulators[MANIPULATOR_TYPES.MOVE_Z] = createMoveMesh("move-manipulator", controlData);
-	controlData.manipulators[MANIPULATOR_TYPES.SCALE_X] = controlData.manipulators[MANIPULATOR_TYPES.SCALE_Y] = controlData.manipulators[MANIPULATOR_TYPES.SCALE_Z] = controlData.manipulators[MANIPULATOR_TYPES.SCALE] = createScaleMesh("scale-manipulator", controlData);
-	controlData.manipulators[MANIPULATOR_TYPES.ROTATE_X] = controlData.manipulators[MANIPULATOR_TYPES.ROTATE_Y] = controlData.manipulators[MANIPULATOR_TYPES.ROTATE_Z] = createRotateMesh("rotate-manipulator", controlData);
-}
-
 function createMeshInstance(p_Mesh, p_Name) {
 	const instance = p_Mesh.createInstance(p_Name);
 	p_Mesh.getChildren().forEach((p_Child) => instance.addChild(createMeshInstance(p_Child, `${p_Name}-${p_Child.name}`)));
 	return instance;
 }
 
-function createAndAttachManipulatorInstance(p_ManipulatorName, p_WebGLControl, p_Mesh, p_Settings) {
-	const controlData = p_WebGLControl[privateData];
-	const name = `${p_ManipulatorName}-${p_Mesh.name}`;
-	p_Mesh.getChildMeshes(true, (p_ChildMesh) => p_ChildMesh.name === name).forEach((p_ChildMesh) => p_Mesh.removeChild(p_ChildMesh));
-	const clonedMesh = controlData.manipulators[p_ManipulatorName].clone(name);
-	clonedMesh.manipulatorType = p_ManipulatorName;
-	p_Mesh.addChild(clonedMesh);
-	if (p_Settings.position) {
-		setPosition(clonedMesh, p_Settings.position, 1);
-	}
-	if (p_Settings.rotation) {
-		setRotation(clonedMesh, p_Settings.rotation);
-	}
-	if (p_Settings.scale) {
-		setScale(clonedMesh, p_Settings.scale);
-	}
-	applyRecursive(clonedMesh, "checkCollisions", true);
-	applyRecursive(clonedMesh, "isVisible", true);
+function createSphere(p_ControlData, p_Settings, p_Name) {
+	return applySettings(p_ControlData, babylon.MeshBuilder.CreateSphere(ensureName(p_Name), { segments: p_Settings.segments || 16, diameter: (p_Settings.diameter || 1) * p_ControlData.multiplier, diameterX: (p_Settings.diameterX || p_Settings.diameter || 1) * p_ControlData.multiplier, diameterY: (p_Settings.diameterY || p_Settings.diameter || 1) * p_ControlData.multiplier, diameterZ: (p_Settings.diameterZ || p_Settings.diameter || 1) * p_ControlData.multiplier, arc: p_Settings.arc || 1, slice: p_Settings.slice || 1, sideOrientation: p_Settings.sideOrientation }, p_ControlData.scene), p_Settings);
 }
 
-function attachMoveXManipulator(p_WebGLControl, p_Mesh, p_Settings) {
-	createAndAttachManipulatorInstance(MANIPULATOR_TYPES.MOVE_X, p_WebGLControl, p_Mesh, p_Settings);
+function createBox(p_ControlData, p_Settings, p_Name) {
+	return applySettings(p_ControlData, babylon.MeshBuilder.CreateBox(ensureName(p_Name), { width: (p_Settings.width || 1) * p_ControlData.multiplier, height: (p_Settings.height || 1) * p_ControlData.multiplier, depth: (p_Settings.depth || 1) * p_ControlData.multiplier, sideOrientation: p_Settings.sideOrientation }, p_ControlData.scene), p_Settings);
 }
-function attachMoveYManipulator(p_WebGLControl, p_Mesh, p_Settings) {
-	createAndAttachManipulatorInstance(MANIPULATOR_TYPES.MOVE_Y, p_WebGLControl, p_Mesh, p_Settings);
+
+function createPlane(p_ControlData, p_Settings, p_Name) {
+	return applySettings(p_ControlData, babylon.MeshBuilder.CreatePlane(ensureName(p_Name), { width: (p_Settings.width || 1) * p_ControlData.multiplier, height: (p_Settings.height || 1) * p_ControlData.multiplier, sideOrientation: p_Settings.sideOrientation }, p_ControlData.scene), p_Settings);
 }
-function attachMoveZManipulator(p_WebGLControl, p_Mesh, p_Settings) {
-	createAndAttachManipulatorInstance(MANIPULATOR_TYPES.MOVE_Z, p_WebGLControl, p_Mesh, p_Settings);
+
+function createPolyline(p_ControlData, p_Settings, p_Name) {
+	const linePoints = p_Settings.points.map((p_Point) => new babylon.Vector3(p_Point.x * p_ControlData.multiplier, p_Point.y * p_ControlData.multiplier, p_Point.z * p_ControlData.multiplier));
+	const polyLine = (linePoints.length > 1) ? babylon.MeshBuilder.CreateLines(ensureName(p_Name), { points: linePoints }, p_ControlData.scene) : null;
+	return (polyLine) ? applySettings(p_ControlData, polyLine, p_Settings) : null;
 }
-function attachScaleXManipulator(p_WebGLControl, p_Mesh, p_Settings) {
-	createAndAttachManipulatorInstance(MANIPULATOR_TYPES.SCALE_X, p_WebGLControl, p_Mesh, p_Settings);
+
+function createExtrudedPolygon(p_ControlData, p_Settings, p_Name) {
+	const shape = (p_Settings.outline || []).map((p_Point) => convertToVector3(multiplyVector(convertToVectorObject(p_Point), p_ControlData.multiplier)));
+	const holes = (p_Settings.holes || []).map((p_Hole) => p_Hole.map((p_Point) => convertToVector3(multiplyVector(convertToVectorObject(p_Point), p_ControlData.multiplier))));
+	return (shape.length) ? applySettings(p_ControlData, babylon.MeshBuilder.ExtrudePolygon(ensureName(p_Name), {
+		shape,
+		depth: (p_Settings.depth || 0) * p_ControlData.multiplier,
+		holes,
+	}, p_ControlData.scene), p_Settings) : null;
 }
-function attachScaleYManipulator(p_WebGLControl, p_Mesh, p_Settings) {
-	createAndAttachManipulatorInstance(MANIPULATOR_TYPES.SCALE_Y, p_WebGLControl, p_Mesh, p_Settings);
+
+function createCylinder(p_ControlData, p_Settings, p_Name) {
+	return applySettings(p_ControlData, babylon.MeshBuilder.CreateCylinder(ensureName(p_Name), { height: (p_Settings.height || 1) * p_ControlData.multiplier, diameter: (p_Settings.diameter === undefined) ? p_Settings.diameter : (p_Settings.diameter || 1) * p_ControlData.multiplier, diameterTop: ((p_Settings.diameterTop === undefined) ? (p_Settings.diameter || 1) : p_Settings.diameterTop) * p_ControlData.multiplier, diameterBottom: ((p_Settings.diameterBottom === undefined) ? (p_Settings.diameter || 1) : p_Settings.diameterBottom) * p_ControlData.multiplier, tessellation: p_Settings.segments || 16, arc: p_Settings.arc || 1, enclose: p_Settings.enclose || false }, p_ControlData.scene), p_Settings);
 }
-function attachScaleZManipulator(p_WebGLControl, p_Mesh, p_Settings) {
-	createAndAttachManipulatorInstance(MANIPULATOR_TYPES.SCALE_Z, p_WebGLControl, p_Mesh, p_Settings);
+
+const meshContainer = Symbol("meshContainer");
+const wrapReference = Symbol("wrapReference");
+const originalDispose = Symbol("originalDispose");
+
+function unWrap(p_Wrapped) { return p_Wrapped[meshContainer]; }
+
+function wrap(p_ControlData, p_Mesh) {
+	let wrapped = p_Mesh ? p_Mesh[wrapReference] : null;
+	if (!wrapped && p_Mesh) {
+		wrapped = {
+			get visible() { return this[meshContainer].isVisible; },
+			set visible(p_Visible) { setVisibility(this[meshContainer], p_Visible); },
+			get parent() { return wrap(p_ControlData, this[meshContainer].parent); },
+			get center() { const bounding = this[meshContainer].getBoundingInfo(); const center = (bounding && bounding.boundingBox) ? bounding.boundingBox.centerWorld : null; return { x: center.x / p_ControlData.multiplier, y: center.y / p_ControlData.multiplier, z: center.z / p_ControlData.multiplier }; },
+			get maximum() { const bounding = this[meshContainer].getBoundingInfo(); const maximum = (bounding && bounding.boundingBox) ? bounding.boundingBox.maximumWorld : null; return { x: maximum.x / p_ControlData.multiplier, y: maximum.y / p_ControlData.multiplier, z: maximum.z / p_ControlData.multiplier }; },
+			get minimum() { const bounding = this[meshContainer].getBoundingInfo(); const minimum = (bounding && bounding.boundingBox) ? bounding.boundingBox.minimumWorld : null; return { x: minimum.x / p_ControlData.multiplier, y: minimum.y / p_ControlData.multiplier, z: minimum.z / p_ControlData.multiplier }; },
+			get name() { return this[meshContainer].name; },
+			clone(p_Name) { return wrap(p_ControlData, this[meshContainer].clone(ensureName(p_Name))); },
+			updateCoordinates() { this[meshContainer].computeWorldMatrix(true); },
+			remove() { this[meshContainer].dispose(); },
+			applySettings(p_Settings) { applySettings(p_ControlData, this[meshContainer], p_Settings); },
+			offset(p_Offset) { this[meshContainer].position.addInPlace({ x: p_Offset.x * p_ControlData.multiplier, y: p_Offset.y * p_ControlData.multiplier, z: p_Offset.z * p_ControlData.multiplier }); },
+			scale(p_Scaling) { this[meshContainer].scaling.x = p_Scaling; this[meshContainer].scaling.y = p_Scaling; this[meshContainer].scaling.z = p_Scaling; },
+		};
+		wrapped[meshContainer] = p_Mesh;
+		p_Mesh[wrapReference] = wrapped;
+		p_Mesh[originalDispose] = p_Mesh.dispose;
+		p_Mesh.dispose = function() {
+			delete this[wrapReference][meshContainer];
+			delete this[wrapReference];
+			this.dispose = this[originalDispose];
+			delete this[originalDispose];
+			this.dispose();
+		};
+	}
+	return wrapped;
 }
-function attachScaleManipulator(p_WebGLControl, p_Mesh, p_Settings) {
-	createAndAttachManipulatorInstance(MANIPULATOR_TYPES.SCALE, p_WebGLControl, p_Mesh, p_Settings);
+
+function wrapGroup(p_ControlData, p_Mesh) {
+	const wrapped = wrap(p_ControlData, p_Mesh);
+	wrapped.addChild = function(p_Child) { this[meshContainer].addChild(unWrap(p_Child)); };
+	wrapped.removeChild = function(p_Child) { this[meshContainer].removeChild(unWrap(p_Child)); };
+	wrapped.addChildren = function(p_Children) { const mesh = this[meshContainer]; p_Children.forEach((p_Child) => mesh.addChild(unWrap(p_Child))); };
+	wrapped.getChildren = function(p_Filter, p_Recursive) { return this[meshContainer].getChildMeshes(!p_Recursive, (p_ChildMesh) => !p_Filter || p_Filter(wrap(p_ControlData, p_ChildMesh))).map((p_Child) => wrap(p_ControlData, p_Child)); };
+	wrapped.clone = function(p_Name) { return wrapGroup(p_ControlData, this[meshContainer].clone(ensureName(p_Name))); };
+	return wrapped;
 }
-function attachRotateAroundXManipulator(p_WebGLControl, p_Mesh, p_Settings) {
-	createAndAttachManipulatorInstance(MANIPULATOR_TYPES.ROTATE_X, p_WebGLControl, p_Mesh, p_Settings);
+
+function wrapEvent(p_ControlData, p_Event) {
+	return {
+		event: p_Event.event,
+		hitMesh: (p_Event.pickInfo.hit) ? wrap(p_ControlData, p_Event.pickInfo.pickedMesh) : null,
+	};
 }
-function attachRotateAroundYManipulator(p_WebGLControl, p_Mesh, p_Settings) {
-	createAndAttachManipulatorInstance(MANIPULATOR_TYPES.ROTATE_Y, p_WebGLControl, p_Mesh, p_Settings);
+
+function addPointerDownListener(p_ControlData, p_Callback) { p_ControlData.scene.onPointerObservable.add((p_Event) => { p_Callback(wrapEvent(p_ControlData, p_Event)); }, babylon.PointerEventTypes.POINTERDOWN); }
+function addPointerUpListener(p_ControlData, p_Callback) { p_ControlData.scene.onPointerObservable.add((p_Event) => { p_Callback(wrapEvent(p_ControlData, p_Event)); }, babylon.PointerEventTypes.POINTERUP); }
+function addPointerMoveListener(p_ControlData, p_Callback) { p_ControlData.scene.onPointerObservable.add((p_Event) => { p_Callback(wrapEvent(p_ControlData, p_Event)); }, babylon.PointerEventTypes.POINTERMOVE); }
+
+function screenToObjectPoint(p_ControlData, p_Position, p_Mesh) {
+	const pickInfo = p_ControlData.scene.pick(p_Position.x, p_Position.y, (p_TestMesh) => p_Mesh === p_TestMesh);
+	return (pickInfo.hit) ? { x: pickInfo.pickedPoint.x / p_ControlData.multiplier, y: pickInfo.pickedPoint.y / p_ControlData.multiplier, z: pickInfo.pickedPoint.z / p_ControlData.multiplier } : null;
 }
-function attachRotateAroundZManipulator(p_WebGLControl, p_Mesh, p_Settings) {
-	createAndAttachManipulatorInstance(MANIPULATOR_TYPES.ROTATE_Z, p_WebGLControl, p_Mesh, p_Settings);
+
+function attachExtension(p_WebGLControl, p_ExtensionObject) {
+	const controlData = p_WebGLControl[privateData];
+	p_ExtensionObject.attach(p_WebGLControl, {
+		// get a named mesh
+		getMeshObject(p_MeshNameOrPath) { return wrap(controlData, getMeshObject(p_WebGLControl, p_MeshNameOrPath)); },
+		// mesh creation
+		createMeshGroup(p_Name) { return wrapGroup(controlData, new babylon.Mesh(ensureName(p_Name), controlData.scene)); },
+		createSphere(p_Settings, p_Name) { return wrap(controlData, createSphere(controlData, p_Settings, p_Name)); },
+		createBox(p_Settings, p_Name) { return wrap(controlData, createBox(controlData, p_Settings, p_Name)); },
+		createPlane(p_Settings, p_Name) { return wrap(controlData, createPlane(controlData, p_Settings, p_Name)); },
+		createPolyline(p_Settings, p_Name) { return wrap(controlData, createPolyline(controlData, p_Settings, p_Name)); },
+		createExtrudedPolygon(p_Settings, p_Name) { return wrap(controlData, createExtrudedPolygon(controlData, p_Settings, p_Name)); },
+		createCylinder(p_Settings, p_Name) { return wrap(controlData, createCylinder(controlData, p_Settings, p_Name)); },
+		// settings
+		applySettings(p_Settings, p_Mesh) { applySettings(controlData, unWrap(p_Mesh), p_Settings); },
+		// event handling
+		addPointerDownListener(p_Callback) { addPointerDownListener(controlData, p_Callback); },
+		addPointerUpListener(p_Callback) { addPointerUpListener(controlData, p_Callback); },
+		addPointerMoveListener(p_Callback) { addPointerMoveListener(controlData, p_Callback); },
+		// utility
+		screenToObjectPoint(p_ScreenPoint, p_Wrapped) { return screenToObjectPoint(controlData, p_ScreenPoint, unWrap(p_Wrapped)); },
+		get pointerPos() { return { x: controlData.scene.pointerX, y: controlData.scene.pointerY }; },
+		// camera
+		detachCameraControl() { controlData.camera.detachControl(p_WebGLControl.$.canvas); },
+		attachCameraControl() { controlData.camera.attachControl(p_WebGLControl.$.canvas, !(controlData.preventDefault || false)); },
+	});
 }
 
 /**
- * Class to represent the vicowa-icon custom element
+ * Class to represent the vicowa-webgl custom element
  * @extends webComponentBaseClass
- * @property {boolean} open Set to true to open the modal or false the close it
+ * @property {boolean} loadingScreen Set to true to show a loading screen or false for no loading screen
+ * @property {boolean} selectionBoundingBox Set to true to show a bounding box when an object is selected or false to not show this box
  */
-class VicowaWebgl extends webComponentBaseClass {
+export class VicowaWebgl extends webComponentBaseClass {
 	static get is() { return componentName; }
 	constructor() {
 		super();
@@ -350,8 +424,7 @@ class VicowaWebgl extends webComponentBaseClass {
 			multiplier: 10,
 			assetsManager: null,
 			scene: null,
-			manipulators: {},
-			activeManipulationObjects: {},
+			extensions: [],
 		};
 	}
 
@@ -372,6 +445,17 @@ class VicowaWebgl extends webComponentBaseClass {
 		};
 	}
 
+	addExtension(p_ExtensionObject) {
+		const controlData = this[privateData];
+		if (controlData.extensions.indexOf(p_ExtensionObject) === -1) {
+			controlData.extensions.push(p_ExtensionObject);
+			// make sure the scene has been created before attaching this
+			if (controlData.scene) {
+				attachExtension(this, p_ExtensionObject);
+			}
+		}
+	}
+
 	async addObjectResource(p_Name, p_MeshName, p_FileName, p_Settings) {
 		const controlData = this[privateData];
 		const meshTask = controlData.assetsManager.addMeshTask(p_Name, p_MeshName, `${p_FileName.split("/").slice(0, -1).join("/")}/`, p_FileName.split("/").slice(-1)[0]);
@@ -381,14 +465,14 @@ class VicowaWebgl extends webComponentBaseClass {
 					p_Settings.position = { x: 0, y: 0, z: 0 };
 				}
 				if (task.loadedMeshes.length === 1) {
-					addMesh(this, p_Name, task.loadedMeshes[0], p_Settings);
+					addMesh(this, task.loadedMeshes[0], p_Settings);
 				} else {
 					const mesh = new babylon.Mesh(p_Name, controlData.scene);
 					task.loadedMeshes.forEach((p_Mesh) => {
 						p_Mesh.renderingGroupId = 1;
 						mesh.addChild(p_Mesh);
 					});
-					addMesh(this, p_Name, mesh, p_Settings);
+					addMesh(this, mesh, p_Settings);
 				}
 				resolve();
 			};
@@ -421,23 +505,9 @@ class VicowaWebgl extends webComponentBaseClass {
 		skybox.renderingGroupId = 0;
 	}
 
-	addSphere(p_Name, p_Settings) {
-		const sphere = babylon.MeshBuilder.CreateSphere(p_Name, { segments: p_Settings.segments || 16, diameter: (p_Settings.diameter || 1) * this.unitMultiplier, diameterX: (p_Settings.diameterX || p_Settings.diameter || 1) * this.unitMultiplier, diameterY: (p_Settings.diameterY || p_Settings.diameter || 1) * this.unitMultiplier, diameterZ: (p_Settings.diameterZ || p_Settings.diameter || 1) * this.unitMultiplier, arc: p_Settings.arc || 1, slice: p_Settings.slice || 1, sideOrientation: p_Settings.sideOrientation }, this[privateData].scene);
-		addMesh(this, p_Name, sphere, p_Settings);
-		return sphere;
-	}
-
-	addBox(p_Name, p_Settings) {
-		const box = babylon.MeshBuilder.CreateBox(p_Name, { width: (p_Settings.width || 1) * this.unitMultiplier, height: (p_Settings.height || 1) * this.unitMultiplier, depth: (p_Settings.depth || 1) * this.unitMultiplier, sideOrientation: p_Settings.sideOrientation }, this[privateData].scene);
-		addMesh(this, p_Name, box, p_Settings);
-		return box;
-	}
-
-	addPlane(p_Name, p_Settings) {
-		const plane = babylon.MeshBuilder.CreatePlane(p_Name, { width: (p_Settings.width || 1) * this.unitMultiplier, height: (p_Settings.height || 1) * this.unitMultiplier, sideOrientation: p_Settings.sideOrientation }, this[privateData].scene);
-		addMesh(this, p_Name, plane, p_Settings);
-		return plane;
-	}
+	addSphere(p_Settings, p_Name) { addMesh(this, createSphere(this[privateData], addDefaultSettings(this, p_Settings), p_Name)); }
+	addBox(p_Settings, p_Name) { addMesh(this, createBox(this[privateData], addDefaultSettings(this, p_Settings), p_Name)); }
+	addPlane(p_Settings, p_Name) { addMesh(this, createPlane(this[privateData], addDefaultSettings(this, p_Settings), p_Name)); }
 
 	addGround(p_Name, p_Settings) {
 		const controlData = this[privateData];
@@ -445,26 +515,19 @@ class VicowaWebgl extends webComponentBaseClass {
 		controlData.meshes[p_Name] = ground;
 		ground.receiveShadows = true;
 		ground.checkCollisions = controlData.allObjectCollisions;
-		return ground;
 	}
 
 	addPolyline(p_Name, p_Settings) {
-		const linePoints = p_Settings.points.map((p_Point) => new babylon.Vector3(p_Point.x * this.unitMultiplier, p_Point.y * this.unitMultiplier, p_Point.z * this.unitMultiplier));
-		const polyLine = (linePoints.length > 1) ? babylon.MeshBuilder.CreateLines(p_Name, { points: linePoints }, this[privateData].scene) : null;
-		addMesh(this, p_Name, polyLine, p_Settings);
-		return polyLine;
+		const polyLine = createPolyline(this[privateData], addDefaultSettings(this, p_Settings), p_Name);
+		if (polyLine) {
+			addMesh(this, polyLine, p_Settings);
+		}
 	}
 
 	addExtrudedPolygon(p_Name, p_Settings) {
-		const shape = (p_Settings.outline || []).map((p_Point) => convertToVector3(multiplyVector(convertToVectorObject(p_Point), this.unitMultiplier)));
-		const holes = (p_Settings.holes || []).map((p_Hole) => p_Hole.map((p_Point) => convertToVector3(multiplyVector(convertToVectorObject(p_Point), this.unitMultiplier))));
-		if (shape.length) {
-			const polygon = babylon.MeshBuilder.ExtrudePolygon(p_Name, {
-				shape,
-				depth: (p_Settings.depth || 0) * this.unitMultiplier,
-				holes,
-			}, this[privateData].scene);
-			addMesh(this, p_Name, polygon, p_Settings);
+		const polygon = createExtrudedPolygon(this[privateData], addDefaultSettings(this, p_Settings), p_Name);
+		if (polygon) {
+			addMesh(this, polygon, p_Settings);
 		}
 	}
 
@@ -571,62 +634,7 @@ class VicowaWebgl extends webComponentBaseClass {
 		}
 	}
 
-	addMaterial(p_MaterialName, p_Settings) {
-		const controlData = this[privateData];
-		const material = controlData.materials[p_MaterialName] || new babylon.StandardMaterial(p_MaterialName, controlData.scene);
-		if (p_Settings.diffuse) {
-			Object.assign(material.diffuseColor, p_Settings.diffuse);
-		}
-		if (p_Settings.specular) {
-			Object.assign(material.specularColor, p_Settings.specular);
-		}
-		if (p_Settings.emissive) {
-			Object.assign(material.emissiveColor, p_Settings.emissive);
-		}
-		if (p_Settings.ambient) {
-			Object.assign(material.ambientColor, p_Settings.ambient);
-		}
-		if (p_Settings.alpha !== undefined) {
-			material.alpha = p_Settings.alpha;
-		}
-		if (p_Settings.texture && p_Settings.texture.src) {
-			material.invertNormalMapY = material.invertNormalMapX = p_Settings.texture.invertBump || false;
-			if (p_Settings.texture.src) {
-				material.diffuseTexture = new babylon.Texture(p_Settings.texture.src, controlData.scene);
-				material.diffuseTexture.hasAlpha = p_Settings.texture.alpha || false;
-			}
-			if (p_Settings.texture.bumpSrc) {
-				material.bumpTexture = new babylon.Texture(p_Settings.texture.bumpSrc, controlData.scene);
-			}
-			if (p_Settings.texture.opacitySrc) {
-				material.opacityTexture = new babylon.Texture(p_Settings.texture.opacitySrc, controlData.scene);
-			}
-			if (p_Settings.texture.xScale) {
-				if (material.diffuseTexture) {
-					material.diffuseTexture.uScale = p_Settings.texture.xScale;
-				}
-				if (material.bumpTexture) {
-					material.bumpTexture.uScale = p_Settings.texture.xScale;
-				}
-				if (material.opacityTexture) {
-					material.opacityTexture.uScale = p_Settings.texture.xScale;
-				}
-			}
-			if (p_Settings.texture.yScale) {
-				if (material.diffuseTexture) {
-					material.diffuseTexture.vScale = p_Settings.texture.yScale;
-				}
-				if (material.bumpTexture) {
-					material.bumpTexture.vScale = p_Settings.texture.yScale;
-				}
-				if (material.opacityTexture) {
-					material.opacityTexture.vScale = p_Settings.texture.yScale;
-				}
-			}
-		}
-		controlData.materials[p_MaterialName] = material;
-		return material;
-	}
+	addMaterial(p_MaterialName, p_Settings) { return addMaterial(this[privateData], p_MaterialName, p_Settings); }
 
 	setObjectMaterial(p_ObjectNames, p_Material) {
 		const controlData = this[privateData];
@@ -895,77 +903,6 @@ class VicowaWebgl extends webComponentBaseClass {
 	set selectColor(p_Color) { Object.assign(this[privateData].materials["selected"].diffuseColor, p_Color); }
 	get selectColor() { const color = (this[privateData].materials["selected"] || {}).diffuseColor; return { r: color.r || 1, g: color.g || 0, b: color.b || 0 }; }
 
-	static getAllManipulatorsAllowed() {
-		return Object.keys(MANIPULATOR_TYPES).reduce((p_Previous, p_Option) => { p_Previous[p_Option] = true; return p_Previous; }, {});
-	}
-
-	setAllowedManipulators(p_ObjectName, p_Settings) {
-		const mesh = getMeshObject(this, p_ObjectName);
-		mesh.manipulation = mesh.manipulation || {};
-		Object.keys(p_Settings).forEach((p_Key) => {
-			if (MANIPULATOR_TYPES[p_Key]) {
-				mesh.manipulation[p_Key] = p_Settings[p_Key];
-			}
-		});
-	}
-
-	removeManipulators(p_ObjectName) {
-		const controlData = this[privateData];
-		const manipulatorName = `manipulator-for-${p_ObjectName}`;
-		if (controlData.activeManipulationObjects[manipulatorName]) {
-			controlData.activeManipulationObjects[manipulatorName].dispose();
-			delete controlData.activeManipulationObjects[manipulatorName];
-		}
-	}
-
-	attachManipulators(p_ObjectName) {
-		const controlData = this[privateData];
-		const mesh = getMeshObject(this, p_ObjectName);
-		if (mesh) {
-			const bounding = mesh.getBoundingInfo();
-			const maxVector = bounding.boundingBox.maximum;
-			const minVector = bounding.boundingBox.minimum;
-			const center = bounding.boundingBox.centerWorld;
-			if (mesh && mesh.manipulation && Object.keys(mesh.manipulation).find((p_Key) => MANIPULATOR_TYPES[p_Key] && mesh.manipulation[p_Key])) {
-				const manipulatorMesh = new babylon.Mesh(`manipulator-for-${p_ObjectName}`, controlData.scene);
-				controlData.activeManipulationObjects[`manipulator-for-${p_ObjectName}`] = manipulatorMesh;
-				manipulatorMesh.manipulatedMesh = mesh;
-				const manipulation = mesh.manipulation;
-				if (manipulation[MANIPULATOR_TYPES.MOVE_X]) {
-					attachMoveXManipulator(this, manipulatorMesh, { position: { x: maxVector.x + center.x + 4, y: minVector.y + center.y - 1, z: minVector.z + center.z - 1 }, rotation: { x: 0, y: 0, z: 90 } });
-				}
-				if (manipulation[MANIPULATOR_TYPES.MOVE_Y]) {
-					attachMoveYManipulator(this, manipulatorMesh, { position: { x: minVector.x + center.x - 1, y: maxVector.y + center.y + 4, z: minVector.z + center.z - 1 }, rotation: { x: 0, y: 0, z: 0 } });
-				}
-				if (manipulation[MANIPULATOR_TYPES.MOVE_Z]) {
-					attachMoveZManipulator(this, manipulatorMesh, { position: { x: minVector.x + center.x - 1, y: minVector.y + center.y + 1, z: minVector.z + center.z - 4 }, rotation: { x: 90, y: 0, z: 0 } });
-				}
-				if (manipulation[MANIPULATOR_TYPES.SCALE]) {
-					attachScaleManipulator(this, manipulatorMesh, { position: { x: maxVector.x + center.x + 4, y: maxVector.y + center.y + 4, z: minVector.z + center.z - 4 }, rotation: { x: -45, y: -45, z: 0 } });
-				} else {
-					if (manipulation[MANIPULATOR_TYPES.SCALE_X]) {
-						attachScaleXManipulator(this, manipulatorMesh, { position: { x: maxVector.x + center.x + 4, y: minVector.y + center.y - 1, z: minVector.z + center.z - 1 }, rotation: { x: 0, y: 0, z: 90 } });
-					}
-					if (manipulation[MANIPULATOR_TYPES.SCALE_Y]) {
-						attachScaleYManipulator(this, manipulatorMesh, { position: { x: minVector.x + center.x - 1, y: maxVector.y + center.y + 4, z: minVector.z + center.z - 1 }, rotation: { x: 0, y: 0, z: 0 } });
-					}
-					if (manipulation[MANIPULATOR_TYPES.SCALE_Z]) {
-						attachScaleZManipulator(this, manipulatorMesh, { position: { x: minVector.x + center.x - 1, y: minVector.y + center.y + 1, z: minVector.z + center.z - 4 }, rotation: { x: 90, y: 0, z: 0 } });
-					}
-				}
-				if (manipulation[MANIPULATOR_TYPES.ROTATE_X]) {
-					attachRotateAroundXManipulator(this, manipulatorMesh, { position: { x: minVector.x + center.x - 1, y: minVector.y + center.y + 1, z: minVector.z + center.z - 4 }, rotation: { x: 90, y: 0, z: 0 } });
-				}
-				if (manipulation[MANIPULATOR_TYPES.ROTATE_Y]) {
-					attachRotateAroundYManipulator(this, manipulatorMesh, { position: { x: minVector.x + center.x - 1, y: minVector.y + center.y + 1, z: minVector.z + center.z - 4 }, rotation: { x: 90, y: 0, z: 0 } });
-				}
-				if (manipulation[MANIPULATOR_TYPES.ROTATE_Z]) {
-					attachRotateAroundZManipulator(this, manipulatorMesh, { position: { x: maxVector.x + center.x + 4, y: minVector.y + center.y - 1, z: minVector.z + center.z - 1 }, rotation: { x: 0, y: 0, z: 90 } });
-				}
-			}
-		}
-	}
-
 	attached() {
 		const controlData = this[privateData];
 		// create the engine
@@ -977,8 +914,6 @@ class VicowaWebgl extends webComponentBaseClass {
 			controlData.scene.workerCollisions = true; // use web workers for collisions
 
 			this.addMaterial("selected", { diffuse: { r: 1, g: 0, b: 0 } });
-			this.addMaterial("manipulator-unselected", { diffuse: { r: 0.6, g: 0.6, b: 1 } });
-			this.addMaterial("manipulator-selected", { diffuse: { r: 0, g: 0, b: 1 } });
 
 			controlData.assetsManager = new babylon.AssetsManager(controlData.scene);
 			controlData.assetsManager.useDefaultLoadingScreen = this.loadingScreen;
@@ -996,176 +931,6 @@ class VicowaWebgl extends webComponentBaseClass {
 		};
 
 		createScene();
-
-		const getPlanePosition = () => {
-			const pickInfo = controlData.scene.pick(controlData.scene.pointerX, controlData.scene.pointerY, (p_Mesh) => controlData.draggingManipulator && p_Mesh === controlData.draggingManipulator.manipulatorPlane);
-			return (pickInfo.hit) ? pickInfo.pickedPoint : null;
-		};
-
-		controlData.scene.onPointerObservable.add((p_Event) => {
-			if (p_Event.pickInfo.hit) {
-				let mesh = p_Event.pickInfo.pickedMesh;
-				while (mesh && !MANIPULATOR_TYPES[mesh.manipulatorType]) {
-					mesh = mesh.parent;
-				}
-				if (mesh) {
-					controlData.draggingManipulator = { manipulatorType: mesh.manipulatorType, activeManipulator: mesh };
-					let meshManipulator = mesh;
-					while (meshManipulator && !meshManipulator.manipulatedMesh) {
-						meshManipulator = meshManipulator.parent;
-					}
-					if (meshManipulator) {
-						const bounding = mesh.getBoundingInfo();
-						const center = bounding.boundingBox.centerWorld;
-						switch (mesh.manipulatorType) {
-							case MANIPULATOR_TYPES.MOVE_X:
-							case MANIPULATOR_TYPES.SCALE_X:
-							case MANIPULATOR_TYPES.ROTATE_Z:
-								controlData.draggingManipulator.manipulatorPlane = babylon.MeshBuilder.CreatePlane(`manipulatorXPlane-for-${meshManipulator.manipulatedMesh.name}`, { width: 10000, height: 10000 }, this[privateData].scene);
-								controlData.draggingManipulator.manipulatorPlane.position.z = center.z;
-								controlData.draggingManipulator.manipulatorPlane.renderingGroupId = 1;
-								controlData.draggingManipulator.manipulatorPlane.checkCollisions = true;
-								controlData.draggingManipulator.manipulatorPlane.computeWorldMatrix(true);
-								controlData.draggingManipulator.manipulatorPlane.isVisible = false;
-								break;
-							case MANIPULATOR_TYPES.SCALE:
-								controlData.draggingManipulator.manipulatorPlane = babylon.MeshBuilder.CreatePlane(`manipulatorXPlane-for-${meshManipulator.manipulatedMesh.name}`, { width: 10000, height: 10000 }, this[privateData].scene);
-								controlData.draggingManipulator.manipulatorPlane.position.z = center.z;
-								controlData.draggingManipulator.manipulatorPlane.position.x = center.x;
-								controlData.draggingManipulator.manipulatorPlane.position.y = center.y;
-								controlData.draggingManipulator.manipulatorPlane.rotation.y = toRadians(45);
-								controlData.draggingManipulator.manipulatorPlane.renderingGroupId = 1;
-								controlData.draggingManipulator.manipulatorPlane.checkCollisions = true;
-								controlData.draggingManipulator.manipulatorPlane.computeWorldMatrix(true);
-								controlData.draggingManipulator.manipulatorPlane.isVisible = false;
-								break;
-							case MANIPULATOR_TYPES.MOVE_Y:
-							case MANIPULATOR_TYPES.SCALE_Y:
-								controlData.draggingManipulator.manipulatorPlane = babylon.MeshBuilder.CreatePlane(`manipulatorYPlane-for-${meshManipulator.manipulatedMesh.name}`, { width: 10000, height: 10000 }, this[privateData].scene);
-								controlData.draggingManipulator.manipulatorPlane.position.z = center.z;
-								controlData.draggingManipulator.manipulatorPlane.renderingGroupId = 1;
-								controlData.draggingManipulator.manipulatorPlane.checkCollisions = true;
-								controlData.draggingManipulator.manipulatorPlane.computeWorldMatrix(true);
-								controlData.draggingManipulator.manipulatorPlane.isVisible = false;
-								break;
-							case MANIPULATOR_TYPES.ROTATE_X:
-								controlData.draggingManipulator.manipulatorPlane = babylon.MeshBuilder.CreatePlane(`manipulatorYPlane-for-${meshManipulator.manipulatedMesh.name}`, { width: 10000, height: 10000 }, this[privateData].scene);
-								controlData.draggingManipulator.manipulatorPlane.position.z = center.z;
-								controlData.draggingManipulator.manipulatorPlane.rotation.y = toRadians(90);
-								controlData.draggingManipulator.manipulatorPlane.renderingGroupId = 1;
-								controlData.draggingManipulator.manipulatorPlane.checkCollisions = true;
-								controlData.draggingManipulator.manipulatorPlane.computeWorldMatrix(true);
-								controlData.draggingManipulator.manipulatorPlane.isVisible = false;
-								break;
-							case MANIPULATOR_TYPES.MOVE_Z:
-							case MANIPULATOR_TYPES.SCALE_Z:
-							case MANIPULATOR_TYPES.ROTATE_Y:
-								controlData.draggingManipulator.manipulatorPlane = babylon.MeshBuilder.CreatePlane(`manipulatorZPlane-for-${meshManipulator.manipulatedMesh.name}`, { width: 10000, height: 10000 }, this[privateData].scene);
-								controlData.draggingManipulator.manipulatorPlane.position.y = center.y;
-								controlData.draggingManipulator.manipulatorPlane.rotation.x = toRadians(90);
-								controlData.draggingManipulator.manipulatorPlane.renderingGroupId = 1;
-								controlData.draggingManipulator.manipulatorPlane.checkCollisions = true;
-								controlData.draggingManipulator.manipulatorPlane.computeWorldMatrix(true);
-								controlData.draggingManipulator.manipulatorPlane.isVisible = false;
-								break;
-							case MANIPULATOR_TYPES.MOVE_PLANE:
-								controlData.draggingManipulator.manipulatorPlane = mesh.manipulatorPlane;
-								break;
-						}
-
-						controlData.draggingManipulator.startPoint = getPlanePosition();
-						if (controlData.draggingManipulator.startPoint) {
-							controlData.draggingManipulator.manipulatorsMesh = meshManipulator;
-							controlData.draggingManipulator.activeManipulator.getChildren()[0].material = controlData.materials["manipulator-selected"].clone();
-							controlData.camera.detachControl(this.$.canvas);
-						} else {
-							if (controlData.draggingManipulator.manipulatorType !== MANIPULATOR_TYPES.MOVE_PLANE) {
-								controlData.draggingManipulator.manipulatorPlane.dispose();
-							}
-							controlData.draggingManipulator = null;
-						}
-					} else {
-						controlData.draggingManipulator.manipulatorPlane.dispose();
-						controlData.draggingManipulator = null;
-					}
-				}
-			}
-		}, babylon.PointerEventTypes.POINTERDOWN);
-
-		controlData.scene.onPointerObservable.add(() => {
-			if (controlData.draggingManipulator) {
-				if (controlData.draggingManipulator.manipulatorType !== MANIPULATOR_TYPES.MOVE_PLANE) {
-					controlData.draggingManipulator.manipulatorPlane.dispose();
-				}
-				controlData.draggingManipulator.activeManipulator.getChildren()[0].material = controlData.materials["manipulator-unselected"].clone();
-				controlData.draggingManipulator = null;
-			}
-			controlData.camera.attachControl(this.$.canvas, !(controlData.preventDefault || false));
-		}, babylon.PointerEventTypes.POINTERUP);
-
-		controlData.scene.onPointerObservable.add(() => {
-			if (controlData.draggingManipulator && controlData.draggingManipulator.startPoint) {
-				const currentPoint = getPlanePosition();
-				if (currentPoint) {
-					const targetObjectCenter = controlData.draggingManipulator.manipulatorsMesh.manipulatedMesh.getBoundingInfo().boundingBox.centerWorld;
-					const diff = currentPoint.subtract(controlData.draggingManipulator.startPoint);
-					diff.x = Math.round(diff.x * 1000) / 1000;
-					diff.y = Math.round(diff.y * 1000) / 1000;
-					diff.z = Math.round(diff.z * 1000) / 1000;
-					switch (controlData.draggingManipulator.manipulatorType) {
-						case MANIPULATOR_TYPES.MOVE_X:
-							diff.y = 0;
-							diff.z = 0;
-							controlData.draggingManipulator.manipulatorsMesh.position.addInPlace(diff);
-							controlData.draggingManipulator.manipulatorsMesh.manipulatedMesh.position.addInPlace(diff);
-							controlData.draggingManipulator.startPoint = currentPoint;
-							break;
-						case MANIPULATOR_TYPES.MOVE_Y:
-							diff.x = 0;
-							diff.z = 0;
-							controlData.draggingManipulator.manipulatorsMesh.position.addInPlace(diff);
-							controlData.draggingManipulator.manipulatorsMesh.manipulatedMesh.position.addInPlace(diff);
-							controlData.draggingManipulator.startPoint = currentPoint;
-							break;
-						case MANIPULATOR_TYPES.MOVE_Z:
-							diff.x = 0;
-							diff.y = 0;
-							controlData.draggingManipulator.manipulatorsMesh.position.addInPlace(diff);
-							controlData.draggingManipulator.manipulatorsMesh.manipulatedMesh.position.addInPlace(diff);
-							controlData.draggingManipulator.startPoint = currentPoint;
-							break;
-						case MANIPULATOR_TYPES.MOVE_PLANE:
-							controlData.draggingManipulator.manipulatorsMesh.position.addInPlace(diff);
-							controlData.draggingManipulator.manipulatorsMesh.manipulatedMesh.position.addInPlace(diff);
-							controlData.draggingManipulator.startPoint = currentPoint;
-							break;
-						case MANIPULATOR_TYPES.SCALE: {
-							const oldDistance = controlData.draggingManipulator.startPoint.subtract(targetObjectCenter).length();
-							const newDistance = currentPoint.subtract(targetObjectCenter).length();
-							controlData.draggingManipulator.manipulatorsMesh.scaling.x = newDistance / oldDistance;
-							controlData.draggingManipulator.manipulatorsMesh.scaling.y = newDistance / oldDistance;
-							controlData.draggingManipulator.manipulatorsMesh.scaling.z = newDistance / oldDistance;
-							controlData.draggingManipulator.manipulatorsMesh.manipulatedMesh.scaling.x = newDistance / oldDistance;
-							controlData.draggingManipulator.manipulatorsMesh.manipulatedMesh.scaling.y = newDistance / oldDistance;
-							controlData.draggingManipulator.manipulatorsMesh.manipulatedMesh.scaling.z = newDistance / oldDistance;
-						}
-							break;
-						case MANIPULATOR_TYPES.SCALE_X:
-							break;
-						case MANIPULATOR_TYPES.SCALE_Y:
-							break;
-						case MANIPULATOR_TYPES.SCALE_Z:
-							break;
-						case MANIPULATOR_TYPES.ROTATE_X:
-							break;
-						case MANIPULATOR_TYPES.ROTATE_Y:
-							break;
-						case MANIPULATOR_TYPES.ROTATE_Z:
-							break;
-					}
-				}
-			}
-		}, babylon.PointerEventTypes.POINTERMOVE);
 
 		controlData.scene.onPointerObservable.add((p_Event) => {
 			if (p_Event.pickInfo.hit) {
@@ -1192,7 +957,9 @@ class VicowaWebgl extends webComponentBaseClass {
 		resizeDetector.addObserver(() => {
 			controlData.engine.resize();
 		}, this);
-		createManipulatorTemplates(this);
+
+		// attach all extensions now
+		controlData.extensions.forEach((p_ExtensionObject) => attachExtension(this, p_ExtensionObject));
 	}
 }
 

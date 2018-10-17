@@ -1,5 +1,6 @@
 import { createQuickAccess } from "../../src/third_party/web-component-base-class/src/tools.js";
 import { CAMERA_TYPES } from "../../src/vicowa-webgl/vicowa-webgl-definitions.js";
+import VicowaWebGLManipulationExtension from "../../src/vicowa-webgl/manipulation-extension.js";
 
 const controls = createQuickAccess(document, "id");
 
@@ -18,6 +19,8 @@ controls.firstPerson.addEventListener("click", () => { setupCamera("first-person
 controls.vr.addEventListener("click", () => { setupCamera("vr"); });
 
 controls.gl1.onAttached = () => {
+	const webglManipulationExtension = new VicowaWebGLManipulationExtension();
+	controls.gl1.addExtension(webglManipulationExtension);
 	controls.gl1.createSkyBox("../resources/3d/skybox/skybox");
 	controls.gl1.addEnviromentalLight("env", { x: 0, y: 1, z: 0 });
 	controls.gl1.setLightColors("env", { diffuse: { r: 0.1, g: 0.15, b: 0.1 }, specular: { r: 0, g: 0, b: 0 } });
@@ -32,10 +35,10 @@ controls.gl1.onAttached = () => {
 	controls.gl1.onObjectClicked = (p_Info) => {
 		if (controls.gl1.isObjectSelected(p_Info.path)) {
 			controls.gl1.unselectObject(p_Info.path);
-			controls.gl1.removeManipulators(p_Info.path);
+			webglManipulationExtension.removeManipulators(p_Info.path);
 		} else {
 			controls.gl1.selectObject(p_Info.path);
-			controls.gl1.attachManipulators(p_Info.path);
+			webglManipulationExtension.attachManipulators(p_Info.path);
 		}
 	};
 
@@ -43,13 +46,13 @@ controls.gl1.onAttached = () => {
 
 	controls.add.addEventListener("click", () => {
 		objectID++;
-		const allowAllManipulators = controls.gl1.constructor.getAllManipulatorsAllowed();
+		const allowAllManipulators = webglManipulationExtension.constructor.getAllManipulatorsAllowed();
 
 		switch (controls.object.value) {
-			case "sphere": controls.gl1.addSphere(`sphere${objectID}`, { diameter: 1, position: { y: 1 } }); controls.gl1.setAllowedManipulators(`sphere${objectID}`, allowAllManipulators); break;
-			case "box": controls.gl1.addBox(`box${objectID}`, { width: 1, height: 2, depth: 3 }); controls.gl1.setAllowedManipulators(`box${objectID}`, allowAllManipulators); break;
-			case "plane": controls.gl1.addPlane(`plane${objectID}`, { width: 1, height: 2 }); controls.gl1.setAllowedManipulators(`plane${objectID}`, allowAllManipulators); break;
-			case "extrudedPolygon": controls.gl1.addExtrudedPolygon(`extrudedPolygon${objectID}`, {
+			case "sphere": controls.gl1.addSphere({ diameter: 1, position: { y: 1 } }, `sphere${objectID}`); webglManipulationExtension.setAllowedManipulators(`sphere${objectID}`, allowAllManipulators); break;
+			case "box": controls.gl1.addBox({ width: 1, height: 2, depth: 3 }, `box${objectID}`); webglManipulationExtension.setAllowedManipulators(`box${objectID}`, allowAllManipulators); break;
+			case "plane": controls.gl1.addPlane({ width: 1, height: 2 }, `plane${objectID}`); webglManipulationExtension.setAllowedManipulators(`plane${objectID}`, allowAllManipulators); break;
+			case "extrudedPolygon": controls.gl1.addExtrudedPolygon({
 				outline: [[-5, 0, 0], [-0.4, 0, 0], [-0.4, 0, 2], [0.4, 0, 2], [0.4, 0, 0], [5, 0, 0], [5, 0, 6], [-5, 0, 6]],
 				holes: [
 					[[1, 0, 0.5], [4, 0, 0.5], [4, 0, 2], [1, 0, 2]],
@@ -62,7 +65,7 @@ controls.gl1.onAttached = () => {
 				depth: 0.1,
 				// rotation: { x: -90, y: 0, z: 0 },
 				material: { name: "brick", specular: { r: 0, g: 0, b: 0 }, texture: { src: "../resources/3d/textures/BrickSmallNew.jpg", xScale: 8, yScale: 5.1 } },
-			}); controls.gl1.setAllowedManipulators(`extrudedPolygon${objectID}`, allowAllManipulators); break;
+			}, `extrudedPolygon${objectID}`); webglManipulationExtension.setAllowedManipulators(`extrudedPolygon${objectID}`, allowAllManipulators); break;
 		}
 	});
 
