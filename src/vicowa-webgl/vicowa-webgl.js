@@ -505,14 +505,14 @@ export class VicowaWebgl extends webComponentBaseClass {
 					p_Settings.position = { x: 0, y: 0, z: 0 };
 				}
 				if (task.loadedMeshes.length === 1) {
-					newMesh = addMesh(this, task.loadedMeshes[0], p_Settings);
+					newMesh = addMesh(this, applySettings(controlData, task.loadedMeshes[0], p_Settings));
 				} else {
 					const mesh = new babylon.Mesh(p_Name, controlData.scene);
 					task.loadedMeshes.forEach((p_Mesh) => {
 						p_Mesh.renderingGroupId = 1;
 						mesh.addChild(p_Mesh);
 					});
-					newMesh = addMesh(this, mesh, p_Settings);
+					newMesh = addMesh(this, applySettings(controlData, mesh, p_Settings));
 				}
 				resolve(wrap(controlData, newMesh));
 			};
