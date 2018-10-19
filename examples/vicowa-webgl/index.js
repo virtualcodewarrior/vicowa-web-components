@@ -1,6 +1,6 @@
 import { createQuickAccess } from "../../src/third_party/web-component-base-class/src/tools.js";
 import { CAMERA_TYPES } from "../../src/vicowa-webgl/vicowa-webgl-definitions.js";
-import VicowaWebGLManipulationExtension from "../../src/vicowa-webgl/manipulation-extension.js";
+import { default as VicowaWebGLManipulationExtension, MANIPULATOR_TYPES } from "../../src/vicowa-webgl/manipulation-extension.js";
 
 const controls = createQuickAccess(document, "id");
 
@@ -22,19 +22,16 @@ controls.gl1.onAttached = () => {
 	const webglManipulationExtension = new VicowaWebGLManipulationExtension();
 	controls.gl1.addExtension(webglManipulationExtension);
 	controls.gl1.createSkyBox("../resources/3d/skybox/skybox");
-	controls.gl1.addEnviromentalLight("env", { x: 0, y: 1, z: 0 });
-	controls.gl1.setLightColors("env", { diffuse: { r: 0.1, g: 0.15, b: 0.1 }, specular: { r: 0, g: 0, b: 0 } });
-	controls.gl1.setGroundLightColor("env", { r: 0.9, g: 1, b: 0.9 });
-	controls.gl1.addDirectionalLight("sunLight", { x: 4, y: -10, z: 10, generateShadows: true });
-	controls.gl1.setLightColors("subLight", { diffuse: { r: 1, g: 1, b: 0.9 }, specular: { r: 1, g: 1, b: 0.9 } });
-	// controls.gl1.addPlane("ground", { width: 100.0, height: 100.0, rotation: { x: 90, y: 0, z: 0 }, material: { name: "ground", diffuse: { r: 0, g: 0.3, b: 0 }, specular: { r: 0, g: 0.01, b: 0 } } });
+	controls.gl1.addEnvironmentalLight({ x: 0, y: 1, z: 0, color: { ground: { r: 0.9, g: 1, b: 0.9 }, diffuse: { r: 0.1, g: 0.15, b: 0.1 }, specular: { r: 0, g: 0, b: 0 } } }, "env");
+	controls.gl1.addDirectionalLight({ x: 4, y: -10, z: 10, generateShadows: true, color: { diffuse: { r: 1, g: 1, b: 0.9 }, specular: { r: 1, g: 1, b: 0.9 } } }, "sunLight");
+	controls.gl1.addGround({ width: 100.0, height: 100.0, material: { name: "ground", diffuse: { r: 0, g: 0.3, b: 0 }, specular: { r: 0, g: 0.01, b: 0 } } }, "ground");
 
 	setupCamera("orbital");
 	controls.gl1.startRendering();
 
 	controls.gl1.onObjectClicked = (p_Info) => {
 		if (controls.gl1.isObjectSelected(p_Info.path)) {
-			controls.gl1.unselectObject(p_Info.path);
+			controls.gl1.unSelectObject(p_Info.path);
 			webglManipulationExtension.removeManipulators(p_Info.path);
 		} else {
 			controls.gl1.selectObject(p_Info.path);
@@ -46,12 +43,14 @@ controls.gl1.onAttached = () => {
 
 	controls.add.addEventListener("click", () => {
 		objectID++;
-		const allowAllManipulators = webglManipulationExtension.constructor.getAllManipulatorsAllowed();
+		const allowedManipulators = webglManipulationExtension.constructor.getAllManipulatorsAllowed();
+		allowedManipulators[MANIPULATOR_TYPES.MOVE_PLANE] = false;
+		// allowedManipulators[MANIPULATOR_TYPES.SCALE] = false;
 
 		switch (controls.object.value) {
-			case "sphere": controls.gl1.addSphere({ diameter: 1, position: { y: 1 } }, `sphere${objectID}`); webglManipulationExtension.setAllowedManipulators(`sphere${objectID}`, allowAllManipulators); break;
-			case "box": controls.gl1.addBox({ width: 1, height: 2, depth: 3 }, `box${objectID}`); webglManipulationExtension.setAllowedManipulators(`box${objectID}`, allowAllManipulators); break;
-			case "plane": controls.gl1.addPlane({ width: 1, height: 2 }, `plane${objectID}`); webglManipulationExtension.setAllowedManipulators(`plane${objectID}`, allowAllManipulators); break;
+			case "sphere": controls.gl1.addSphere({ diameter: 1, position: { y: 1 } }, `sphere${objectID}`); webglManipulationExtension.setAllowedManipulators(`sphere${objectID}`, allowedManipulators); break;
+			case "box": controls.gl1.addBox({ width: 1, height: 2, depth: 3, position: { y: 1 }, rotation: { x: 0, y: 0, z: 45 } }, `box${objectID}`); webglManipulationExtension.setAllowedManipulators(`box${objectID}`, allowedManipulators); break;
+			case "plane": controls.gl1.addPlane({ width: 1, height: 2 }, `plane${objectID}`); webglManipulationExtension.setAllowedManipulators(`plane${objectID}`, allowedManipulators); break;
 			case "extrudedPolygon": controls.gl1.addExtrudedPolygon({
 				outline: [[-5, 0, 0], [-0.4, 0, 0], [-0.4, 0, 2], [0.4, 0, 2], [0.4, 0, 0], [5, 0, 0], [5, 0, 6], [-5, 0, 6]],
 				holes: [
@@ -65,7 +64,7 @@ controls.gl1.onAttached = () => {
 				depth: 0.1,
 				// rotation: { x: -90, y: 0, z: 0 },
 				material: { name: "brick", specular: { r: 0, g: 0, b: 0 }, texture: { src: "../resources/3d/textures/BrickSmallNew.jpg", xScale: 8, yScale: 5.1 } },
-			}, `extrudedPolygon${objectID}`); webglManipulationExtension.setAllowedManipulators(`extrudedPolygon${objectID}`, allowAllManipulators); break;
+			}, `extrudedPolygon${objectID}`); webglManipulationExtension.setAllowedManipulators(`extrudedPolygon${objectID}`, allowedManipulators); break;
 		}
 	});
 
