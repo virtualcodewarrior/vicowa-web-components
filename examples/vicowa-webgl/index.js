@@ -35,7 +35,7 @@ controls.gl1.onAttached = () => {
 			webglManipulationExtension.removeManipulators(p_Info.path);
 		} else {
 			controls.gl1.selectObject(p_Info.path);
-			webglManipulationExtension.attachManipulators(p_Info.path);
+			webglManipulationExtension.attachManipulators(p_Info.path, p_Info.location);
 		}
 	};
 
@@ -53,6 +53,7 @@ controls.gl1.onAttached = () => {
 			case "plane": controls.gl1.addPlane({ width: 1, height: 2 }, `plane${objectID}`); webglManipulationExtension.setAllowedManipulators(`plane${objectID}`, allowedManipulators); break;
 			case "extrudedPolygon": controls.gl1.addExtrudedPolygon({
 				outline: [[-5, 0, 0], [-0.4, 0, 0], [-0.4, 0, 2], [0.4, 0, 2], [0.4, 0, 0], [5, 0, 0], [5, 0, 6], [-5, 0, 6]],
+				rotation: { x: -90, y: 0, z: 0 },
 				holes: [
 					[[1, 0, 0.5], [4, 0, 0.5], [4, 0, 2], [1, 0, 2]],
 					[[-1, 0, 0.5], [-1, 0, 2], [-4, 0, 2], [-4, 0, 0.5]],
@@ -64,7 +65,17 @@ controls.gl1.onAttached = () => {
 				depth: 0.1,
 				// rotation: { x: -90, y: 0, z: 0 },
 				material: { name: "brick", specular: { r: 0, g: 0, b: 0 }, texture: { src: "../resources/3d/textures/BrickSmallNew.jpg", xScale: 8, yScale: 5.1 } },
-			}, `extrudedPolygon${objectID}`); webglManipulationExtension.setAllowedManipulators(`extrudedPolygon${objectID}`, allowedManipulators); break;
+			}, `extrudedPolygon${objectID}`);
+				controls.gl1.addExtrudedPolygon({
+					outline: [[-4.5, 0, 0.2], [-0.5, 0, 0.2], [-0.5, 0, 2.5], [0.5, 0, 2.5], [0.5, 0, 0.2], [4.5, 0, 0.2], [4.5, 0, 5.5], [-4.5, 0, 5.5]],
+					depth: 0.02,
+					rotation: { x: -90, y: 0, z: 0 },
+					position: { z: 0.05 },
+					material: { name: "glass", specular: { r: 1, g: 1, b: 1 }, diffuse: { r: 0.9, g: 1, b: 0.9 }, alpha: 0.2 },
+				}, `front-glass${objectID}`);
+				controls.gl1.groupObjects([`extrudedPolygon${objectID}`, `front-glass${objectID}`], `front${objectID}`);
+				webglManipulationExtension.setAllowedManipulators(`front${objectID}`, allowedManipulators);
+				break;
 		}
 	});
 

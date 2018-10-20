@@ -2,7 +2,7 @@
 /* switching this off for this file because babylon uses almost all uppercase starting function names */
 import { webComponentBaseClass } from "../third_party/web-component-base-class/src/webComponentBaseClass.js";
 import { CAMERA_TYPES, CAP_TYPES } from "./vicowa-webgl-definitions.js";
-import { toDegrees, toRadians } from "../utilities/mathHelpers.js";
+import { intersectRayAndTriangle, toDegrees, toRadians, vectorLength } from "../utilities/mathHelpers.js";
 import debug from "../utilities/debug.js";
 
 const privateData = Symbol["privateData"];
@@ -53,6 +53,14 @@ function getMeshObject(p_ControlData, p_MeshNamePathOrObject) {
 		mesh = p_ControlData.meshes[p_MeshNamePathOrObject] || p_ControlData.instances[p_MeshNamePathOrObject];
 	} else {
 		mesh = unWrap(p_MeshNamePathOrObject);
+	}
+	return mesh;
+}
+
+function getTopLevelMeshObject(p_ControlData, p_MeshNamePathOrObject) {
+	let mesh = getMeshObject(p_ControlData, p_MeshNamePathOrObject);
+	while (mesh && p_ControlData.meshes[mesh.name] !== mesh) {
+		mesh = mesh.parent;
 	}
 	return mesh;
 }
@@ -397,8 +405,9 @@ function addPointerUpListener(p_ControlData, p_Callback) { p_ControlData.scene.o
 function addPointerMoveListener(p_ControlData, p_Callback) { p_ControlData.scene.onPointerObservable.add((p_Event) => { p_Callback(wrapEvent(p_ControlData, p_Event)); }, babylon.PointerEventTypes.POINTERMOVE); }
 function addPointerClickListener(p_ControlData, p_Callback) { p_ControlData.scene.onPointerObservable.add((p_Event) => { p_Callback(wrapEvent(p_ControlData, p_Event)); }, babylon.PointerEventTypes.POINTERPICK); }
 
-function screenToObjectPoint(p_ControlData, p_Position, p_Mesh) {
-	const pickInfo = p_ControlData.scene.pick(p_Position.x, p_Position.y, (p_TestMesh) => p_Mesh === p_TestMesh);
+function screenToObjectPoint(p_ControlData, p_Position, p_Mesh, p_BoundingBoxCheck) {
+	const childMeshes = flattenMeshes(p_Mesh);
+	const pickInfo = p_ControlData.scene.pick(p_Position.x, p_Position.y, (p_TestMesh) => childMeshes.includes(p_TestMesh), p_BoundingBoxCheck || false);
 	return (pickInfo.hit) ? { x: pickInfo.pickedPoint.x / p_ControlData.multiplier, y: pickInfo.pickedPoint.y / p_ControlData.multiplier, z: pickInfo.pickedPoint.z / p_ControlData.multiplier } : null;
 }
 
@@ -406,16 +415,31 @@ function pointToScreenPoint(p_ControlData, p_Point) {
 	return babylon.Vector3.Project(new babylon.Vector3(p_Point.x * p_ControlData.multiplier, p_Point.y * p_ControlData.multiplier, p_Point.z * p_ControlData.multiplier), babylon.Matrix.Identity(), p_ControlData.scene.getTransformMatrix(), p_ControlData.camera.viewport.toGlobal(p_ControlData.engine));
 }
 
-function createScreenToObjectPointVectorPair(p_ControlData, p_Point, p_Mesh) {
+function screenPointToBoundingProjection(p_ControlData, p_Point, p_Mesh) {
 	const ray = p_ControlData.scene.createPickingRay(p_Point.x, p_Point.y, babylon.Matrix.Identity(), p_ControlData.camera, false);
-	return { start: { x: ray.origin.x / p_ControlData.multiplier, y: ray.origin.y / p_ControlData.multiplier, z: ray.origin.z / p_ControlData.multiplier }, intersection: screenToObjectPoint(p_ControlData, p_Point, p_Mesh) };
+	const boxVectors = p_Mesh.getBoundingInfo().boundingBox.vectorsWorld;
+	const triangleIndexes = [[0, 3, 5], [0, 5, 2], [0, 4, 6], [0, 6, 3], [0, 2, 7], [0, 7, 4], [1, 7, 2], [1, 2, 5], [1, 6, 3], [1, 3, 5], [1, 6, 4], [1, 4, 7]];
+	let distance = -1;
+	let intersection = null;
+	triangleIndexes.forEach((p_TriangleIndexSet) => {
+		const is = intersectRayAndTriangle(ray.origin, ray.direction, boxVectors[p_TriangleIndexSet[0]], boxVectors[p_TriangleIndexSet[1]], boxVectors[p_TriangleIndexSet[2]]);
+		if (is) {
+			const dist = vectorLength(is, ray.origin);
+			if (distance < 0 || distance > dist) {
+				distance = dist;
+				intersection = is;
+			}
+		}
+	});
+
+	return (intersection) ? { start: { x: ray.origin.x / p_ControlData.multiplier, y: ray.origin.y / p_ControlData.multiplier, z: ray.origin.z / p_ControlData.multiplier }, intersection: { x: intersection.x / p_ControlData.multiplier, y: intersection.y / p_ControlData.multiplier, z: intersection.z / p_ControlData.multiplier } } : null;
 }
 
 function attachExtension(p_WebGLControl, p_ExtensionObject) {
 	const controlData = p_WebGLControl[privateData];
 	p_ExtensionObject.attach(p_WebGLControl, {
-		// get a named object
-		getObject(p_ObjectNameOrPath) { return wrap(controlData, getMeshObject(controlData, p_ObjectNameOrPath)); },
+		// get a mesh object from the main store
+		getObject(p_ObjectNameOrPath) { return wrap(controlData, getTopLevelMeshObject(controlData, p_ObjectNameOrPath)); },
 		// object creation
 		createGroup(p_Name) { return wrapGroup(controlData, new babylon.Mesh(ensureName(p_Name), controlData.scene)); },
 		createSphere(p_Settings, p_Name) { return wrap(controlData, createSphere(controlData, p_Settings, p_Name)); },
@@ -435,7 +459,7 @@ function attachExtension(p_WebGLControl, p_ExtensionObject) {
 		// utility
 		screenToObjectPoint(p_ScreenPoint, p_Wrapped) { return screenToObjectPoint(controlData, p_ScreenPoint, unWrap(p_Wrapped)); },
 		pointToScreenPoint(p_Point) { const point = pointToScreenPoint(controlData, p_Point); return { x: point.x, y: point.y }; },
-		createScreenToObjectPointVectorPair(p_ScreenPoint, p_Wrapped) { return createScreenToObjectPointVectorPair(controlData, p_ScreenPoint, unWrap(p_Wrapped)); },
+		screenPointToBoundingProjection(p_ScreenPoint, p_Wrapped) { return screenPointToBoundingProjection(controlData, p_ScreenPoint, unWrap(p_Wrapped)); },
 		get pointerPos() { return { x: controlData.scene.pointerX, y: controlData.scene.pointerY }; },
 		// camera
 		detachCameraControl() { controlData.camera.detachControl(p_WebGLControl.$.canvas); },
@@ -871,18 +895,33 @@ export class VicowaWebgl extends webComponentBaseClass {
 		const controlData = this[privateData];
 		const meshes = [];
 		let newMesh = null;
+		const refreshBoundingInfo = (p_Mesh) => {
+			const children = p_Mesh.getChildren();
+			let boundingInfo = children[0].getBoundingInfo();
+			let min = boundingInfo.boundingBox.minimumWorld;
+			let max = boundingInfo.boundingBox.maximumWorld;
+			for (let index = 1; index < children.length; index++) {
+				boundingInfo = children[index].getBoundingInfo();
+				min = babylon.Vector3.Minimize(min, boundingInfo.boundingBox.minimumWorld);
+				max = babylon.Vector3.Maximize(max, boundingInfo.boundingBox.maximumWorld);
+			}
+			p_Mesh.setBoundingInfo(new babylon.BoundingInfo(min, max));
+		};
+
 		p_ObjectNames.forEach((p_Name) => { const mesh = controlData.meshes[p_Name]; if (mesh) { meshes.push(mesh); } });
 		if (meshes.length) {
 			newMesh = new babylon.Mesh(p_NewName, controlData.scene);
 			meshes.forEach((p_NewChild) => { newMesh.addChild(p_NewChild); delete controlData.meshes[p_NewChild.name]; });
 			controlData.meshes[p_NewName] = newMesh;
+			newMesh.computeWorldMatrix(true);
+			refreshBoundingInfo(newMesh);
 		}
 		return (newMesh) ? newMesh.name : null;
 	}
 
 	selectObject(p_Object) {
 		const controlData = this[privateData];
-		const mesh = getMeshObject(controlData, p_Object);
+		const mesh = getTopLevelMeshObject(controlData, p_Object);
 		if (mesh) {
 			const allMeshes = flattenMeshes(mesh);
 			allMeshes.forEach((p_Mesh) => {
@@ -901,7 +940,8 @@ export class VicowaWebgl extends webComponentBaseClass {
 	}
 
 	unSelectObject(p_ObjectName) {
-		const mesh = getMeshObject(this[privateData], p_ObjectName);
+		const controlData = this[privateData];
+		const mesh = getTopLevelMeshObject(controlData, p_ObjectName);
 		if (mesh) {
 			const allMeshes = flattenMeshes(mesh);
 			allMeshes.forEach((p_Mesh) => {

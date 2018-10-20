@@ -23,11 +23,6 @@ export const MANIPULATOR_TYPES = Object.freeze({
 
 const privateData = Symbol("privateData");
 const manipulation = Symbol("manipulation");
-
-function getObject(p_ExtensionData, p_Object) {
-	return (typeof p_Object === "string" || Array.isArray(p_Object)) ? p_ExtensionData.webglIF.getObject(p_Object) : p_Object;
-}
-
 const manipulatorRenderingGroup = 1;
 
 function createMoveObject(p_Name, p_ExtensionData) {
@@ -140,7 +135,7 @@ function attachRotateAroundZManipulator(p_Extension, p_Object, p_Settings) {
 	createAndAttachManipulatorInstance(MANIPULATOR_TYPES.ROTATE_Z, p_Extension, p_Object, p_Settings);
 }
 
-function attachManipulators(p_Extension, p_Object) {
+function attachManipulators(p_Extension, p_Object, p_ClickPoint) {
 	const extensionData = p_Extension[privateData];
 	const allowed = p_Object[manipulation].allowed;
 	const activeGroup = p_Object[manipulation].activeGroup;
@@ -159,8 +154,8 @@ function attachManipulators(p_Extension, p_Object) {
 		};
 
 		const getPosition = (p_TargetOffsetX, p_TargetOffsetY) => {
-			const screenPoint = extensionData.webglIF.pointToScreenPoint(center);
-			const planePointPair = extensionData.webglIF.createScreenToObjectPointVectorPair(screenPoint, p_Object);
+			const screenPoint = extensionData.webglIF.pointToScreenPoint(p_ClickPoint || center);
+			const planePointPair = extensionData.webglIF.screenPointToBoundingProjection(screenPoint, p_Object);
 			const distance = vectorLength(vectorSubtract(planePointPair.intersection, planePointPair.start));
 			const factor = 1 / distance;
 			const position = {
@@ -559,7 +554,7 @@ export default class VicowaWebGLManipulationExtension {
 
 	setAllowedManipulators(p_Object, p_Settings) {
 		const extensionData = this[privateData];
-		const targetObject = getObject(extensionData, p_Object);
+		const targetObject = extensionData.webglIF.getObject(p_Object);
 		targetObject[manipulation] = targetObject[manipulation] || { allowed: {}, manipulatorPlane: null };
 		Object.keys(p_Settings).forEach((p_Key) => {
 			if (MANIPULATOR_TYPES[p_Key]) {
@@ -573,7 +568,7 @@ export default class VicowaWebGLManipulationExtension {
 
 	removeManipulators(p_Object) {
 		const extensionData = this[privateData];
-		const targetObject = getObject(extensionData, p_Object);
+		const targetObject = extensionData.webglIF.getObject(p_Object);
 		const manipulatorName = `manipulator-for-${targetObject.name}`;
 		if (extensionData.activeManipulationObjects[manipulatorName]) {
 			extensionData.activeManipulationObjects[manipulatorName].remove();
@@ -581,14 +576,14 @@ export default class VicowaWebGLManipulationExtension {
 		}
 	}
 
-	attachManipulators(p_Object) {
+	attachManipulators(p_Object, p_ClickPoint) {
 		const extensionData = this[privateData];
-		const targetObject = getObject(extensionData, p_Object);
+		const targetObject = extensionData.webglIF.getObject(p_Object);
 		if (targetObject && targetObject[manipulation]) {
 			if (!targetObject[manipulation].activeGroup) {
 				setNextGroup(this, targetObject);
 			}
-			attachManipulators(this, targetObject);
+			attachManipulators(this, targetObject, p_ClickPoint);
 		}
 	}
 }
