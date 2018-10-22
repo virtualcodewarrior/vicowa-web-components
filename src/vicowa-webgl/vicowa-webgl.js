@@ -487,6 +487,7 @@ export class VicowaWebgl extends webComponentBaseClass {
 			multiplier: 10,
 			assetsManager: null,
 			scene: null,
+			engine: null,
 			extensions: [],
 		};
 	}
@@ -1032,6 +1033,22 @@ export class VicowaWebgl extends webComponentBaseClass {
 
 		// attach all extensions now
 		controlData.extensions.forEach((p_ExtensionObject) => attachExtension(this, p_ExtensionObject));
+	}
+
+	detached() {
+		const controlData = this[privateData];
+		this.stopRendering();
+		controlData.scene.dispose();
+		controlData.engine.dispose();
+
+		controlData.lights = {};
+		controlData.meshes = {};
+		controlData.instances = {};
+		controlData.materials = {};
+		controlData.assetsManager = null;
+		controlData.engine = null;
+		controlData.scene = null;
+		controlData.extensions = [];
 	}
 }
 
