@@ -42,6 +42,9 @@
 	</div>
 	<script>
 		const content = document.querySelector('#content');
+		content.onChange = (p_ElementInstance) => {
+			p_ElementInstance.testValue = new Date().toString();
+		};
 		const content2 = document.querySelector('#content2');
 			Array.from(document.querySelectorAll('button')).forEach((p_Button) => {
 			p_Button.addEventListener('click', (p_Event) => {

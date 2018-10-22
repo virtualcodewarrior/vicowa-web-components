@@ -1,8 +1,11 @@
 import { webComponentBaseClass } from "../third_party/web-component-base-class/src/webComponentBaseClass.js";
 
+const privateData = Symbol("privateData");
+
 const componentName = "vicowa-content-container";
 
 function handleChangeLocation(p_Control) {
+	const controlData = p_Control[privateData];
 	if (p_Control.location && typeof p_Control.contentBaseLocation === "string") {
 		// get the web component name by taking the location, taking the file name and stripping of the extension. This requires you to always name the
 		// html the same as the web component
@@ -10,22 +13,24 @@ function handleChangeLocation(p_Control) {
 		const location = p_Control.contentBaseLocation + p_Control.location;
 
 		// make sure we didn't load this already
-		if (p_Control._currentElement !== element && p_Control._currentLocation !== location) {
+		if (controlData.currentElement !== element && controlData.currentLocation !== location) {
 			// only push a new state if we are changing the location not if we are just initializing
-			if (p_Control._currentElement && p_Control._currentLocation && p_Control._currentTitle !== undefined && !p_Control.noPush) {
+			if (controlData.currentElement && controlData.currentLocation && controlData.currentTitle !== undefined && !p_Control.noPush) {
 				if (!window.history.state) {
-					window.history.replaceState({ location: p_Control._currentLocation.replace(p_Control.contentBaseLocation, ""), id: p_Control.getAttribute("id"), title: p_Control._currentTitle }, p_Control._currentTitle, (p_Control.addLocationToUrl) ? `#${p_Control._currentLocation.replace(p_Control.contentBaseLocation, "")}` : undefined);
+					window.history.replaceState({ location: controlData.currentLocation.replace(p_Control.contentBaseLocation, ""), id: p_Control.getAttribute("id"), title: controlData.currentTitle }, controlData.currentTitle, (p_Control.addLocationToUrl) ? `#${controlData.currentLocation.replace(p_Control.contentBaseLocation, "")}` : undefined);
 				}
 				window.history.pushState({ location: location.replace(p_Control.contentBaseLocation, ""), id: p_Control.getAttribute("id"), title: p_Control.getAttribute("page-title") }, p_Control.getAttribute("page-title"), (p_Control.addLocationToUrl) ? `#${location.replace(p_Control.contentBaseLocation, "")}` : undefined);
 			}
-			p_Control._currentElement = element;
-			p_Control._currentLocation = location;
-			p_Control._currentTitle = p_Control.getAttribute("page-title");
+			controlData.currentElement = element;
+			controlData.elementInstance = null;
+			controlData.currentLocation = location;
+			controlData.currentTitle = p_Control.getAttribute("page-title");
 			const createElement = () => {
 				p_Control.$.container.innerHTML = "";
-				p_Control.$.container.appendChild(document.createElement(element));
-				if (p_Control.onChange) {
-					p_Control.onChange();
+				controlData.elementInstance = document.createElement(element);
+				p_Control.$.container.appendChild(controlData.elementInstance);
+				if (controlData.onChange) {
+					controlData.onChange(controlData.elementInstance);
 				}
 			};
 
@@ -84,9 +89,25 @@ class VicowaContentContainer extends webComponentBaseClass {
 			},
 		};
 	}
-	constructor() { super(); }
+	constructor() {
+		super();
+		this[privateData] = {
+			currentElement: null,
+			currentLocation: null,
+			currentTitle: "",
+			elementInstance: null,
+			onChange: null,
+		};
+	}
 
 	attached() {
+		const controlData = this[privateData];
+		controlData.onChange = this.onChange;
+		Object.defineProperty(this, "onChange", {
+			get() { return undefined; },
+			set(p_Callback) { controlData.onChange = p_Callback; controlData.onChange(controlData.elementInstance); },
+		});
+
 		const handleLoadState = (p_State, p_Anchor) => {
 			p_Anchor = (p_Anchor || "").replace(/^#/, "");
 			if (p_Anchor) {
