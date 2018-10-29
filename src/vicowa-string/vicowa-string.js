@@ -1,6 +1,8 @@
 import { webComponentBaseClass } from "../third_party/web-component-base-class/src/webComponentBaseClass.js";
 import translator from "../utilities/translate.js";
 
+const privateData = Symbol("privateData");
+
 const componentName = "vicowa-string";
 
 function updateString(p_StringElement, p_NewValue, p_OldValue) {
@@ -34,7 +36,9 @@ class VicowaString extends webComponentBaseClass {
 	static get is() { return componentName; }
 	constructor() {
 		super();
-		this._activeTranslator = null;
+		this[privateData] = {
+			activeTranslator: null,
+		};
 	}
 
 	static get properties() {
@@ -59,7 +63,8 @@ class VicowaString extends webComponentBaseClass {
 	}
 
 	updateTranslation() {
-		this.$.string.innerHTML = (this._activeTranslator && this.string) ? this._activeTranslator.translate(this.string).ifPlural(this.pluralNumber || 1).fetch(this.parameters) : this.string;
+		const controlData = this[privateData];
+		this.$.string.innerHTML = (controlData.activeTranslator && this.string) ? controlData.activeTranslator.translate(this.string).ifPlural(this.pluralNumber || 1).fetch(this.parameters) : this.string;
 		if (this.onTranslationUpdated) {
 			this.onTranslationUpdated(this.displayString);
 		}
@@ -74,7 +79,7 @@ class VicowaString extends webComponentBaseClass {
 	attached() {
 		this.$.string.innerHTML = this.string;
 		translator.addTranslationUpdatedObserver((p_Translator) => {
-			this._activeTranslator = p_Translator;
+			this[privateData].activeTranslator = p_Translator;
 			this.updateTranslation();
 		}, this);
 	}

@@ -1,4 +1,7 @@
 import { webComponentBaseClass } from "../third_party/web-component-base-class/src/webComponentBaseClass.js";
+import translator from "../utilities/translate.js";
+
+const privateData = Symbol("privateData");
 
 const componentName = "vicowa-button";
 
@@ -23,6 +26,16 @@ function argumentsChanged(p_ButtonControl) {
 }
 
 /**
+ * Handler to be called when the tooltip text is changed
+ * @param {VicowaButton} p_InputControl The control for which this handler is called
+ */
+function tooltipChanged(p_InputControl) {
+	p_InputControl.$.button.setAttribute("title", p_InputControl.tooltip);
+	p_InputControl.updateTranslation();
+}
+
+
+/**
  * Class that represents the vicowa-button custom element
  * @extends webComponentBaseClass
  * @property {string} string The text to be displayed on the button
@@ -30,11 +43,15 @@ function argumentsChanged(p_ButtonControl) {
  * @property {number} pluralNumber A number to indicate the number of items a string applies to. The translator will use this to determine if a plural form should be used
  * @property {string} icon The name of an icon to use with this button. This should be in the format <iconSet>:<iconName> e.g. general:file
  * @property {string} ariaLabel The name of the button, used for accessibility, if this is not set it will use any string set for the button
+ * @property {string} tooltip A tooltip for the button
  */
 class VicowaButton extends webComponentBaseClass {
 	static get is() { return componentName; }
 	constructor() {
 		super();
+		this[privateData] = {
+			activeTranslator: null,
+		};
 	}
 
 	static get properties() {
@@ -69,7 +86,18 @@ class VicowaButton extends webComponentBaseClass {
 				value: false,
 				reflectToAttribute: true,
 			},
+			tooltip: {
+				type: String,
+				value: "",
+				reflectToAttribute: true,
+				observer: tooltipChanged,
+			},
 		};
+	}
+
+	updateTranslation() {
+		const controlData = this[privateData];
+		this.$.button.setAttribute("title", (controlData.activeTranslator && this.tooltip) ? controlData.activeTranslator.translate(this.tooltip).fetch() : this.tooltip);
 	}
 
 	attached() {
@@ -79,6 +107,11 @@ class VicowaButton extends webComponentBaseClass {
 			}
 		};
 		this.$.button.setAttribute("aria-label", this.$.string.displayString);
+
+		translator.addTranslationUpdatedObserver((p_Translator) => {
+			this[privateData].activeTranslator = p_Translator;
+			this.updateTranslation();
+		}, this);
 	}
 }
 
