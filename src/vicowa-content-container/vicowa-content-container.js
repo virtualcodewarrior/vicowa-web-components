@@ -26,11 +26,14 @@ function handleChangeLocation(p_Control) {
 			controlData.currentLocation = location;
 			controlData.currentTitle = p_Control.getAttribute("page-title");
 			const createElement = () => {
-				p_Control.$.container.innerHTML = "";
-				controlData.elementInstance = document.createElement(element);
-				p_Control.$.container.appendChild(controlData.elementInstance);
-				if (controlData.onChange) {
-					controlData.onChange(controlData.elementInstance);
+				// test again because importing the document might be out of order
+				if (!controlData.elementInstance || controlData.elementInstance.localName !== controlData.currentElement) {
+					p_Control.$.container.innerHTML = "";
+					controlData.elementInstance = document.createElement(controlData.currentElement);
+					p_Control.$.container.appendChild(controlData.elementInstance);
+					if (controlData.onChange) {
+						controlData.onChange(controlData.elementInstance);
+					}
 				}
 			};
 
