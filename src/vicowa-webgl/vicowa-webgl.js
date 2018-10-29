@@ -976,6 +976,9 @@ export class VicowaWebgl extends webComponentBaseClass {
 	set selectColor(p_Color) { Object.assign(this[privateData].materials["selected"].diffuseColor, p_Color); }
 	get selectColor() { const color = (this[privateData].materials["selected"] || {}).diffuseColor; return { r: color.r || 1, g: color.g || 0, b: color.b || 0 }; }
 
+	getDataUrl(p_Type, p_Quality) { return this.$.canvas.toDataURL(p_Type || "image/png", p_Quality || undefined); }
+	getBlob(p_Callback, p_Type, p_Quality) { this.$.canvas.toBlob(p_Callback, p_Type || "image/png", p_Quality || undefined); }
+
 	attached() {
 		const controlData = this[privateData];
 		// create the engine

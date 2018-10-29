@@ -86,3 +86,19 @@ controls.gl1.onAttached = () => {
 	});
 };
 
+controls.screenShotJpg.addEventListener("click", () => {
+	controls.screenshotResult.src = controls.gl1.getDataUrl("image/jpg", 0.6);
+});
+
+controls.screenShotPng.addEventListener("click", () => {
+	// using get blob here to show that case working, of course you can use getDataUrl with no parameters to also get a PNG data url
+	controls.gl1.getBlob((p_Blob) => {
+		const reader = new FileReader();
+		reader.readAsDataURL(p_Blob);
+		reader.onloadend = () => {
+			const base64data = reader.result;
+			controls.screenshotResult.src = base64data;
+		};
+	});
+});
+
