@@ -1,6 +1,6 @@
-import exports from "../utilities/amdToModule.js";
+import exports from "./amdToModule.js";
 import "../third_party/jed/jed.js";
-import debug from "../utilities/debug.js";
+import debug from "./debug.js";
 import observerFactory from "./observerFactory.js";
 
 function noTranslationMessage(p_Original) {

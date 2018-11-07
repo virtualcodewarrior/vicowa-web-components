@@ -840,7 +840,7 @@ export class VicowaWebgl extends webComponentBaseClass {
 				// if no positions are specified, the camera will be positioned at 0 0 -10 and will be pointing at 0, 0, 0
 				const position = Object.assign({}, { x: 0, y: 0, z: -10 }, p_Settings.position || {});
 				const target = Object.assign({}, { x: 0, y: 0, z: 0 }, p_Settings.target || {});
-				controlData.camera = new babylon[(p_Settings.vrEnabled) ? ((p_Settings.mobile) ? "VRDeviceOrientationFreeCamera" : "WebVRFreeCamera") : "UniversalCamera"]("camera", new babylon.Vector3(position.x * this.unitMultiplier, position.y * this.unitMultiplier, position.z * this.unitMultiplier), controlData.scene);
+				controlData.camera = new babylon[(p_Settings.vrEnabled) ? ((p_Settings.mobile) ? "VRDeviceOrientationFreeCamera" : "WebVRFreeCamera") : "UniversalCamera"]("camera", new babylon.Vector3(position.x * this.unitMultiplier, position.y * this.unitMultiplier, position.z * this.unitMultiplier), controlData.scene, false);
 				controlData.camera.attachControl(this.$.canvas, !(controlData.preventDefault || false));
 				controlData.camera.setTarget(new babylon.Vector3(target.x * this.unitMultiplier, target.y * this.unitMultiplier, target.z * this.unitMultiplier));
 				break;
