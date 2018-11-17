@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>ViCoWa Web Components - vicowa-string</title>
+    <script src="../../node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js"></script>
+    <script src="../../node_modules/@webcomponents/html-imports/html-imports.min.js"></script>
+    <link rel="import" href="../../src/vicowa-p2pmessage/vicowa-p2pmessage.html">
+</head>
+
+<body lang="en_US">
+	<h2>Local</h2>
+	<vicowa-p2pmessage id="local"></vicowa-p2pmessage>
+	<h2>Remote</h2>
+	<vicowa-p2pmessage id="remote"></vicowa-p2pmessage>
+	<script type="module">
+		import { createQuickAccess } from "../../node_modules/web-component-base-class/src/tools.js";
+		import { SignalingBase } from "../../src/utilities/webrtc.js";
+
+		const controls = createQuickAccess(document, "id");
+
+		class Signaling extends SignalingBase {
+			constructor() {
+				super({
+					onMessage: null,
+					onClose: null,
+					onError: null,
+					onOpen: null,
+					send(p_Message) { this.send(p_Message); },
+				});
+				this.remote = null;
+			}
+
+			connectChannel(p_ChannelID) {
+				if (this.onOpen && this.remote) {
+					setTimeout(() => { this.onOpen(); }, Math.random() * 100);
+					setTimeout(() => { if (this.remote.onOpen) { this.remote.onOpen() } }, Math.random() * 100);
+				}
+			}
+
+			close() {
+				if (this.onClose && this.remote) {
+					this.onClose();
+					if (this.remote.onClose) {
+						this.remote.onClose();
+					}
+				}
+			}
+
+			setRemote(p_Remote) {
+				if (this !== p_Remote && this.remote !== p_Remote) {
+					this.remote = p_Remote;
+					if (this.remote) {
+						this.remote.setRemote(this);
+					}
+				}
+			}
+
+			send(p_Message) {
+				if (this.remote && this.remote.onMessage) {
+					setTimeout(() => this.remote.onMessage(p_Message), Math.random() * 100);
+				}
+			}
+		}
+
+		const signalingLocal = new Signaling();
+		const signalingRemote = new Signaling();
+		signalingLocal.setRemote(signalingRemote);
+
+		controls.local.signalingHandler = signalingLocal;
+		controls.remote.signalingHandler = signalingRemote;
+	</script>
+</body>
+
+</html>

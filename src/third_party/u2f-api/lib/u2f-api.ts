@@ -15,63 +15,87 @@ interface API
 	u2f: any;
 }
 
-export declare type NotYetTyped = { [ key: string ]: any; };
-export declare type RegisterRequest = NotYetTyped;
-export declare type SignRequest = NotYetTyped;
-export declare type RegisterResponse = NotYetTyped;
-export declare type SignResponse = NotYetTyped;
+export interface RegisterRequest {
+	version: string;
+	appId: string;
+	challenge: string;
+}
+
+export interface SignRequest
+	extends RegisterRequest {
+	keyHandle: string;
+}
+
+export interface RegisterResponse {
+	clientData: string;
+	registrationData: string;
+	version: string;
+}
+
+export interface SignResponse {
+	clientData: string;
+	keyHandle: string;
+	signatureData: string;
+}
 
 var _backend: Promise< API > = null;
 function getBackend( )
 {
-	if ( !_backend )
-		_backend = new Promise< API >( function( resolve, reject )
+	if ( _backend )
+		return _backend;
+
+	const supportChecker = new Promise< API >( function( resolve, reject )
+	{
+		function notSupported( )
 		{
-			function notSupported( )
-			{
-				resolve( { u2f: null } );
-			}
+			resolve( { u2f: null } );
+		}
 
-			if ( !isBrowser )
-				return notSupported( );
+		if ( !isBrowser )
+			return notSupported( );
 
-			if ( isSafari )
-				// Safari doesn't support U2F, and the Safari-FIDO-U2F
-				// extension lacks full support (Multi-facet apps), so we
-				// block it until proper support.
-				return notSupported( );
+		if ( isSafari )
+			// Safari doesn't support U2F, and the Safari-FIDO-U2F
+			// extension lacks full support (Multi-facet apps), so we
+			// block it until proper support.
+			return notSupported( );
 
-			const hasNativeSupport =
-				( typeof ( < any >window ).u2f !== 'undefined' ) &&
-				( typeof ( < any >window ).u2f.sign === 'function' );
+		const hasNativeSupport =
+			( typeof ( < any >window ).u2f !== 'undefined' ) &&
+			( typeof ( < any >window ).u2f.sign === 'function' );
 
-			if ( hasNativeSupport )
-				return resolve( { u2f: ( < any >window ).u2f } );
+		if ( hasNativeSupport )
+			return resolve( { u2f: ( < any >window ).u2f } );
 
-			if ( isEDGE )
-				// We don't want to check for Google's extension hack on EDGE
-				// as it'll cause trouble (popups, etc)
-				return notSupported( );
+		if ( isEDGE )
+			// We don't want to check for Google's extension hack on EDGE
+			// as it'll cause trouble (popups, etc)
+			return notSupported( );
 
-			if ( location.protocol === 'http:' )
-				// U2F isn't supported over http, only https
-				return notSupported( );
+		if ( location.protocol === 'http:' )
+			// U2F isn't supported over http, only https
+			return notSupported( );
 
-			if ( typeof MessageChannel === 'undefined' )
-				// Unsupported browser, the chrome hack would throw
-				return notSupported( );
+		if ( typeof MessageChannel === 'undefined' )
+			// Unsupported browser, the chrome hack would throw
+			return notSupported( );
 
-			// Test for google extension support
-			chromeApi.isSupported( function( ok )
-			{
-				if ( ok )
-					resolve( { u2f: chromeApi } );
-				else
-					notSupported( );
-			} );
+		// Test for google extension support
+		chromeApi.isSupported( function( ok )
+		{
+			if ( ok )
+				resolve( { u2f: chromeApi } );
+			else
+				notSupported( );
 		} );
+	} )
+	.then( function ( response )
+	{
+		_backend = response.u2f ? supportChecker : null;
+		return response;
+	} );
 
-	return _backend;
+	return supportChecker;
 }
 
 export const ErrorCodes = {
@@ -140,7 +164,7 @@ export function register(
 : Promise< RegisterResponse >
 {
 	if ( !Array.isArray( registerRequests ) )
-		registerRequests = [ registerRequests ];
+		registerRequests = [ registerRequests ] as ReadonlyArray< RegisterRequest >;
 
 	if ( typeof signRequests === 'number' && typeof timeout === 'undefined' )
 	{
@@ -186,7 +210,7 @@ export function sign(
 : Promise< SignResponse >
 {
 	if ( !Array.isArray( signRequests ) )
-		signRequests = [ signRequests ];
+		signRequests = [ signRequests ] as ReadonlyArray< SignRequest >;
 
 	return getBackend( )
 	.then( function( backend )

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<link rel="import" href="../vicowa-button/vicowa-button.html">
+<div>
+    <template id="vicowa-p2pconnect">
+        <style>
+			:host {
+				display: block;
+			}
+
+			.peer {
+				cursor: pointer;
+			}
+			.peer:hover,
+			.peer.selected {
+				background: blue;
+				color: white;
+			}
+        </style>
+        <div id="peers"></div>
+		<vicowa-button id="connect" string="Connect"><slot name="custom-connect"></slot></vicowa-button>
+		<slot id="peer-template" name="peer-template"><template><div name="peer"></div></template></slot>
+    </template>
+    <script>
+		(function storeTemplate() {
+			const template = document.currentScript.parentNode.querySelector('template');
+			window.webComponentTemplates = window.webComponentTemplates || new Map();
+			window.webComponentTemplates.set(template.getAttribute('id'), template);
+		})();
+    </script>
+    <script type="module" src="./vicowa-p2pconnect.js"></script>
+</div>

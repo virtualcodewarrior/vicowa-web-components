@@ -68,3 +68,4 @@ typings/
 /doc
 #ignore build output
 /dist
+/source

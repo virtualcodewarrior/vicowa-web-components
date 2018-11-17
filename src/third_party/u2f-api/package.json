@@ -1,27 +1,27 @@
 {
-  "_from": "u2f-api@1.0.6",
-  "_id": "u2f-api@1.0.6",
+  "_from": "u2f-api@1.0.8",
+  "_id": "u2f-api@1.0.8",
   "_inBundle": false,
-  "_integrity": "sha512-CDvSoiHLdB4I7ArzAngsSattj7lIRBmih/NAD9VUKVuMBoQHuhDdIkEM80Fu2vAMUQO9WQc/kjF8Akp5JvVfQw==",
+  "_integrity": "sha512-AsxuWbwT0Mhisk7q/EiHoP2kQVZYQHa+irmjcWiGfXEGBC6k4D7YbaGbl6tEFYpOkYxZZaKTGLQgpnYo38b+tw==",
   "_location": "/u2f-api",
   "_phantomChildren": {},
   "_requested": {
     "type": "version",
     "registry": true,
-    "raw": "u2f-api@1.0.6",
+    "raw": "u2f-api@1.0.8",
     "name": "u2f-api",
     "escapedName": "u2f-api",
-    "rawSpec": "1.0.6",
+    "rawSpec": "1.0.8",
     "saveSpec": null,
-    "fetchSpec": "1.0.6"
+    "fetchSpec": "1.0.8"
   },
   "_requiredBy": [
     "#USER",
     "/"
   ],
-  "_resolved": "https://registry.npmjs.org/u2f-api/-/u2f-api-1.0.6.tgz",
-  "_shasum": "fdde2a0788fcf7d8d273aa8688b217625961f866",
-  "_spec": "u2f-api@1.0.6",
+  "_resolved": "https://registry.npmjs.org/u2f-api/-/u2f-api-1.0.8.tgz",
+  "_shasum": "14b04b6ca596a53c32d89068670bb2ab40d2b153",
+  "_spec": "u2f-api@1.0.8",
   "_where": "/home/rodney/prj/webcomponents/vicowa-web-components",
   "author": {
     "name": "Gustaf Räntilä",
@@ -34,14 +34,14 @@
   "deprecated": false,
   "description": "Promisified U2F API for browsers",
   "devDependencies": {
-    "@types/mocha": "2.x",
+    "@types/mocha": "5.x",
     "already": "1.x",
     "chai": "4.x",
     "jsdom": "11.x",
     "mocha": "5.x",
     "pre-commit": "1.x",
     "rimraf": "2.x",
-    "typescript": "2.7.x"
+    "typescript": "3.x"
   },
   "homepage": "https://github.com/grantila/u2f-api#readme",
   "keywords": [
@@ -70,5 +70,5 @@
     "test": "mocha dist/test"
   },
   "types": "./dist/index.d.ts",
-  "version": "1.0.6"
+  "version": "1.0.8"
 }

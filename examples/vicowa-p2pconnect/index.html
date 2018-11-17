@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>ViCoWa Web Components - vicowa-string</title>
+    <script src="../../node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js"></script>
+    <script src="../../node_modules/@webcomponents/html-imports/html-imports.min.js"></script>
+    <link rel="import" href="../../src/vicowa-p2pconnect/vicowa-p2pconnect.html">
+	<style>
+		vicowa-p2pconnect {
+			width: 150px;
+			box-shadow: 3px 3px 8px gray;
+			margin: 1em;
+		}
+
+		#peers {
+			display: flex;
+		}
+	</style>
+</head>
+
+<body lang="en_US">
+	<h2>Local</h2>
+	<button id="add-peer">Add Peer</button>
+	<button id="remove-peer">Remove random Peer</button>
+	<vicowa-p2pconnect id="local" peer-id="local"></vicowa-p2pconnect>
+	<div id="peers"></div>
+	<script type="module">
+		import { createQuickAccess } from "../../node_modules/web-component-base-class/src/tools.js";
+		import { SignalingBase, COMMANDS } from "../../src/utilities/webrtc.js";
+		const controls = createQuickAccess(document, "id");
+
+		class fakeSocket {
+			constructor(p_Remote, p_Server) {
+				this.onmessage = null;
+				this.onclose = null;
+				this.onerror = null;
+				this.onopen = null;
+				this.remote = p_Remote;
+				this.server = p_Server;
+				if (this.remote) {
+					this.remote.setRemote(this);
+				}
+			}
+
+			receiveMessage(p_Message) {
+				if (p_Message.command === COMMANDS.peerList && this.server) {
+					p_Message.data = this.server.clients.map((p_Client) => ({ displayName: p_Client.displayName, id: p_Client.id }));
+					this.send(p_Message);
+				}
+
+				if (this.onmessage) {
+					this.onmessage(p_Message);
+				}
+			}
+
+			connectChannel(p_ChannelID) {
+				if (this.onopen && this.remote) {
+					setTimeout(() => { this.onopen(); }, Math.random() * 100);
+					setTimeout(() => { if (this.remote.onopen) { this.remote.onopen() } }, Math.random() * 100);
+				}
+			}
+
+			close() {
+				if (this.onclose && this.remote) {
+					this.onclose();
+					if (this.remote.onclose) {
+						this.remote.onclose();
+					}
+				}
+			}
+
+			setRemote(p_Remote) {
+				if (this !== p_Remote && this.remote !== p_Remote) {
+					this.remote = p_Remote;
+					if (this.remote) {
+						this.remote.setRemote(this);
+					}
+				}
+			}
+
+			send(p_Message) {
+				if (this.remote && this.remote.receiveMessage) {
+					setTimeout(() => this.remote.receiveMessage(p_Message), Math.random() * 100);
+				}
+			}
+		}
+
+		const fakeServer = {
+			clients: [],
+		};
+
+
+		const localSocket = new fakeSocket();
+		fakeServer.clients.push({ socket: new fakeSocket(localSocket, fakeServer), id: "local", displayName: "local" });
+
+		controls.local.onAttached = () => {
+			controls.local.signalingHandler = new SignalingBase(localSocket);
+		};
+		let count = 0;
+
+		controls.addPeer.addEventListener("click", () => {
+			const elem = document.createElement("vicowa-p2pconnect");
+			controls.peers.appendChild(elem);
+			const remoteSocket = new fakeSocket();
+			elem.peerId = `remote-${++count}`;
+			fakeServer.clients.push({ socket: new fakeSocket(remoteSocket, fakeServer), id: elem.peerId, displayName: elem.peerId });
+			elem.onAttached = () => {
+				elem.signalingHandler = new SignalingBase(remoteSocket);
+				fakeServer.clients.forEach((p_Client) => { p_Client.socket.remote.onmessage({ command: COMMANDS.peerUpdate, update: "add", data: { id: elem.peerId, displayName: elem.peerId } }); });
+			};
+		});
+		controls.removePeer.addEventListener("click", () => {
+			const index = Math.floor(Math.random() * (fakeServer.clients.length - 1)) + 1;
+			const peer = fakeServer.clients[index];
+			fakeServer.clients.splice(index, 1);
+			const child = controls.peers.children[index - 1];
+			child.parentElement.removeChild(child);
+			fakeServer.clients.forEach((p_Client) => { p_Client.socket.remote.onmessage({ command: COMMANDS.peerUpdate, update: "remove", data: { id: peer.id } }); });
+		});
+	</script>
+</body>
+
+</html>
