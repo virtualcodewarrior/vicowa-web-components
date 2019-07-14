@@ -64,6 +64,31 @@ class VicowaResizeDetector extends webComponentBaseClass {
 	removeOwner(p_Owner) {
 		this._handlers.removeOwner(p_Owner);
 	}
+
+	static get template() {
+		return `
+		    <template>
+			<style>
+				:host,
+					iframe {
+					display: block;
+					position: absolute;
+					top: 0;
+					right: 0;
+					bottom: 0;
+					left: 0;
+					pointer-events: none;
+					opacity: 0;
+					border: none;
+					width: 100%;
+					height: 100%;
+					background: transparent;
+				}
+			</style>
+			<iframe id="detector"></iframe>
+			</template>
+		`;
+	}
 }
 
 window.customElements.define(componentName, VicowaResizeDetector);

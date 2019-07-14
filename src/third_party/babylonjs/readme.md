@@ -2,17 +2,19 @@
 
 Getting started? Play directly with the Babylon.js API using our [playground](https://playground.babylonjs.com/). It also contains a lot of samples to learn how to use it.
 
-[![Build Status](https://travis-ci.com/BabylonJS/Babylon.js.svg)](https://travis-ci.com/BabylonJS/Babylon.js)
-[![Average time to resolve an issue](https://isitmaintained.com/badge/resolution/babylonJS/babylon.js.svg)](https://isitmaintained.com/project/babylonJS/babylon.js "Average time to resolve an issue")
+[![npm version](https://badge.fury.io/js/babylonjs.svg)](https://badge.fury.io/js/babylonjs)
+[![Build Status](https://dev.azure.com/babylonjs/ContinousIntegration/_apis/build/status/CI?branchName=master)](https://dev.azure.com/babylonjs/ContinousIntegration/_build/latest?definitionId=1&branchName=master)
+[![Average time to resolve an issue](http://isitmaintained.com/badge/resolution/BabylonJS/Babylon.js.svg)](http://isitmaintained.com/project/BabylonJS/Babylon.js "Average time to resolve an issue")
 [![Percentage of issues still open](https://isitmaintained.com/badge/open/babylonJS/babylon.js.svg)](https://isitmaintained.com/project/babylonJS/babylon.js "Percentage of issues still open")
+[![Build Size](https://img.badgesize.io/BabylonJS/Babylon.js/master/dist/preview%20release/babylon.js.svg?compression=gzip)](https://img.badgesize.io/BabylonJS/Babylon.js/master/dist/preview%20release/babylon.js.svg?compression=gzip)
+[![Twitter](https://img.shields.io/twitter/follow/babylonjs.svg?style=social&label=Follow)](https://twitter.com/intent/follow?screen_name=babylonjs)
 
-**Any questions?** Here is our official [forum](http://www.html5gamedevs.com/forum/16-babylonjs/) on www.html5gamedevs.com.
+**Any questions?** Here is our official [forum](https://forum.babylonjs.com/).
 
 ## CDN
 
 - <https://cdn.babylonjs.com/babylon.js>
 - <https://cdn.babylonjs.com/babylon.max.js>
-- <https://cdn.babylonjs.com/babylon.worker.js>
 
 Additional references can be found on <https://cdn.babylonjs.com/xxx> where `xxx` is the folder structure you can find in the /dist folder like <https://cdn.babylonjs.com/gui/babylon.gui.min.js>
 
@@ -20,7 +22,6 @@ For the preview release, use the following URLs:
 
 - <https://preview.babylonjs.com/babylon.js>
 - <https://preview.babylonjs.com/babylon.max.js>
-- <https://preview.babylonjs.com/babylon.worker.js>
 
 Additional references can be found on <https://preview.babylonjs.com/xxx> where xxx is the folder structure you can find in the /dist/preview release folder like <https://preview.babylonjs.com/gui/babylon.gui.min.js>
 
@@ -101,13 +102,16 @@ window.addEventListener('resize', function(){
 
 ## Preview release
 
-Preview version of **4.0** can be found [here](https://github.com/BabylonJS/Babylon.js/tree/master/dist/preview%20release).
+Preview version of **4.1** can be found [here](https://github.com/BabylonJS/Babylon.js/tree/master/dist/preview%20release).
 If you want to contribute, please read our [contribution guidelines](https://github.com/BabylonJS/Babylon.js/blob/master/contributing.md) first.
 
 ## Documentation
 
 - [Documentation](https://doc.babylonjs.com)
 - [Examples](https://doc.babylonjs.com/examples)
+
+## Contributing
+Please see the [Contributing Guidelines](./contributing.md)
 
 ## Useful links
 
@@ -118,7 +122,7 @@ If you want to contribute, please read our [contribution guidelines](https://git
 - 3DS Max [exporter](https://github.com/BabylonJS/Exporters/tree/master/3ds%20Max) can be used to generate a .babylon file from 3DS Max
 - Maya [exporter](https://github.com/BabylonJS/Exporters/tree/master/Maya) can be used to generate a .babylon file from 3DS Max
 - Blender [exporter](https://github.com/BabylonJS/Exporters/tree/master/Blender) can be used to generate a .babylon file from Blender 3d
-- Unity 5 [exporter](https://github.com/BabylonJS/Exporters/tree/master/Unity%205) can be used to export your geometries from Unity 5 scene editor(animations are supported)
+- Unity 5[ (deprecated) exporter](https://github.com/BabylonJS/Exporters/tree/master/Unity) can be used to export your geometries from Unity 5 scene editor(animations are supported)
 - [glTF Tools](https://github.com/KhronosGroup/glTF#gltf-tools) by KhronosGroup
 
 ## Features
@@ -127,4 +131,4 @@ To get a complete list of supported features, please visit our [website](https:/
 
 ## Build
 
-Babylon.js is automatically built using [Gulp](https://gulpjs.com/). For further instructions see the readme at [/Tools/Gulp](https://github.com/BabylonJS/Babylon.js/tree/master/Tools/Gulp).
+Babylon.js is automatically built using [Gulp](https://gulpjs.com/). Further instructions can be found in [the documentation](https://doc.babylonjs.com/how_to/how_to_start#the-build) or in the readme at [/Tools/Gulp](https://github.com/BabylonJS/Babylon.js/tree/master/Tools/Gulp).

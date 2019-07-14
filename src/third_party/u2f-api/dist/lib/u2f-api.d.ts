@@ -16,6 +16,14 @@ export interface SignResponse {
     keyHandle: string;
     signatureData: string;
 }
+export declare type Transport = 'bt' | 'ble' | 'nfc' | 'usb';
+export declare type Transports = Array<Transport>;
+export interface RegisteredKey {
+    version: string;
+    keyHandle: string;
+    transports: Transports;
+    appId: string;
+}
 export declare const ErrorCodes: {
     OK: number;
     OTHER_ERROR: number;

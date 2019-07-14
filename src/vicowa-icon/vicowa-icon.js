@@ -1,4 +1,5 @@
 import { webComponentBaseClass } from "../third_party/web-component-base-class/src/webComponentBaseClass.js";
+import "../vicowa-icon-set/vicowa-icon-set.js";
 
 const componentName = "vicowa-icon";
 
@@ -37,6 +38,38 @@ class VicowaIcon extends webComponentBaseClass {
 
 	detached() {
 		this.$.iconSource.constructor.removeCallback(this);
+	}
+
+	static get template() {
+		return `
+			<template>
+				<vicowa-icon-set id="icon-source"></vicowa-icon-set>
+				<style>
+					/* these styles make the icon fit to its container */
+					:host {
+						position: relative;
+						display: block;
+						margin: 0;
+						padding: 0;
+						box-sizing: border-box;
+						width: 100%;
+						height: 100%;
+					}
+			
+					svg {
+						width: 100%;
+						height: 100%;
+					}
+			
+					/* these styles allow you to change the icon color if they are not explicitly specified in the icon itself */
+					#icon-container {
+						stroke: var(--vicowa-icon-line-color, black);
+						fill: var(--vicowa-icon-fill-color, none);
+					}
+					</style>
+				<svg id="icon-container" viewBox="0 0 24 24"></svg>
+				</template>
+		`;
 	}
 }
 

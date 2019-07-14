@@ -37,16 +37,16 @@ function handleChangeLocation(p_Control) {
 				}
 			};
 
-			if (!window.webComponentTemplates.get(element)) {
+			if (!window.customElements.get(element)) {
 				const head = document.querySelector("head");
-				let link = head.querySelector(`link[href="${location}"]`);
-				if (!link) {
-					link = document.createElement("link");
-					link.rel = "import";
-					link.href = location;
-					head.appendChild(link);
+				let script = head.querySelector(`script[src="${location}"]`);
+				if (!script) {
+					script = document.createElement("script");
+					script.type = "module";
+					script.src = location;
+					head.appendChild(script);
 				}
-				link.addEventListener("load", createElement);
+				script.addEventListener("load", createElement);
 			} else {
 				createElement();
 			}
@@ -134,6 +134,22 @@ class VicowaContentContainer extends webComponentBaseClass {
 		window.addEventListener("popstate", (p_Event) => {
 			handleLoadState(p_Event.state, (p_Event.state) ? "" : document.location.hash);
 		});
+	}
+
+	static get template() {
+		return `
+			<template id="vicowa-content-container">
+				<style>
+					:host {
+							position: relative;
+							display: block;
+							box-sizing: border-box;
+						}
+				
+				</style>
+				<div id="container"></div>
+			</template>
+		`;
 	}
 }
 

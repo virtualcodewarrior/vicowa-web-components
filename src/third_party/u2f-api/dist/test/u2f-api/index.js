@@ -5,7 +5,7 @@ var __extends = (this && this.__extends) || (function () {
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
             function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
         return extendStatics(d, b);
-    }
+    };
     return function (d, b) {
         extendStatics(d, b);
         function __() { this.constructor = d; }
@@ -49,6 +49,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 var _this = this;
 Object.defineProperty(exports, "__esModule", { value: true });
+require("source-map-support/register");
 require("mocha");
 var chai_1 = require("chai");
 var already_1 = require("already");
@@ -143,15 +144,13 @@ function u2fMock(props) {
     if (props === void 0) { props = {}; }
     var store = [];
     return {
-        sign: function (appId, challenge, signRequests, cbNative, timeout) {
+        sign: function (appId, challenge, registeredKeys, cbNative, timeout) {
             return handleTimeout(props, timeout, function () {
                 if (props.appId && props.appId !== appId)
                     return { errorCode: ErrorCodesEnum.BAD_REQUEST };
-                var found = signRequests.some(function (req) {
+                var found = registeredKeys.some(function (req) {
                     return store.some(function (storeReq) {
-                        return storeReq.request === req.request
-                            &&
-                                storeReq.appId === req.appId;
+                        return storeReq.appId === req.appId;
                     });
                 });
                 if (!found)
@@ -176,7 +175,8 @@ function u2fMock(props) {
 function wrappedTest(props, fn) {
     var _this = this;
     return function () { return __awaiter(_this, void 0, void 0, function () {
-        var _a, dom, mock, gmp, api;
+        var dom, mock, gmp, api;
+        var _a;
         return __generator(this, function (_b) {
             switch (_b.label) {
                 case 0:

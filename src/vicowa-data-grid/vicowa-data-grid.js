@@ -1,4 +1,5 @@
 import { webComponentBaseClass } from "../third_party/web-component-base-class/src/webComponentBaseClass.js";
+import "../vicowa-resize-detector/vicowa-resize-detector.js";
 
 const componentName = "vicowa-data-grid";
 
@@ -218,6 +219,157 @@ class VicowaDataGrid extends webComponentBaseClass {
 
 	detached() {
 		this.$.resizeDetector.removeOwner(this);
+	}
+
+	static get template() {
+		return  `
+			<template>
+				<style id="styles">
+					:host {
+						display: block;
+						position: relative;
+					}
+					.column {
+						box-sizing: border-box;
+						display: table-column;
+					}
+					.row {
+						box-sizing: border-box;
+						display: table-row;
+					}
+					.cell {
+						box-sizing: border-box;
+						display: table-cell;
+						position: relative;
+						border-top: var(--vicowa-data-grid-cell-border-top, 0);
+						border-left: var(--vicowa-data-grid-cell-border-left, 0);
+						border-bottom: var(--vicowa-data-grid-cell-border-bottom, 0);
+						border-right: var(--vicowa-data-grid-cell-border-right, 0);
+					}
+			
+					#main {
+						position: absolute;
+						left: 0;
+						top: 0;
+						bottom: 0;
+						right: 0;
+						overflow: hidden;
+					}
+			
+					#content-main {
+						display: table;
+						border-collapse: collapse;
+						position: relative;
+					}
+			
+					#main {
+						display: flex;
+						flex-direction: column;
+						justify-items: stretch;
+					}
+			
+					#hor-main {
+						flex: 1 1 auto;
+						display: flex;
+						flex-direction: row;
+					}
+					#ver-main {
+						flex: 1 1 auto;
+					}
+			
+					#hor-main,
+					#ver-main {
+						overflow: hidden;
+					}
+			
+					#hscrollarea,
+						#vscrollarea {
+						flex: 0 0 0;
+					}
+			
+					#vscrollarea {
+						overflow-y: auto;
+						overflow-x: hidden;
+					}
+			
+					#hscrollarea {
+						overflow-x: auto;
+						overflow-y: hidden;
+					}
+			
+					#vscrollcontent {
+						width: 10px;
+					}
+			
+					#hscrollcontent {
+						height: 10px;
+					}
+			
+					.cell-content {
+						overflow: hidden;
+						position: absolute;
+						left: 0;
+						top: 0;
+						right: 0;
+						bottom: 0;
+						text-overflow: ellipsis;
+						white-space: nowrap;
+					}
+			
+					.row.fixed {
+						background: var(--vicowa-data-grid-fixed-row-background, inherit);
+						color: var(--vicowa-data-grid-fixed-row-color, inherit);
+						border-top: var(--vicowa-data-grid-fixed-row-border-top, 0);
+						border-left: var(--vicowa-data-grid-fixed-row-border-left, 0);
+						border-bottom: var(--vicowa-data-grid-fixed-row-border-bottom, 0);
+						border-right: var(--vicowa-data-grid-fixed-row-border-right, 0);
+					}
+			
+					.row.fixed .cell {
+			
+					}
+			
+					:not(.row) .cell.fixed {
+						background: var(--vicowa-data-grid-fixed-column-background, inherit);
+						color: var(--vicowa-data-grid-fixed-column-color, inherit);
+						border-top: var(--vicowa-data-grid-fixed-column-border-top, 0);
+						border-left: var(--vicowa-data-grid-fixed-column-border-left, 0);
+						border-bottom: var(--vicowa-data-grid-fixed-column-border-bottom, 0);
+						border-right: var(--vicowa-data-grid-fixed-column-border-right, 0);
+					}
+			
+				</style>
+				<div id="main">
+					<vicowa-resize-detector id="resize-detector"></vicowa-resize-detector>
+					<div id="hor-main">
+					<div id="ver-main">
+					<div id="content-main">
+					<div id="content">
+					<div id="rows">
+		
+					</div>
+					</div>
+					</div>
+					</div>
+					<div id="vscrollarea">
+					<div id="vscrollcontent"></div>
+					</div>
+					</div>
+					<div id="hscrollarea">
+					<div id="hscrollcontent"></div>
+					</div>
+					</div>
+					<template id="row">
+					<div class="row"><div class="force-height"></div></div>
+				</template>
+				<template id="column">
+					<div class="column"></div>
+					</template>
+					<template id="cell">
+					<div class="cell"><div class="cell-content"></div></div>
+				</template>
+			</template>
+		`;
 	}
 }
 

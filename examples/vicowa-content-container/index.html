@@ -4,9 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <title>ViCoWa Web Components - vicowa-content-container</title>
-    <script src="../../node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js"></script>
-    <script src="../../node_modules/@webcomponents/html-imports/html-imports.min.js"></script>
-    <link rel="import" href="../../src/vicowa-content-container/vicowa-content-container.html">
+	<script type="module" src="../../src/vicowa-content-container/vicowa-content-container.js"></script>
 
 	<style>
 		#content {
@@ -35,10 +33,10 @@
 </head>
 
 <body>
-	<button location="content-test1.html">Load Content 1</button>	<button location="content-test2.html">Load Content 2</button>	<button location="content-test3.html">Load Content 3</button>	<button location="content-test4.html">Load Content 4</button>
-	<vicowa-content-container id="content" location="content-test1.html" content-base-location="./content/" add-location-to-url></vicowa-content-container>
+	<button location="content-test1.js">Load Content 1</button>	<button location="content-test2.js">Load Content 2</button>	<button location="content-test3.js">Load Content 3</button>	<button location="content-test4.js">Load Content 4</button>
+	<vicowa-content-container id="content" location="content-test1.js" content-base-location="./content/" add-location-to-url></vicowa-content-container>
 	<div id="parent-container">
-		<vicowa-content-container id="content2" location="content-test1.html" content-base-location="./content/" add-location-to-url></vicowa-content-container>
+		<vicowa-content-container id="content2" location="content-test1.js" content-base-location="./content/" add-location-to-url></vicowa-content-container>
 	</div>
 	<script>
 		const content = document.querySelector('#content');

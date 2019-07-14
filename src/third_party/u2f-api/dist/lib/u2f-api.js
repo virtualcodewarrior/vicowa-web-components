@@ -2,10 +2,13 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 var chromeApi = require("./generated-google-u2f-api");
 // Feature detection (yes really)
+// For IE and Edge detection, see https://stackoverflow.com/questions/31757852#31757969
+// and https://stackoverflow.com/questions/56360225#56361977
 var isBrowser = (typeof navigator !== 'undefined') && !!navigator.userAgent;
 var isSafari = isBrowser && navigator.userAgent.match(/Safari\//)
     && !navigator.userAgent.match(/Chrome\//);
-var isEDGE = isBrowser && navigator.userAgent.match(/Edge\/1[2345]/);
+var isEDGE = isBrowser && /(Edge\/)|(edg\/)/i.test(navigator.userAgent);
+var isIE = isBrowser && /(MSIE 9|MSIE 10|rv:11.0)/i.test(navigator.userAgent);
 var _backend = null;
 function getBackend() {
     if (_backend)
@@ -25,8 +28,8 @@ function getBackend() {
             (typeof window.u2f.sign === 'function');
         if (hasNativeSupport)
             return resolve({ u2f: window.u2f });
-        if (isEDGE)
-            // We don't want to check for Google's extension hack on EDGE
+        if (isEDGE || isIE)
+            // We don't want to check for Google's extension hack on EDGE & IE
             // as it'll cause trouble (popups, etc)
             return notSupported();
         if (location.protocol === 'http:')
@@ -89,15 +92,21 @@ function ensureSupport() {
         .then(_ensureSupport);
 }
 exports.ensureSupport = ensureSupport;
+function arrayify(value) {
+    if (value != null && Array.isArray(value))
+        return value;
+    return value == null
+        ? []
+        : Array.isArray(value)
+            ? value.slice() : [value];
+}
 function register(registerRequests, signRequests, timeout) {
-    if (!Array.isArray(registerRequests))
-        registerRequests = [registerRequests];
+    var _registerRequests = arrayify(registerRequests);
     if (typeof signRequests === 'number' && typeof timeout === 'undefined') {
         timeout = signRequests;
         signRequests = null;
     }
-    if (!signRequests)
-        signRequests = [];
+    var _signRequests = arrayify(signRequests);
     return getBackend()
         .then(function (backend) {
         _ensureSupport(backend);
@@ -111,15 +120,14 @@ function register(registerRequests, signRequests, timeout) {
                     resolve(response);
                 }
             }
-            var appId = registerRequests[0].appId;
-            u2f.register(appId, registerRequests, signRequests, callback, timeout);
+            var appId = _registerRequests[0].appId;
+            u2f.register(appId, _registerRequests, _signRequests, callback, timeout);
         });
     });
 }
 exports.register = register;
 function sign(signRequests, timeout) {
-    if (!Array.isArray(signRequests))
-        signRequests = [signRequests];
+    var _signRequests = arrayify(signRequests);
     return getBackend()
         .then(function (backend) {
         _ensureSupport(backend);
@@ -133,9 +141,14 @@ function sign(signRequests, timeout) {
                     resolve(response);
                 }
             }
-            var appId = signRequests[0].appId;
-            var challenge = signRequests[0].challenge;
-            u2f.sign(appId, challenge, signRequests, callback, timeout);
+            var appId = _signRequests[0].appId;
+            var challenge = _signRequests[0].challenge;
+            var registeredKeys = _signRequests
+                .map(function (_a) {
+                var version = _a.version, keyHandle = _a.keyHandle, appId = _a.appId;
+                return ({ version: version, keyHandle: keyHandle, appId: appId });
+            });
+            u2f.sign(appId, challenge, registeredKeys, callback, timeout);
         });
     });
 }

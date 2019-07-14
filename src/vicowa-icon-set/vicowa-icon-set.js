@@ -79,6 +79,19 @@ class VicowaIconSet extends webComponentBaseClass {
 			});
 		});
 	}
+
+	static get template() {
+		return `
+			<template>
+				<style>
+					:host {
+						display: none;
+					}
+				</style>
+				<slot id="icons" name="icons"></slot>
+			</template>
+		`;
+	}
 }
 
 window.customElements.define(componentName, VicowaIconSet);

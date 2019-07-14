@@ -35,6 +35,10 @@ class VicowaTranslate extends webComponentBaseClass {
 	attached() {
 		translator.addTranslationLocation(this.translationLocation);
 	}
+
+	static get template() {
+		return `<template></template>`;
+	}
 }
 
 window.customElements.define(componentName, VicowaTranslate);

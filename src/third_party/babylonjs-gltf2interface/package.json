@@ -1,32 +1,35 @@
 {
-  "_from": "babylonjs-gltf2interface@3.3.0",
-  "_id": "babylonjs-gltf2interface@3.3.0",
+  "_args": [
+    [
+      "babylonjs-gltf2interface@4.0.3",
+      "/home/rodney/prj/vicowa-web-components"
+    ]
+  ],
+  "_from": "babylonjs-gltf2interface@4.0.3",
+  "_id": "babylonjs-gltf2interface@4.0.3",
   "_inBundle": false,
-  "_integrity": "sha512-88pHBewfAbH3CxzXOxKHsDtCDSy/RMyig0KiXscgHJLg2F0Ai+NdMEqm+7WCpWj0PpLg7tgR/3Z2fYsua7R6Fw==",
+  "_integrity": "sha512-ys8cEhlkYmBCJ3F/aBemVNKPkaV5fPghR4wgQfvUTNCF9pFlwYZpJ1KXEPj4+z6OohXN14AQMcaiafL+bmVLlg==",
   "_location": "/babylonjs-gltf2interface",
   "_phantomChildren": {},
   "_requested": {
     "type": "version",
     "registry": true,
-    "raw": "babylonjs-gltf2interface@3.3.0",
+    "raw": "babylonjs-gltf2interface@4.0.3",
     "name": "babylonjs-gltf2interface",
     "escapedName": "babylonjs-gltf2interface",
-    "rawSpec": "3.3.0",
+    "rawSpec": "4.0.3",
     "saveSpec": null,
-    "fetchSpec": "3.3.0"
+    "fetchSpec": "4.0.3"
   },
   "_requiredBy": [
     "/babylonjs-loaders"
   ],
-  "_resolved": "https://registry.npmjs.org/babylonjs-gltf2interface/-/babylonjs-gltf2interface-3.3.0.tgz",
-  "_shasum": "0f83f9473d37f14c60562d234c972067f28b0076",
-  "_spec": "babylonjs-gltf2interface@3.3.0",
-  "_where": "/home/rodney/prj/webcomponents/vicowa-web-components/node_modules/babylonjs-loaders",
+  "_resolved": "https://registry.npmjs.org/babylonjs-gltf2interface/-/babylonjs-gltf2interface-4.0.3.tgz",
+  "_spec": "4.0.3",
+  "_where": "/home/rodney/prj/vicowa-web-components",
   "bugs": {
     "url": "https://github.com/BabylonJS/Babylon.js/issues"
   },
-  "bundleDependencies": false,
-  "deprecated": false,
   "description": "A typescript declaration of babylon's gltf2 inteface.",
   "engines": {
     "node": "*"
@@ -45,13 +48,10 @@
   ],
   "license": "Apache-2.0",
   "name": "babylonjs-gltf2interface",
-  "peerDependencies": {
-    "babylonjs": ">=3.3.0-rc.4"
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/BabylonJS/Babylon.js.git"
   },
   "typings": "babylon.glTF2Interface.d.ts",
-  "version": "3.3.0"
+  "version": "4.0.3"
 }

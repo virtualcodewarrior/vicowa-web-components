@@ -1,4 +1,6 @@
 import { webComponentBaseClass } from "../third_party/web-component-base-class/src/webComponentBaseClass.js";
+import "../vicowa-icon/vicowa-icon.js";
+import "../vicowa-string/vicowa-string.js";
 import translator from "../utilities/translate.js";
 
 const privateData = Symbol("privateData");
@@ -112,6 +114,94 @@ class VicowaButton extends webComponentBaseClass {
 			this[privateData].activeTranslator = p_Translator;
 			this.updateTranslation();
 		}, this);
+	}
+
+	static get template() {
+		return `
+			<template>
+				<style>
+					:host {
+						position: relative;
+						box-sizing: border-box;
+						display: block;
+						margin: 0;
+						padding: 0;
+						background: var(--vicowa-button-background, transparent);
+						color: var(--vicowa-button-color);
+						font: var(--vicowa-button-font);
+						cursor: var(--vicowa-button-cursor);
+						box-shadow: var(--vicowa-button-box-shadow);
+					}
+		
+					:host(:hover) {
+						background: var(--vicowa-button-background-hover, var(--vicowa-button-background));
+						color: var(--vicowa-button-color-hover, var(--vicowa-button-color));
+						font: var(--vicowa-button-font-hover, var(--vicowa-button-font));
+						cursor: var(--vicowa-button-cursor-hover, var(--vicowa-button-cursor));
+						box-shadow: var(--vicowa-button-box-shadow-hover, var(--vicowa-button-shadow));
+						left: var(--vicowa-button-left-hover);
+						top: var(--vicowa-button-top-hover);
+					}
+			
+					:host(:active) {
+						background: var(--vicowa-button-background-active, var(--vicowa-button-background));
+						color: var(--vicowa-button-color-active, var(--vicowa-button-color));
+						font: var(--vicowa-button-font-active, var(--vicowa-button-font));
+						cursor: var(--vicowa-button-cursor-active, var(--vicowa-button-cursor));
+						box-shadow: var(--vicowa-button-box-shadow-active, var(--vicowa-button-shadow));
+						left: var(--vicowa-button-left-active);
+						top: var(--vicowa-button-top-active);
+					}
+		
+					button {
+						width: 100%;
+						box-sizing: border-box;
+						position: relative;
+						user-select: none;
+						display: flex;
+						flex-direction: row;
+						align-content: stretch;
+						align-items: center;
+						border: var(--vicowa-button-border, none);
+						background: transparent;
+						color: inherit;
+						font: inherit;
+						cursor: inherit;
+					}
+			
+					#icon {
+						position: relative;
+						height: 24px;
+						flex: 0 0 24px;
+					}
+			
+					#icon[icon=""],
+						#icon:not([icon]){
+						flex: 0 0 var(--vicowa-button-min-icon-width, 0);
+						max-width: 0;
+					}
+			
+					:host([disabled]) {
+						pointer-events: none;
+						opacity: 0.5;
+						cursor: default;
+					}
+			
+					#container {
+						display: flex;
+						flex-direction: row;
+						height: 100%;
+					}
+			
+					vicowa-string {
+						flex: 1 1 auto;
+					}
+			
+				</style>
+				<div id="container">
+					<button id="button"><slot name="custom-content"></slot><vicowa-icon id="icon"></vicowa-icon><vicowa-string id="string"></vicowa-string></button>
+				</div>
+			</template>`;
 	}
 }
 
