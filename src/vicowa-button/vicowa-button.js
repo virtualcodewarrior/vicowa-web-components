@@ -7,36 +7,6 @@ const privateData = Symbol("privateData");
 
 const componentName = "vicowa-button";
 
-function ariaLabelChanged(p_ButtonControl) {
-	p_ButtonControl.$.button.setAttribute("aria-label", p_ButtonControl.ariaLabel);
-}
-
-function stringChanged(p_ButtonControl) {
-	p_ButtonControl.$.string.string = p_ButtonControl.string;
-}
-
-function iconChanged(p_ButtonControl) {
-	p_ButtonControl.$.icon.icon = p_ButtonControl.icon;
-}
-
-function pluralNumberChanged(p_ButtonControl) {
-	p_ButtonControl.$.string.pluralNumber = p_ButtonControl.pluralNumber;
-}
-
-function argumentsChanged(p_ButtonControl) {
-	p_ButtonControl.$.string.parameters = p_ButtonControl.parameters;
-}
-
-/**
- * Handler to be called when the tooltip text is changed
- * @param {VicowaButton} p_InputControl The control for which this handler is called
- */
-function tooltipChanged(p_InputControl) {
-	p_InputControl.$.button.setAttribute("title", p_InputControl.tooltip);
-	p_InputControl.updateTranslation();
-}
-
-
 /**
  * Class that represents the vicowa-button custom element
  * @extends webComponentBaseClass
@@ -58,42 +28,13 @@ class VicowaButton extends webComponentBaseClass {
 
 	static get properties() {
 		return {
-			string: {
-				type: String,
-				value: "",
-				observer: stringChanged,
-			},
-			parameters: {
-				type: Array,
-				value: [],
-				observer: argumentsChanged,
-			},
-			pluralNumber: {
-				type: Number,
-				value: 1,
-				observer: pluralNumberChanged,
-			},
-			icon: {
-				type: String,
-				value: "",
-				observer: iconChanged,
-			},
-			ariaLabel: {
-				type: String,
-				value: "",
-				observer: ariaLabelChanged,
-			},
-			disabled: {
-				type: Boolean,
-				value: false,
-				reflectToAttribute: true,
-			},
-			tooltip: {
-				type: String,
-				value: "",
-				reflectToAttribute: true,
-				observer: tooltipChanged,
-			},
+			string: { type: String, value: "", observer: () => { this.$.string.string = this.string; } },
+			parameters: { type: Array, value: [], observer: () => { this.$.string.parameters = this.parameters; } },
+			pluralNumber: { type: Number, value: 1, observer: () => { this.$.string.pluralNumber = this.pluralNumber; } },
+			icon: { type: String, value: "", observer: () => { this.$.icon.icon = this.icon; } },
+			ariaLabel: { type: String, value: "", observer: () => { this.$.button.setAttribute("aria-label", this.ariaLabel); } },
+			disabled: { type: Boolean, value: false, reflectToAttribute: true },
+			tooltip: { type: String, value: "", reflectToAttribute: true, observer: () => { this.$.button.setAttribute("title", this.tooltip); this.updateTranslation(); } },
 		};
 	}
 
