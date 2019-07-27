@@ -5,12 +5,14 @@ const componentName = "vicowa-icon";
 
 function iconChanged(p_IconControl) {
 	p_IconControl.$.iconContainer.innerHTML = "";
-	p_IconControl.$.iconSource.constructor.getIcon(p_IconControl, p_IconControl.icon, (p_Icon) => {
-		p_IconControl.$.iconContainer.innerHTML = "";
-		if (p_Icon) {
-			p_IconControl.$.iconContainer.appendChild(p_Icon.cloneNode(true));
-		}
-	});
+	p_IconControl.$.iconSource.onAttached = () => {
+		p_IconControl.$.iconSource.constructor.getIcon(p_IconControl, p_IconControl.icon, (p_Icon) => {
+			p_IconControl.$.iconContainer.innerHTML = "";
+			if (p_Icon) {
+				p_IconControl.$.iconContainer.appendChild(p_Icon.cloneNode(true));
+			}
+		});
+	};
 }
 
 /**

@@ -1,4 +1,5 @@
 import { webComponentBaseClass } from '../../src/third_party/web-component-base-class/src/webComponentBaseClass.js';
+import '../../src/vicowa-icon-set/vicowa-icon-set.js';
 
 const customElementName = 'test-icons';
 window.customElements.define(customElementName, class extends webComponentBaseClass {
