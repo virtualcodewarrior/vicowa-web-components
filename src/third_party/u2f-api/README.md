@@ -1,4 +1,5 @@
 [![npm version][npm-image]][npm-url]
+[![downloads][downloads-image]][npm-url]
 [![build status][travis-image]][travis-url]
 
 # u2f-api
@@ -7,6 +8,8 @@ U2F API for browsers
 
 ## History
 
+- 1.1.0
+    - Can be used [without bundler](#using-without-bundler)
 - 1.0.0
 	- Support for custom promise libraries removed
 	- Promises no longer cancellable
@@ -102,6 +105,16 @@ var u2fApi = require( 'u2f-api' ); // CommonJS
 import u2fApi from 'u2f-api' // ES modules
 ```
 
+#### Using without bundler
+
+`u2f-api` can be used without a bundler (like Webpack). Just include:
+
+```html
+<head><script src="https://cdn.jsdelivr.net/npm/u2f-api@latest/bundle.js"></script></head>
+```
+
+The functionality will be in the `window.u2fApi` object.
+
 
 ### Registering a passkey
 
@@ -156,5 +169,6 @@ For more information, please see https://developers.yubico.com/U2F/Libraries/Cli
 
 [npm-image]: https://img.shields.io/npm/v/u2f-api.svg
 [npm-url]: https://npmjs.org/package/u2f-api
+[downloads-image]: https://img.shields.io/npm/dm/u2f-api.svg
 [travis-image]: https://img.shields.io/travis/grantila/u2f-api.svg
 [travis-url]: https://travis-ci.org/grantila/u2f-api

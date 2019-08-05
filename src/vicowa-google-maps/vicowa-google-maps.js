@@ -127,43 +127,43 @@ class VicowaGoogleMaps extends webComponentBaseClass {
 			latitude: {
 				type: Number,
 				value: 58.8282216,
-				reflectToAttribute: true,
+				reflect: true,
 				observer: locationUpdated,
 			},
 			longitude: {
 				type: Number,
 				value: -112.261819,
-				reflectToAttribute: true,
+				reflect: true,
 				observer: locationUpdated,
 			},
 			zoom: {
 				type: Number,
 				value: 0,
-				reflectToAttribute: true,
+				reflect: true,
 				observer: zoomUpdated,
 			},
 			marker: {
 				type: String,
 				value: "",
-				reflectToAttribute: true,
+				reflect: true,
 				observer: locationUpdated,
 			},
 			info: {
 				type: String,
 				value: "",
-				reflectToAttribute: true,
+				reflect: true,
 				observer: locationUpdated,
 			},
 			type: {
 				type: String,
 				value: "roadmap",
-				reflectToAttribute: true,
+				reflect: true,
 				observer: mapTypeUpdated,
 			},
 			apiKey: {
 				type: String,
 				value: "",
-				reflectToAttribute: false,
+				reflect: false,
 				observer: loadMapAPI,
 			},
 		};
@@ -226,20 +226,18 @@ class VicowaGoogleMaps extends webComponentBaseClass {
 
 	static get template() {
 		return `
-			<template>
-				<style>
-					:host {
-						display: block;
-					}
-				
-					#map {
-						position: relative;
-						width: 100%;
-						height: 100%;
-					}
-				</style>
-				<div id="map"></div>
-			</template>
+			<style>
+				:host {
+					display: block;
+				}
+			
+				#map {
+					position: relative;
+					width: 100%;
+					height: 100%;
+				}
+			</style>
+			<div id="map"></div>
 		`;
 	}
 }

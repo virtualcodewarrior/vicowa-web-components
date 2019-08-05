@@ -71,23 +71,23 @@ class VicowaContentContainer extends webComponentBaseClass {
 		return {
 			location: {
 				type: String,
-				reflectToAttribute: true,
+				reflect: true,
 				observer: handleChangeLocation,
 			},
 			pageTitle: {
 				type: String,
 				value: "",
-				reflectToAttribute: true,
+				reflect: true,
 			},
 			addLocationToUrl: {
 				type: Boolean,
 				value: false,
-				reflectToAttribute: true,
+				reflect: true,
 			},
 			contentBaseLocation: {
 				type: String,
 				value: "",
-				reflectToAttribute: true,
+				reflect: true,
 				observer: handleChangeLocation,
 			},
 		};
@@ -138,17 +138,15 @@ class VicowaContentContainer extends webComponentBaseClass {
 
 	static get template() {
 		return `
-			<template id="vicowa-content-container">
-				<style>
-					:host {
-							position: relative;
-							display: block;
-							box-sizing: border-box;
-						}
-				
-				</style>
-				<div id="container"></div>
-			</template>
+			<style>
+				:host {
+						position: relative;
+						display: block;
+						box-sizing: border-box;
+					}
+			
+			</style>
+			<div id="container"></div>
 		`;
 	}
 }

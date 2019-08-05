@@ -67,7 +67,6 @@ class VicowaResizeDetector extends webComponentBaseClass {
 
 	static get template() {
 		return `
-		    <template>
 			<style>
 				:host,
 					iframe {
@@ -86,7 +85,6 @@ class VicowaResizeDetector extends webComponentBaseClass {
 				}
 			</style>
 			<iframe id="detector"></iframe>
-			</template>
 		`;
 	}
 }

@@ -22,7 +22,7 @@ class VicowaIconSet extends webComponentBaseClass {
 			name: {
 				type: String,
 				value: "",
-				reflectToAttribute: true,
+				reflect: true,
 			},
 		};
 	}
@@ -82,14 +82,12 @@ class VicowaIconSet extends webComponentBaseClass {
 
 	static get template() {
 		return `
-			<template>
-				<style>
-					:host {
-						display: none;
-					}
-				</style>
-				<slot id="icons" name="icons"></slot>
-			</template>
+			<style>
+				:host {
+					display: none;
+				}
+			</style>
+			<slot id="icons" name="icons"></slot>
 		`;
 	}
 }

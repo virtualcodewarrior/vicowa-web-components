@@ -1,10 +1,4 @@
 {
-  "_args": [
-    [
-      "babylonjs@4.0.3",
-      "/home/rodney/prj/vicowa-web-components"
-    ]
-  ],
   "_from": "babylonjs@4.0.3",
   "_id": "babylonjs@4.0.3",
   "_inBundle": false,
@@ -22,24 +16,27 @@
     "fetchSpec": "4.0.3"
   },
   "_requiredBy": [
-    "/",
-    "/babylonjs-loaders"
+    "#USER",
+    "/"
   ],
   "_resolved": "https://registry.npmjs.org/babylonjs/-/babylonjs-4.0.3.tgz",
-  "_spec": "4.0.3",
-  "_where": "/home/rodney/prj/vicowa-web-components",
+  "_shasum": "5dba9a96a7cb70634338e8dd7a17081e9f902cf6",
+  "_spec": "babylonjs@4.0.3",
+  "_where": "/home/rodney/prj/webcomponents/vicowa-web-components",
   "author": {
     "name": "David CATUHE"
   },
   "bugs": {
     "url": "https://github.com/BabylonJS/Babylon.js/issues"
   },
+  "bundleDependencies": false,
   "contributors": [
     {
       "name": "Sebastien VANDENBERGHE"
     }
   ],
   "dependencies": {},
+  "deprecated": false,
   "description": "Babylon.js is a JavaScript 3D engine based on webgl.",
   "devDependencies": {},
   "engines": {

@@ -106,42 +106,42 @@ class VicowaImageContainer extends webComponentBaseClass {
 			tooltip: {
 				type: String,
 				value: "",
-				reflectToAttribute: true,
+				reflect: true,
 				observer: tooltipChanged,
 			},
 			alt: {
 				type: String,
 				value: "",
-				reflectToAttribute: true,
+				reflect: true,
 				observer: altChanged,
 			},
 			description: {
 				type: String,
 				value: "",
-				reflectToAttribute: true,
+				reflect: true,
 				observer: descriptionChanged,
 			},
 			src: {
 				type: String,
 				value: "",
-				reflectToAttribute: true,
+				reflect: true,
 				observer: srcChanged,
 			},
 			galleryGroup: {
 				type: String,
 				value: "",
-				reflectToAttribute: true,
+				reflect: true,
 			},
 			alternates: {
 				type: Array,
 				value: [],
-				reflectToAttribute: true,
+				reflect: true,
 				observer: alternatesChanged,
 			},
 			lazyload: {
 				type: Boolean,
 				value: false,
-				reflectToAttribute: true,
+				reflect: true,
 				observer: lazyloadChanged,
 			},
 		});
@@ -161,73 +161,71 @@ class VicowaImageContainer extends webComponentBaseClass {
 
 	static get template() {
 		return `
-			<template id="vicowa-image-container">
-				<style>
-					:host {
-						position: relative;
-						box-sizing: border-box;
-						display: inline-block;
-					}
-			
-					#image-container {
-						position: relative;
-						width: 100%;
-						height: 100%;
-					}
-			
-					.description-container {
-						box-sizing: border-box;
-						position: absolute;
-						bottom: 0;
-						width: 100%;
-						text-align: center;
-						visibility: var(--vicowa-image-container-description-visibility, visible);
-					}
-			
-					.description-container .background {
-						position: absolute;
-						left: 0;
-						top: 0;
-						right: 0;
-						bottom: 0;
-						background: var(--vicowa-image-container-description-background, rgba(0, 0, 0, 0.7));
-					}
-			
-					#description {
-						display: block;
-						position: relative;
-						padding: 3px;
-						color: var(--vicowa-image-container-description-color, white);
-					}
-			
-					#description[string=""],
-						#description:not([string]) {
-						display: none;
-					}
-			
-					#image {
-						pointer-events: var(--vicowa-image-container-image-pointer-events, all);
-					}
-			
-					img {
-						position: absolute;
-						width: 100%;
-						height: 100%;
-						object-fit: var(--vicowa-image-container-object-fit, contain);
-						object-position: 50% 0;
-					}
-			
-				</style>
-				<div id="image-container">
-					<picture id="picture">
-						<img id="image" src="">
-					</picture>
-					<div class="description-container">
-						<div class="background"></div>
-						<vicowa-string id="description"></vicowa-string>
-					</div>
+			<style>
+				:host {
+					position: relative;
+					box-sizing: border-box;
+					display: inline-block;
+				}
+		
+				#image-container {
+					position: relative;
+					width: 100%;
+					height: 100%;
+				}
+		
+				.description-container {
+					box-sizing: border-box;
+					position: absolute;
+					bottom: 0;
+					width: 100%;
+					text-align: center;
+					visibility: var(--vicowa-image-container-description-visibility, visible);
+				}
+		
+				.description-container .background {
+					position: absolute;
+					left: 0;
+					top: 0;
+					right: 0;
+					bottom: 0;
+					background: var(--vicowa-image-container-description-background, rgba(0, 0, 0, 0.7));
+				}
+		
+				#description {
+					display: block;
+					position: relative;
+					padding: 3px;
+					color: var(--vicowa-image-container-description-color, white);
+				}
+		
+				#description[string=""],
+					#description:not([string]) {
+					display: none;
+				}
+		
+				#image {
+					pointer-events: var(--vicowa-image-container-image-pointer-events, all);
+				}
+		
+				img {
+					position: absolute;
+					width: 100%;
+					height: 100%;
+					object-fit: var(--vicowa-image-container-object-fit, contain);
+					object-position: 50% 0;
+				}
+		
+			</style>
+			<div id="image-container">
+				<picture id="picture">
+					<img id="image" src="">
+				</picture>
+				<div class="description-container">
+					<div class="background"></div>
+					<vicowa-string id="description"></vicowa-string>
 				</div>
-			</template>
+			</div>
 		`;
 	}
 }

@@ -1,32 +1,28 @@
 {
-  "_args": [
-    [
-      "u2f-api@1.0.11",
-      "/home/rodney/prj/vicowa-web-components"
-    ]
-  ],
-  "_from": "u2f-api@1.0.11",
-  "_id": "u2f-api@1.0.11",
+  "_from": "u2f-api@1.1.1",
+  "_id": "u2f-api@1.1.1",
   "_inBundle": false,
-  "_integrity": "sha512-WxOasq8nJmyAISE7cSIm1X2gW7V0/4JfHH4dIVGLNr3s/D4h7IWyFfIEmxuDYHhQxRRZev+96xFmM5tXpvnQMg==",
+  "_integrity": "sha512-tbmMBmg9eaFv+cdcBwja/hbpdXwcvBV0YSQh674nmP3HI0hNWcNAp9LRJ0jl9HGWLF7gF/3UKHzIxlXCW8j7kw==",
   "_location": "/u2f-api",
   "_phantomChildren": {},
   "_requested": {
     "type": "version",
     "registry": true,
-    "raw": "u2f-api@1.0.11",
+    "raw": "u2f-api@1.1.1",
     "name": "u2f-api",
     "escapedName": "u2f-api",
-    "rawSpec": "1.0.11",
+    "rawSpec": "1.1.1",
     "saveSpec": null,
-    "fetchSpec": "1.0.11"
+    "fetchSpec": "1.1.1"
   },
   "_requiredBy": [
+    "#USER",
     "/"
   ],
-  "_resolved": "https://registry.npmjs.org/u2f-api/-/u2f-api-1.0.11.tgz",
-  "_spec": "1.0.11",
-  "_where": "/home/rodney/prj/vicowa-web-components",
+  "_resolved": "https://registry.npmjs.org/u2f-api/-/u2f-api-1.1.1.tgz",
+  "_shasum": "594f600ff7bb49e8bb03e9f533e1f7bfc95f2e0f",
+  "_spec": "u2f-api@1.1.1",
+  "_where": "/home/rodney/prj/webcomponents/vicowa-web-components",
   "author": {
     "name": "Gustaf Räntilä",
     "email": "g.rantila@gmail.com"
@@ -34,13 +30,16 @@
   "bugs": {
     "url": "https://github.com/grantila/u2f-api/issues"
   },
+  "bundleDependencies": false,
   "config": {
     "commitizen": {
       "path": "./node_modules/cz-conventional-changelog"
     }
   },
+  "deprecated": false,
   "description": "Promisified U2F API for browsers",
   "devDependencies": {
+    "@types/chai": "^4.1.7",
     "@types/mocha": "5.x",
     "already": "1.x",
     "chai": "4.x",
@@ -50,13 +49,16 @@
     "mocha": "6.x",
     "pre-commit": "1.x",
     "rimraf": "2.x",
+    "rollup": "^1.17.0",
     "semantic-release": "15.x",
     "source-map-support": "0.x",
     "travis-deploy-once": "5.x",
+    "ts-node": "^8.3.0",
     "typescript": "3.x"
   },
   "files": [
-    "dist"
+    "dist",
+    "bundle.js"
   ],
   "homepage": "https://github.com/grantila/u2f-api#readme",
   "keywords": [
@@ -80,7 +82,9 @@
     "url": "git+https://github.com/grantila/u2f-api.git"
   },
   "scripts": {
-    "build": "scripts/build.sh",
+    "build": "yarn build:lib && yarn build:rollup",
+    "build:lib": "scripts/build.sh",
+    "build:rollup": "rimraf bundle.js && node_modules/.bin/rollup dist-bundle/index.bundle.js --file bundle.js --format iife",
     "buildtest": "npm run build && npm run test",
     "cz": "git-cz",
     "semantic-release": "semantic-release",
@@ -88,5 +92,5 @@
     "travis-deploy-once": "travis-deploy-once"
   },
   "types": "./dist/index.d.ts",
-  "version": "1.0.11"
+  "version": "1.1.1"
 }

@@ -2,10 +2,6 @@ import { webComponentBaseClass } from "../third_party/web-component-base-class/s
 import translator from "../utilities/translate.js";
 
 const componentName = "vicowa-translate";
-
-function translationLocationChanged(p_Control) {
-	translator.addTranslationLocation(p_Control.translationLocation);
-}
 /**
  * Class to represent the vicowa-translate custom element
  * This custom element adds a convenient way of adding locations for translation files, just add the element with
@@ -26,8 +22,10 @@ class VicowaTranslate extends webComponentBaseClass {
 			translationLocation: {
 				type: String,
 				value: "",
-				reflectToAttribute: true,
-				observer: translationLocationChanged,
+				reflect: true,
+				observer: (inst) => {
+					translator.addTranslationLocation(inst.translationLocation);
+				},
 			},
 		};
 	}
@@ -37,7 +35,7 @@ class VicowaTranslate extends webComponentBaseClass {
 	}
 
 	static get template() {
-		return `<template></template>`;
+		return "";
 	}
 }
 

@@ -227,57 +227,57 @@ class VicowaEditableList extends webComponentBaseClass {
 			static: {
 				type: Boolean,
 				value: false,
-				reflectToAttribute: true,
+				reflect: true,
 			},
 			maxPageItems: {
 				type: Number,
 				value: 100,
-				reflectToAttribute: true,
+				reflect: true,
 			},
 			filter: {
 				type: Boolean,
 				value: false,
-				reflectToAttribute: true,
+				reflect: true,
 			},
 			noEdit: {
 				type: Boolean,
 				value: false,
-				reflectToAttribute: true,
+				reflect: true,
 			},
 			noDelete: {
 				type: Boolean,
 				value: false,
-				reflectToAttribute: true,
+				reflect: true,
 			},
 			noAdd: {
 				type: Boolean,
 				value: false,
-				reflectToAttribute: true,
+				reflect: true,
 			},
 			noSave: {
 				type: Boolean,
 				value: false,
-				reflectToAttribute: true,
+				reflect: true,
 			},
 			noCancel: {
 				type: Boolean,
 				value: false,
-				reflectToAttribute: true,
+				reflect: true,
 			},
 			select: {
 				type: Boolean,
 				value: false,
-				reflectToAttribute: true,
+				reflect: true,
 			},
 			single: {
 				type: Boolean,
 				value: false,
-				reflectToAttribute: true,
+				reflect: true,
 			},
 			multi: {
 				type: Boolean,
 				value: false,
-				reflectToAttribute: true,
+				reflect: true,
 			},
 		};
 	}
@@ -366,133 +366,131 @@ class VicowaEditableList extends webComponentBaseClass {
 
 	static get template() {
 		return `
-			<template id="vicowa-editable-list">
-				<style>
-					:host {
-						display: block;
-						position: relative;
-						overflow: auto;
-					}
-			
-					:host([static]) #add,
-						div[name="edit-area"].editing [name="edit"],
-						div[name="edit-area"].editing [name="delete"],
-					:host([static]) [name="edit"],
-					:host([static]) [name="delete"],
-					:host([static]) [name="save"],
-						div[name="edit-area"]:not(.editing) [name="save"],
-						div[name="edit-area"]:not(.editing) [name="cancel"] {
-						display: none;
-					}
-			
-					.edit-area,
-					.button-area {
-						box-sizing: border-box;
-						display: flex;
-						flex-direction: row;
-					}
-			
-					#items .edit-area:not(.editing) {
-						background: var(--vicowa-editable-list-item-background, transparent);
-						border: var(--vicowa-editable-list-item-border, 0);
-						border-bottom: 0;
-					}
-			
-					#items .edit-area:not(.editing):last-child {
-						border: var(--vicowa-editable-list-item-border, 0);
-					}
-			
-					#items .edit-area:nth-child(even):not(.editing) {
-						background: var(--vicowa-editable-list-item-even-background, transparent);
-					}
-			
-					.button-area {
-						padding-right: 5px;
-						width: var(--vicowa-editable-list-button-area-width, auto);
-					}
-			
-					.edit-area.editing {
-						flex-direction: column;
-						margin: 1em;
-						padding: 1em;
-						box-shadow: 0 0 6px gray;
-					}
-			
-					.filter {
-						margin-bottom: 1em;
-					}
-			
-					#pages {
-						margin-bottom: 1em;
-						display: flex;
-					}
-			
-					:host(:not([filter])) .filter,
-					:host(:not(.pages)) #pages,
-					:host([no-edit]) button[name="edit"],
-					:host([no-delete]) button[name="delete"],
-					:host([no-save]) button[name="save"],
-					:host([no-cancel]) button[name="cancel"],
-					:host([no-add]) #add {
-						display: none;
-					}
-			
-					#page-links {
-						margin-right: 1em;
-					}
-			
-					.edit-area.editing .button-area {
-						order: 2;
-					}
-			
-					#add {
-						margin-top: 5px;
-					}
-			
-					:host([select]) .edit-area,
-					:host([select]) vicowa-input,
-					:host([select]) .edit-area:hover {
-						cursor: pointer;
-					}
-			
-					:host([select]) #items .edit-area:not(.editing):hover {
-						background: var(--vicowa-editable-list-hover-background, #88f);
-						color: var(--vicowa-editable-list-hover-color, white);
-					}
-					:host([select]) #items .edit-area:not(.editing).selected {
-						background: var(--vicowa-editable-list-select-background, blue);
-						color: var(--vicowa-editable-list-select-color, white);
-					}
-				</style>
-				<div>
-				<div class="item-area">
-					<vicowa-input class="filter" id="filter" label="Filter items"></vicowa-input>
-					<div id="pages">
-						<div id="page-links"></div>
-						<vicowa-input id="jump-to" hide-label></vicowa-input>
-						<button id="jump"><vicowa-string>Jump to page</vicowa-string></button>
+			<style>
+				:host {
+					display: block;
+					position: relative;
+					overflow: auto;
+				}
+		
+				:host([static]) #add,
+					div[name="edit-area"].editing [name="edit"],
+					div[name="edit-area"].editing [name="delete"],
+				:host([static]) [name="edit"],
+				:host([static]) [name="delete"],
+				:host([static]) [name="save"],
+					div[name="edit-area"]:not(.editing) [name="save"],
+					div[name="edit-area"]:not(.editing) [name="cancel"] {
+					display: none;
+				}
+		
+				.edit-area,
+				.button-area {
+					box-sizing: border-box;
+					display: flex;
+					flex-direction: row;
+				}
+		
+				#items .edit-area:not(.editing) {
+					background: var(--vicowa-editable-list-item-background, transparent);
+					border: var(--vicowa-editable-list-item-border, 0);
+					border-bottom: 0;
+				}
+		
+				#items .edit-area:not(.editing):last-child {
+					border: var(--vicowa-editable-list-item-border, 0);
+				}
+		
+				#items .edit-area:nth-child(even):not(.editing) {
+					background: var(--vicowa-editable-list-item-even-background, transparent);
+				}
+		
+				.button-area {
+					padding-right: 5px;
+					width: var(--vicowa-editable-list-button-area-width, auto);
+				}
+		
+				.edit-area.editing {
+					flex-direction: column;
+					margin: 1em;
+					padding: 1em;
+					box-shadow: 0 0 6px gray;
+				}
+		
+				.filter {
+					margin-bottom: 1em;
+				}
+		
+				#pages {
+					margin-bottom: 1em;
+					display: flex;
+				}
+		
+				:host(:not([filter])) .filter,
+				:host(:not(.pages)) #pages,
+				:host([no-edit]) button[name="edit"],
+				:host([no-delete]) button[name="delete"],
+				:host([no-save]) button[name="save"],
+				:host([no-cancel]) button[name="cancel"],
+				:host([no-add]) #add {
+					display: none;
+				}
+		
+				#page-links {
+					margin-right: 1em;
+				}
+		
+				.edit-area.editing .button-area {
+					order: 2;
+				}
+		
+				#add {
+					margin-top: 5px;
+				}
+		
+				:host([select]) .edit-area,
+				:host([select]) vicowa-input,
+				:host([select]) .edit-area:hover {
+					cursor: pointer;
+				}
+		
+				:host([select]) #items .edit-area:not(.editing):hover {
+					background: var(--vicowa-editable-list-hover-background, #88f);
+					color: var(--vicowa-editable-list-hover-color, white);
+				}
+				:host([select]) #items .edit-area:not(.editing).selected {
+					background: var(--vicowa-editable-list-select-background, blue);
+					color: var(--vicowa-editable-list-select-color, white);
+				}
+			</style>
+			<div>
+			<div class="item-area">
+				<vicowa-input class="filter" id="filter" label="Filter items"></vicowa-input>
+				<div id="pages">
+					<div id="page-links"></div>
+					<vicowa-input id="jump-to" hide-label></vicowa-input>
+					<button id="jump"><vicowa-string>Jump to page</vicowa-string></button>
+				</div>
+				<p><vicowa-string id="heading" string=""></vicowa-string></p>
+				<slot name="header"></slot>
+					<div id="items">
 					</div>
-					<p><vicowa-string id="heading" string=""></vicowa-string></p>
-					<slot name="header"></slot>
-						<div id="items">
-						</div>
-						<div class="button-area">
-							<button id="add"><vicowa-string>Add</vicowa-string></button>
-						</div>
+					<div class="button-area">
+						<button id="add"><vicowa-string>Add</vicowa-string></button>
 					</div>
 				</div>
-				<template id="item">
-					<div name="edit-area" class="edit-area">
-						<div class="button-area">
-							<button name="edit"><vicowa-string>Edit</vicowa-string></button>
-							<button name="delete"><vicowa-string>Delete</vicowa-string></button>
-							<button name="save"><vicowa-string>Save</vicowa-string></button>
-							<button name="cancel"><vicowa-string>Cancel</vicowa-string></button>
-						</div>
-						<div name="editable-item">
-						</div>
+			</div>
+			<template id="item">
+				<div name="edit-area" class="edit-area">
+					<div class="button-area">
+						<button name="edit"><vicowa-string>Edit</vicowa-string></button>
+						<button name="delete"><vicowa-string>Delete</vicowa-string></button>
+						<button name="save"><vicowa-string>Save</vicowa-string></button>
+						<button name="cancel"><vicowa-string>Cancel</vicowa-string></button>
 					</div>
-				</template>
+					<div name="editable-item">
+					</div>
+				</div>
 			</template>
 		`;
 	}

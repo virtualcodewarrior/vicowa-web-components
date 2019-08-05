@@ -36,13 +36,13 @@ class VicowaMoveBetweenLists extends webComponentBaseClass {
 			firstTitle: {
 				type: String,
 				value: "",
-				reflectToAttribute: true,
+				reflect: true,
 				observer: titleUpdated,
 			},
 			secondTitle: {
 				type: String,
 				value: "",
-				reflectToAttribute: true,
+				reflect: true,
 				observer: titleUpdated,
 			},
 			first: {
@@ -96,68 +96,66 @@ class VicowaMoveBetweenLists extends webComponentBaseClass {
 
 	static get template() {
 		return `
-			<template id="vicowa-move-between-lists">
-				<style>
-					.list-container {
-						justify-content: stretch;
-						--vicowa-input-control-width: 200px;
-					}
-					.swap-button-container {
-						justify-content: center;
-					}
-			
-					.swap-button-container button {
-						margin: 3px 2px;
-					}
-			
-					.list-container,
-					.swap-button-container {
-						display: flex;
-						flex-direction: column;
-					}
-			
-					select {
-						width: var(--vicowa-input-control-width);
-						height: 200px;
-					}
-			
-					label {
-						margin: .2em 0;
-					}
-			
-					.side-by-side {
-						display: flex;
-					}
-			
-					.move {
-						cursor: pointer;
-					}
-			
-					.disabled {
-						pointer-events: none;
-						opacity: 0.5;
-						cursor: default;
-					}
-				</style>
-				<div class="side-by-side">
-					<div class="list-container">
-						<label for="first-list"><vicowa-string id="first-title"></vicowa-string></label>
-						<vicowa-input id="first-filter" placeholder="Filter" hide-label></vicowa-input>
-						<select id="first-list" multiple>
-						</select>
-					</div>
-					<div class="swap-button-container">
-						<div class="move" id="first-to-second"><slot name="first-to-second-button"><button >-></button></slot></div>
-						<div class="move" id="second-to-first"><slot name="second-to-first-button"><button ><-</button></slot></div>
-					</div>
-					<div class="list-container">
-						<label for="second-list"><vicowa-string id="second-title"></vicowa-string></label>
-						<vicowa-input id="second-filter" placeholder="Filter" hide-label></vicowa-input>
-						<select id="second-list" multiple>
-						</select>
-					</div>
+			<style>
+				.list-container {
+					justify-content: stretch;
+					--vicowa-input-control-width: 200px;
+				}
+				.swap-button-container {
+					justify-content: center;
+				}
+		
+				.swap-button-container button {
+					margin: 3px 2px;
+				}
+		
+				.list-container,
+				.swap-button-container {
+					display: flex;
+					flex-direction: column;
+				}
+		
+				select {
+					width: var(--vicowa-input-control-width);
+					height: 200px;
+				}
+		
+				label {
+					margin: .2em 0;
+				}
+		
+				.side-by-side {
+					display: flex;
+				}
+		
+				.move {
+					cursor: pointer;
+				}
+		
+				.disabled {
+					pointer-events: none;
+					opacity: 0.5;
+					cursor: default;
+				}
+			</style>
+			<div class="side-by-side">
+				<div class="list-container">
+					<label for="first-list"><vicowa-string id="first-title"></vicowa-string></label>
+					<vicowa-input id="first-filter" placeholder="Filter" hide-label></vicowa-input>
+					<select id="first-list" multiple>
+					</select>
 				</div>
-			</template>
+				<div class="swap-button-container">
+					<div class="move" id="first-to-second"><slot name="first-to-second-button"><button >-></button></slot></div>
+					<div class="move" id="second-to-first"><slot name="second-to-first-button"><button ><-</button></slot></div>
+				</div>
+				<div class="list-container">
+					<label for="second-list"><vicowa-string id="second-title"></vicowa-string></label>
+					<vicowa-input id="second-filter" placeholder="Filter" hide-label></vicowa-input>
+					<select id="second-list" multiple>
+					</select>
+				</div>
+			</div>
 		`;
 	}
 }

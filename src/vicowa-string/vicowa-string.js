@@ -44,22 +44,9 @@ class VicowaString extends webComponentBaseClass {
 
 	static get properties() {
 		return {
-			string: {
-				type: String,
-				value: "",
-				reflectToAttribute: true,
-				observer: updateString,
-			},
-			parameters: {
-				type: Array,
-				value: [],
-				observer: updateParameters,
-			},
-			pluralNumber: {
-				type: Number,
-				value: 1,
-				observer: updatePluralNumber,
-			},
+			string: { type: String, value: "", reflect: true, observer: updateString },
+			parameters: { type: Array, value: [], observer: updateParameters },
+			pluralNumber: { type: Number, value: 1, observer: updatePluralNumber },
 		};
 	}
 
@@ -87,11 +74,10 @@ class VicowaString extends webComponentBaseClass {
 
 	static get template() {
 		return `
-			<template id="vicowa-string">
-				<style>
-				</style>
-				<span id="string"></span>
-			</template>`;
+			<style>
+			</style>
+			<span id="string"></span>
+		`;
 	}
 }
 

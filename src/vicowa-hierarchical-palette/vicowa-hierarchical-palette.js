@@ -104,19 +104,19 @@ class VicowaHierarchicalPalette extends webComponentBaseClass {
 			paletteSize: {
 				type: Number,
 				value: 50,
-				reflectToAttribute: true,
+				reflect: true,
 				observer: fillPaletteItems,
 			},
 			itemSize: {
 				type: Number,
 				value: 50,
-				reflectToAttribute: true,
+				reflect: true,
 				observer: fillPaletteItems,
 			},
 			horizontal: {
 				type: Boolean,
 				value: false,
-				reflectToAttribute: true,
+				reflect: true,
 				observer: fillPaletteItems,
 			},
 		};
@@ -234,145 +234,143 @@ class VicowaHierarchicalPalette extends webComponentBaseClass {
 
 	static get template() {
 		return `
-			<template id="vicowa-hierarchical-palette">
-				<style>
-					:host {
-						display: block;
-						box-sizing: border-box;
-					}
-			
-					#container {
-						position: relative;
-						height: 100%;
-						width: 100%;
-						overflow: hidden;
-					}
-			
-					#container,
-					#containers-container,
-					.items-container {
-						display: flex;
-						flex-direction: column;
-						align-items: stretch;
-					}
-			
-					#containers-container {
-						position: relative;
-						flex: 1 1 auto;
-						display: flex;
-						flex-direction: row;
-						align-items: stretch;
-						overflow: hidden;
-					}
+			<style>
+				:host {
+					display: block;
+					box-sizing: border-box;
+				}
+		
+				#container {
+					position: relative;
+					height: 100%;
+					width: 100%;
+					overflow: hidden;
+				}
+		
+				#container,
+				#containers-container,
+				.items-container {
+					display: flex;
+					flex-direction: column;
+					align-items: stretch;
+				}
+		
+				#containers-container {
+					position: relative;
+					flex: 1 1 auto;
+					display: flex;
+					flex-direction: row;
+					align-items: stretch;
+					overflow: hidden;
+				}
 
-					.items-container {
-						flex: 0 0 33%;
-						overflow: hidden;
-					}
-			
-					:host([horizontal]) #containers-container {
-						flex-direction: column;
-					}
-			
-					:host([horizontal]) #container,
-					:host([horizontal]) .items-container {
-						flex-direction: row;
-						overflow: hidden;
-					}
-					#move-to-start,
-					#move-to-end {
-						flex: 0 0 auto;
-					}
+				.items-container {
+					flex: 0 0 33%;
+					overflow: hidden;
+				}
+		
+				:host([horizontal]) #containers-container {
+					flex-direction: column;
+				}
+		
+				:host([horizontal]) #container,
+				:host([horizontal]) .items-container {
+					flex-direction: row;
+					overflow: hidden;
+				}
+				#move-to-start,
+				#move-to-end {
+					flex: 0 0 auto;
+				}
 
-					:host(:not([horizontal])) #move-to-start slot > div,
-					:host(:not([horizontal])) #move-to-end slot > div {
-						transform: rotate(90deg);
-					}
+				:host(:not([horizontal])) #move-to-start slot > div,
+				:host(:not([horizontal])) #move-to-end slot > div {
+					transform: rotate(90deg);
+				}
 
-					div[name="item-container"] {
-						position: relative;
-						box-sizing: border-box;
-						cursor: pointer;
-						flex: 0 0 auto;
-						user-select: none;
-						overflow: hidden;
-					}
+				div[name="item-container"] {
+					position: relative;
+					box-sizing: border-box;
+					cursor: pointer;
+					flex: 0 0 auto;
+					user-select: none;
+					overflow: hidden;
+				}
 
-					.button {
-						position: relative;
-						box-sizing: border-box;
-						border-bottom: var(--vicowa-hierarchical-palette-button-border, 1px solid grey);
-						text-align: center;
-						cursor: pointer;
-						user-select: none;
-						display: flex;
-						align-items: center;
-						justify-content: center;
-					}
+				.button {
+					position: relative;
+					box-sizing: border-box;
+					border-bottom: var(--vicowa-hierarchical-palette-button-border, 1px solid grey);
+					text-align: center;
+					cursor: pointer;
+					user-select: none;
+					display: flex;
+					align-items: center;
+					justify-content: center;
+				}
 
-					:host([horizontal]) .button {
-						border-bottom: 0;
-						border-top: 0;
-						border-right: var(--vicowa-hierarchical-palette-button-border, 1px solid grey);
-					}
+				:host([horizontal]) .button {
+					border-bottom: 0;
+					border-top: 0;
+					border-right: var(--vicowa-hierarchical-palette-button-border, 1px solid grey);
+				}
 
-					.button:last-child {
-						border-top: var(--vicowa-hierarchical-palette-button-border, 1px solid grey);
-						border-bottom: 0;
-					}
-					:host([horizontal]) .button:last-child {
-						border-left: var(--vicowa-hierarchical-palette-button-border, 1px solid grey);
-						border-right: 0;
-					}
+				.button:last-child {
+					border-top: var(--vicowa-hierarchical-palette-button-border, 1px solid grey);
+					border-bottom: 0;
+				}
+				:host([horizontal]) .button:last-child {
+					border-left: var(--vicowa-hierarchical-palette-button-border, 1px solid grey);
+					border-right: 0;
+				}
 
-					:host(:not([search])) #search {
-						display: none;
-					}
-			
-					div[name="item-container"]:hover {
-						background: var(--vicowa-hierarchical-palette-hover-background, #8888ff);
-						color: var(--vicowa-hierarchical-palette-hover-color, white);
-					}
-					div[name="item-container"].active {
-						background: var(--vicowa-hierarchical-palette-active-background, #8888ff);
-						color: var(--vicowa-hierarchical-palette-active-color, white);
-					}
-			
-					#containers-container.animate {
-						transition: left var(--vicowa-hierarchical-palette-transition-time, .5s), top var(--vicowa-hierarchical-palette-transition-time, .5s);
-					}
-			
-					.button.disabled {
-						opacity: 0.5;
-						pointer-events: none;
-					}
-			
-					#move-to-end:not(.disabled) {
-						box-shadow: 0 -2px 4px grey;
-					}
-					#move-to-start:not(.disabled) {
-						box-shadow: 0 2px 4px grey;
-					}
-			
-					:host([horizontal]) #move-to-end:not(.disabled) {
-						box-shadow: -2px 0 4px grey;
-					}
-					:host([horizontal]) #move-to-start:not(.disabled) {
-						box-shadow: 2px 0 4px grey;
-					}
-				</style>
-				<template id="item-template">
-					<div name="item-container"><slot></slot></div>
-				</template>
-				<div id="container">
-					<vicowa-resize-detector id="resize-detector"></vicowa-resize-detector>
-					<div class="button" id="search">Search<vicowa-input id="search"></vicowa-input></div>
-					<div class="button" id="back"><slot name="back-button"><div>Back</div></slot></div>
-					<div class="button" id="move-to-start"><slot name="move-to-start"><div>&lt;</div></slot></div>
-					<div id="containers-container"><div class="items-container" id="prev-items-container"></div><div class="items-container" id="items-container"></div><div class="items-container" id="next-items-container"></div></div>
-					<div class="button" id="move-to-end"><slot name="move-to-end"><div>&gt;</div></slot></div>
-				</div>
+				:host(:not([search])) #search {
+					display: none;
+				}
+		
+				div[name="item-container"]:hover {
+					background: var(--vicowa-hierarchical-palette-hover-background, #8888ff);
+					color: var(--vicowa-hierarchical-palette-hover-color, white);
+				}
+				div[name="item-container"].active {
+					background: var(--vicowa-hierarchical-palette-active-background, #8888ff);
+					color: var(--vicowa-hierarchical-palette-active-color, white);
+				}
+		
+				#containers-container.animate {
+					transition: left var(--vicowa-hierarchical-palette-transition-time, .5s), top var(--vicowa-hierarchical-palette-transition-time, .5s);
+				}
+		
+				.button.disabled {
+					opacity: 0.5;
+					pointer-events: none;
+				}
+		
+				#move-to-end:not(.disabled) {
+					box-shadow: 0 -2px 4px grey;
+				}
+				#move-to-start:not(.disabled) {
+					box-shadow: 0 2px 4px grey;
+				}
+		
+				:host([horizontal]) #move-to-end:not(.disabled) {
+					box-shadow: -2px 0 4px grey;
+				}
+				:host([horizontal]) #move-to-start:not(.disabled) {
+					box-shadow: 2px 0 4px grey;
+				}
+			</style>
+			<template id="item-template">
+				<div name="item-container"><slot></slot></div>
 			</template>
+			<div id="container">
+				<vicowa-resize-detector id="resize-detector"></vicowa-resize-detector>
+				<div class="button" id="search">Search<vicowa-input id="search"></vicowa-input></div>
+				<div class="button" id="back"><slot name="back-button"><div>Back</div></slot></div>
+				<div class="button" id="move-to-start"><slot name="move-to-start"><div>&lt;</div></slot></div>
+				<div id="containers-container"><div class="items-container" id="prev-items-container"></div><div class="items-container" id="items-container"></div><div class="items-container" id="next-items-container"></div></div>
+				<div class="button" id="move-to-end"><slot name="move-to-end"><div>&gt;</div></slot></div>
+			</div>
 		`;
 	}
 }

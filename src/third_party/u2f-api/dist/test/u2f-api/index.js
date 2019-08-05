@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -67,6 +67,8 @@ var JSDOM = jsdom.JSDOM;
 var appId = "https://example.org/";
 var MonkeyPatcher = /** @class */ (function () {
     function MonkeyPatcher(obj) {
+        this._values = [];
+        this._overwrittenValues = [];
         this._object = obj;
         this.clear();
     }
@@ -245,11 +247,16 @@ describe('general', function () {
                 case 0: return [4 /*yield*/, api.ensureSupport()];
                 case 1:
                     _a.sent();
-                    request = "req";
-                    return [4 /*yield*/, api.register({ appId: appId, request: request })];
+                    request = {
+                        version: 'U2F_V2',
+                        appId: appId,
+                        challenge: 'Sk1hrSXt_KswFHOhTQ7BED45yQRU2gqY37dfBQ8nNiI',
+                        keyHandle: 'foo',
+                    };
+                    return [4 /*yield*/, api.register(request)];
                 case 2:
                     _a.sent();
-                    return [4 /*yield*/, api.sign({ appId: appId, request: request })];
+                    return [4 /*yield*/, api.sign(request)];
                 case 3:
                     _a.sent();
                     return [2 /*return*/];

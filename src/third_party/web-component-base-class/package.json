@@ -1,39 +1,37 @@
 {
-  "_args": [
-    [
-      "web-component-base-class@1.0.0",
-      "/home/rodney/prj/vicowa-web-components"
-    ]
-  ],
-  "_from": "web-component-base-class@1.0.0",
-  "_id": "web-component-base-class@1.0.0",
+  "_from": "web-component-base-class@1.0.1",
+  "_id": "web-component-base-class@1.0.1",
   "_inBundle": false,
-  "_integrity": "sha512-xW27wgizjLPCxiOWry3xHoSCxyLaVcFDK/8kcZrj7x74lYRNqxtCMkdjHXEWTIP/sRmYLDsmNiRbAstZgqi67w==",
+  "_integrity": "sha512-VVgSkd7BTtVOHyForDz3PRn69I/tq0Ls5U0Gr2G6XJI3695buhseC6wL0uABVOFYRCCVuCsUTpiGlzoAysMibw==",
   "_location": "/web-component-base-class",
   "_phantomChildren": {},
   "_requested": {
     "type": "version",
     "registry": true,
-    "raw": "web-component-base-class@1.0.0",
+    "raw": "web-component-base-class@1.0.1",
     "name": "web-component-base-class",
     "escapedName": "web-component-base-class",
-    "rawSpec": "1.0.0",
+    "rawSpec": "1.0.1",
     "saveSpec": null,
-    "fetchSpec": "1.0.0"
+    "fetchSpec": "1.0.1"
   },
   "_requiredBy": [
+    "#USER",
     "/"
   ],
-  "_resolved": "https://registry.npmjs.org/web-component-base-class/-/web-component-base-class-1.0.0.tgz",
-  "_spec": "1.0.0",
-  "_where": "/home/rodney/prj/vicowa-web-components",
+  "_resolved": "https://registry.npmjs.org/web-component-base-class/-/web-component-base-class-1.0.1.tgz",
+  "_shasum": "acb2d4ac0691191baed00683938832df1f207478",
+  "_spec": "web-component-base-class@1.0.1",
+  "_where": "/home/rodney/prj/webcomponents/vicowa-web-components",
   "author": {
     "name": "Rodney Draaisma"
   },
   "bugs": {
     "url": "https://github.com/virtualcodewarrior/webComponentBaseClass/issues"
   },
+  "bundleDependencies": false,
   "dependencies": {},
+  "deprecated": false,
   "description": "Base class to simplify the creation of web components",
   "devDependencies": {
     "eslint": "^6.0.1",
@@ -81,5 +79,5 @@
     "unittest": "node ./node_modules/karma/bin/karma start karma.conf.js --single-run",
     "watch-test": "node ./node_modules/karma/bin/karma start karma.conf.js --watch"
   },
-  "version": "1.0.0"
+  "version": "1.0.1"
 }

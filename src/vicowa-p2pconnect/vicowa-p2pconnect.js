@@ -49,13 +49,13 @@ class VicowaP2PConnect extends webComponentBaseClass {
 			signalingServer: {
 				type: String,
 				value: "",
-				reflectToAttribute: true,
+				reflect: true,
 				observer: handleSignalingChange,
 			},
 			peerId: {
 				type: String,
 				value: "",
-				reflectToAttribute: true,
+				reflect: true,
 				observer: handleIdChange,
 			},
 		};
@@ -87,6 +87,27 @@ class VicowaP2PConnect extends webComponentBaseClass {
 			controlData.channelGuid = uuidv4();
 			controlData.signaling.send({ command: COMMANDS.inviteChannel, channel: controlData.channelGuid, peers: [] });
 		});
+	}
+
+	static get template() {
+		return `
+		<style>
+			:host {
+					display: block;
+				}
+		
+			.peer {
+					cursor: pointer;
+				}
+			.peer:hover,
+			.peer.selected {
+					background: blue;
+					color: white;
+				}
+		</style>
+		<div id="peers"></div>
+		<vicowa-button id="connect" string="Connect"><slot name="custom-connect"></slot></vicowa-button>
+		<slot id="peer-template" name="peer-template"><template><div name="peer"></div></template></slot>
 	}
 }
 

@@ -1,10 +1,4 @@
 {
-  "_args": [
-    [
-      "babylonjs-gltf2interface@4.0.3",
-      "/home/rodney/prj/vicowa-web-components"
-    ]
-  ],
   "_from": "babylonjs-gltf2interface@4.0.3",
   "_id": "babylonjs-gltf2interface@4.0.3",
   "_inBundle": false,
@@ -25,11 +19,14 @@
     "/babylonjs-loaders"
   ],
   "_resolved": "https://registry.npmjs.org/babylonjs-gltf2interface/-/babylonjs-gltf2interface-4.0.3.tgz",
-  "_spec": "4.0.3",
-  "_where": "/home/rodney/prj/vicowa-web-components",
+  "_shasum": "e81cc65fac93b723feef4980b7497fa4643a8c4c",
+  "_spec": "babylonjs-gltf2interface@4.0.3",
+  "_where": "/home/rodney/prj/webcomponents/vicowa-web-components/node_modules/babylonjs-loaders",
   "bugs": {
     "url": "https://github.com/BabylonJS/Babylon.js/issues"
   },
+  "bundleDependencies": false,
+  "deprecated": false,
   "description": "A typescript declaration of babylon's gltf2 inteface.",
   "engines": {
     "node": "*"
