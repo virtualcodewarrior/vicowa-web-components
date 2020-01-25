@@ -157,6 +157,12 @@ class VicowaImageContainer extends webComponentBaseClass {
 			this._activeTranslator = p_Translator;
 			this.updateTranslation();
 		}, this);
+
+		this.$.image.onload = () => {
+			if (this.onload) {
+				this.onload();
+			}
+		};
 	}
 
 	static get template() {

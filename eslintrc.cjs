@@ -1,4 +1,3 @@
-/* eslint-disable */
 module.exports = {
 	env: {
 		browser: true, // we are targetting browser environments
@@ -10,7 +9,7 @@ module.exports = {
 	],
 	parserOptions: {
 		sourceType: 'module',
-		ecmaVersion: 8,
+		ecmaVersion: 2017,
 	},
 	// 'extends': 'eslint:recommended', // don't use any default settings, we will specify all settings explicitly
 	rules: {

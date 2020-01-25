@@ -17,7 +17,7 @@ function createItem(p_Control, p_Done) {
 		const item = p_Control.factory();
 		const editArea = itemClone.querySelector(".edit-area");
 		editArea.item = item;
-		const save = itemClone.querySelector('[name="save"]');
+		const save = itemClone.querySelector("[name=\"save\"]");
 		const listUpdate = () => {
 			// create new work list for items
 			const newWorkList = Array.from(p_Control.$.items.querySelectorAll(".edit-area")).map((p_Item) => p_Control.itemInterface.getItemData(p_Item.item));
@@ -36,15 +36,21 @@ function createItem(p_Control, p_Done) {
 			}
 		};
 		const applyActions = {
-			startEditing() { editArea.classList.add("editing"); },
+			startEditing() {
+				editArea.classList.add("editing");
+				Array.from(editArea.querySelectorAll("input")).forEach((inputItem) => { inputItem.static = false; });
+			},
 			update() { listUpdate(); },
-			stopEditing() { editArea.classList.remove("editing"); },
+			stopEditing() {
+				editArea.classList.remove("editing");
+				Array.from(editArea.querySelectorAll("input")).forEach((inputItem) => { inputItem.static = true; });
+			},
 			removeEditArea() { editArea.parentElement.removeChild(editArea); },
 		};
 
-		itemClone.querySelector('[name="editable-item"]').appendChild(item);
+		itemClone.querySelector("[name=\"editable-item\"]").appendChild(item);
 		item.applyActions = applyActions;
-		p_Control.addAutoEventListener(itemClone.querySelector('[name="edit"]'), "click", () => {
+		p_Control.addAutoEventListener(itemClone.querySelector("[name=\"edit\"]"), "click", () => {
 			p_Control.itemInterface.startEdit(item);
 			applyActions.startEditing();
 		});
@@ -55,7 +61,7 @@ function createItem(p_Control, p_Done) {
 				applyActions.update();
 			}
 		});
-		p_Control.addAutoEventListener(itemClone.querySelector('[name="cancel"]'), "click", () => {
+		p_Control.addAutoEventListener(itemClone.querySelector("[name=\"cancel\"]"), "click", () => {
 			p_Control.itemInterface.doCancel(item);
 			p_Control.itemInterface.stopEdit(item);
 			applyActions.stopEditing();
@@ -63,7 +69,7 @@ function createItem(p_Control, p_Done) {
 				applyActions.removeEditArea();
 			}
 		});
-		p_Control.addAutoEventListener(itemClone.querySelector('[name="delete"]'), "click", async() => {
+		p_Control.addAutoEventListener(itemClone.querySelector("[name=\"delete\"]"), "click", async () => {
 			const continueDelete = await p_Control.continueDelete(editArea.item);
 			if (continueDelete) {
 				applyActions.removeEditArea();
@@ -89,7 +95,10 @@ async function fillList(p_Control, p_Start, p_Count, p_Filter) {
 	const listData = p_Control[privateData];
 	listData.startItem = p_Start;
 	listData.retrievedData = await p_Control.getData(p_Start, p_Count, p_Filter);
-	listData.retrievedData.items = listData.retrievedData.items.map((p_Item, p_Index) => { p_Item[originalItem] = p_Index; return p_Item; });
+	listData.retrievedData.items = listData.retrievedData.items.map((p_Item, p_Index) => {
+		p_Item[originalItem] = p_Index;
+		return p_Item;
+	});
 	p_Control.classList.toggle("pages", listData.retrievedData.totalItemCount > p_Control.maxPageItems);
 	const pageContainer = p_Control.$.pageLinks;
 	pageContainer.innerHTML = "";
@@ -180,12 +189,14 @@ async function fillList(p_Control, p_Start, p_Count, p_Filter) {
 }
 
 const componentName = "vicowa-editable-list";
+
 class VicowaEditableList extends webComponentBaseClass {
 	/**
 	 * return this web components name
 	 * @returns {String} The name of this element
 	 */
 	static get is() { return componentName; }
+
 	/**
 	 * constructor
 	 */
@@ -201,7 +212,7 @@ class VicowaEditableList extends webComponentBaseClass {
 		};
 		this.factory = null;
 		this.getData = null;
-		this.continueDelete = async() => true;
+		this.continueDelete = async () => true;
 		this.itemInterface = {
 			setItemData(p_Item, p_Data) { p_Item.data = p_Data; },
 			getItemData(p_Item) { return p_Item.data; },
