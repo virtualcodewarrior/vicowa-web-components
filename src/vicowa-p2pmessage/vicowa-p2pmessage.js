@@ -23,7 +23,7 @@ class VicowaP2PMessage extends webComponentBaseClass {
 			signalingServer: {
 				type: String,
 				value: "",
-				reflect: true,
+				reflectToAttribute: true,
 				observer: handleSignalingChange,
 			},
 		};

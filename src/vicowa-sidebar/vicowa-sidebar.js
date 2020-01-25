@@ -22,27 +22,27 @@ class VicowaSideBar extends webComponentBaseClass {
 			location: {
 				type: String,
 				value: "left",
-				reflect: true,
+				reflectToAttribute: true,
 			},
 			expanded: {
 				type: Boolean,
 				value: true,
-				reflect: true,
+				reflectToAttribute: true,
 			},
 			resizeable: {
 				type: Boolean,
 				value: false,
-				reflect: true,
+				reflectToAttribute: true,
 			},
 			floating: {
 				type: Boolean,
 				value: false,
-				reflect: true,
+				reflectToAttribute: true,
 			},
 			forceNonFloating: {
 				type: Boolean,
 				value: false,
-				reflect: true,
+				reflectToAttribute: true,
 			},
 		};
 	}

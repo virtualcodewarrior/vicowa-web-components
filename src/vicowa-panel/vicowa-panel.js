@@ -18,10 +18,10 @@ class VicowaPanel extends webComponentBaseClass {
 
 	static get properties() {
 		return {
-			header: { type: String, value: "", reflect: true, observer: (inst) => { inst.$.title = inst.header; } },
-			collapsible: { type: Boolean, value: false, reflect: true },
-			expanded: { type: Boolean, value: true, reflect: true },
-			expandControlAnimation: { type: String, value: "rotate", reflect: true },
+			header: { type: String, value: "", reflectToAttribute: true, observer: (inst) => { inst.$.title = inst.header; } },
+			collapsible: { type: Boolean, value: false, reflectToAttribute: true },
+			expanded: { type: Boolean, value: true, reflectToAttribute: true },
+			expandControlAnimation: { type: String, value: "rotate", reflectToAttribute: true },
 		};
 	}
 

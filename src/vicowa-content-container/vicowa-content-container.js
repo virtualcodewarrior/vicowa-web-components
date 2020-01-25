@@ -71,23 +71,23 @@ class VicowaContentContainer extends webComponentBaseClass {
 		return {
 			location: {
 				type: String,
-				reflect: true,
+				reflectToAttribute: true,
 				observer: handleChangeLocation,
 			},
 			pageTitle: {
 				type: String,
 				value: "",
-				reflect: true,
+				reflectToAttribute: true,
 			},
 			addLocationToUrl: {
 				type: Boolean,
 				value: false,
-				reflect: true,
+				reflectToAttribute: true,
 			},
 			contentBaseLocation: {
 				type: String,
 				value: "",
-				reflect: true,
+				reflectToAttribute: true,
 				observer: handleChangeLocation,
 			},
 		};

@@ -22,7 +22,7 @@ class VicowaIconSet extends webComponentBaseClass {
 			name: {
 				type: String,
 				value: "",
-				reflect: true,
+				reflectToAttribute: true,
 			},
 		};
 	}

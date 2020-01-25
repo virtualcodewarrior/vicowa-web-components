@@ -36,13 +36,13 @@ class VicowaMoveBetweenLists extends webComponentBaseClass {
 			firstTitle: {
 				type: String,
 				value: "",
-				reflect: true,
+				reflectToAttribute: true,
 				observer: titleUpdated,
 			},
 			secondTitle: {
 				type: String,
 				value: "",
-				reflect: true,
+				reflectToAttribute: true,
 				observer: titleUpdated,
 			},
 			first: {

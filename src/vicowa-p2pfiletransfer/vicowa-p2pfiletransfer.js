@@ -22,7 +22,7 @@ class VicowaP2pfiletransfer extends webComponentBaseClass {
 			signalingServer: {
 				type: String,
 				value: "",
-				reflect: true,
+				reflectToAttribute: true,
 				observer: handleSignalingChange,
 			},
 		};

@@ -33,8 +33,8 @@ class VicowaButton extends webComponentBaseClass {
 			pluralNumber: { type: Number, value: 1, observer: (inst) => { inst.$.string.pluralNumber = inst.pluralNumber; } },
 			icon: { type: String, value: "", observer: (inst) => { inst.$.icon.icon = inst.icon; } },
 			ariaLabel: { type: String, value: "", observer: (inst) => { inst.$.button.setAttribute("aria-label", inst.ariaLabel); } },
-			disabled: { type: Boolean, value: false, reflect: true },
-			tooltip: { type: String, value: "", reflect: true, observer: (inst) => { inst.$.button.setAttribute("title", inst.tooltip); inst.updateTranslation(); } },
+			disabled: { type: Boolean, value: false, reflectToAttribute: true },
+			tooltip: { type: String, value: "", reflectToAttribute: true, observer: (inst) => { inst.$.button.setAttribute("title", inst.tooltip); inst.updateTranslation(); } },
 		};
 	}
 

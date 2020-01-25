@@ -92,18 +92,18 @@ class VicowaSingleSelection extends VicowaInputBaseClass {
 			type: {
 				type: String,
 				value: "radio",
-				reflect: true,
+				reflectToAttribute: true,
 				observer: optionsChanged,
 			},
 			opened: {
 				type: Boolean,
 				value: false,
-				reflect: true,
+				reflectToAttribute: true,
 			},
 			hideLabel: {
 				type: Boolean,
 				value: false,
-				reflect: true,
+				reflectToAttribute: true,
 			},
 		});
 	}

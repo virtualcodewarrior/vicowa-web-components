@@ -86,18 +86,18 @@ class VicowaImageCarousel extends webComponentBaseClass {
 			startIndex: {
 				type: Number,
 				value: 0,
-				reflect: true,
+				reflectToAttribute: true,
 				observer: startIndexChanged,
 			},
 			loop: {
 				type: Boolean,
 				value: false,
-				reflect: true,
+				reflectToAttribute: true,
 			},
 			auto: {
 				type: Number,
 				value: 0,
-				reflect: true,
+				reflectToAttribute: true,
 				observer: autoChanged,
 			},
 		});

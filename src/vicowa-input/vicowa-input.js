@@ -40,7 +40,7 @@ class VicowaInput extends VicowaInputBaseClass {
 			placeholder: {
 				type: String,
 				value: "",
-				reflect: true,
+				reflectToAttribute: true,
 				observer: placeholderChanged,
 			},
 		});

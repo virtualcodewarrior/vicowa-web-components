@@ -38,12 +38,10 @@ function createItem(p_Control, p_Done) {
 		const applyActions = {
 			startEditing() {
 				editArea.classList.add("editing");
-				Array.from(editArea.querySelectorAll("input")).forEach((inputItem) => { inputItem.static = false; });
 			},
 			update() { listUpdate(); },
 			stopEditing() {
 				editArea.classList.remove("editing");
-				Array.from(editArea.querySelectorAll("input")).forEach((inputItem) => { inputItem.static = true; });
 			},
 			removeEditArea() { editArea.parentElement.removeChild(editArea); },
 		};
@@ -238,57 +236,57 @@ class VicowaEditableList extends webComponentBaseClass {
 			static: {
 				type: Boolean,
 				value: false,
-				reflect: true,
+				reflectToAttribute: true,
 			},
 			maxPageItems: {
 				type: Number,
 				value: 100,
-				reflect: true,
+				reflectToAttribute: true,
 			},
 			filter: {
 				type: Boolean,
 				value: false,
-				reflect: true,
+				reflectToAttribute: true,
 			},
 			noEdit: {
 				type: Boolean,
 				value: false,
-				reflect: true,
+				reflectToAttribute: true,
 			},
 			noDelete: {
 				type: Boolean,
 				value: false,
-				reflect: true,
+				reflectToAttribute: true,
 			},
 			noAdd: {
 				type: Boolean,
 				value: false,
-				reflect: true,
+				reflectToAttribute: true,
 			},
 			noSave: {
 				type: Boolean,
 				value: false,
-				reflect: true,
+				reflectToAttribute: true,
 			},
 			noCancel: {
 				type: Boolean,
 				value: false,
-				reflect: true,
+				reflectToAttribute: true,
 			},
 			select: {
 				type: Boolean,
 				value: false,
-				reflect: true,
+				reflectToAttribute: true,
 			},
 			single: {
 				type: Boolean,
 				value: false,
-				reflect: true,
+				reflectToAttribute: true,
 			},
 			multi: {
 				type: Boolean,
 				value: false,
-				reflect: true,
+				reflectToAttribute: true,
 			},
 		};
 	}

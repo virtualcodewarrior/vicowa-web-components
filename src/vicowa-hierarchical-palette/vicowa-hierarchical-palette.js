@@ -104,19 +104,19 @@ class VicowaHierarchicalPalette extends webComponentBaseClass {
 			paletteSize: {
 				type: Number,
 				value: 50,
-				reflect: true,
+				reflectToAttribute: true,
 				observer: fillPaletteItems,
 			},
 			itemSize: {
 				type: Number,
 				value: 50,
-				reflect: true,
+				reflectToAttribute: true,
 				observer: fillPaletteItems,
 			},
 			horizontal: {
 				type: Boolean,
 				value: false,
-				reflect: true,
+				reflectToAttribute: true,
 				observer: fillPaletteItems,
 			},
 		};

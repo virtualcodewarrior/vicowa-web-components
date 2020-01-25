@@ -179,31 +179,31 @@ class VicowaDataGrid extends webComponentBaseClass {
 			defaultHeight: {
 				type: Number,
 				value: 15,
-				reflect: true,
+				reflectToAttribute: true,
 				observer: dataChanged,
 			},
 			defaultWidth: {
 				type: Number,
 				value: 50,
-				reflect: true,
+				reflectToAttribute: true,
 				observer: dataChanged,
 			},
 			snapToCellBoundaries: {
 				type: Boolean,
 				value: false,
-				reflect: true,
+				reflectToAttribute: true,
 				observer: dataChanged,
 			},
 			fixedHeaderRows: {
 				type: Number,
 				value: 0,
-				reflect: true,
+				reflectToAttribute: true,
 				observer: dataChanged,
 			},
 			fixedStartColumns: {
 				type: Number,
 				value: 0,
-				reflect: true,
+				reflectToAttribute: true,
 				observer: dataChanged,
 			},
 		};

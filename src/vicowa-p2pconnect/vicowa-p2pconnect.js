@@ -49,13 +49,13 @@ class VicowaP2PConnect extends webComponentBaseClass {
 			signalingServer: {
 				type: String,
 				value: "",
-				reflect: true,
+				reflectToAttribute: true,
 				observer: handleSignalingChange,
 			},
 			peerId: {
 				type: String,
 				value: "",
-				reflect: true,
+				reflectToAttribute: true,
 				observer: handleIdChange,
 			},
 		};

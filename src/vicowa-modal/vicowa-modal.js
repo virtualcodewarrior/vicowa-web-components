@@ -18,12 +18,12 @@ class VicowaModal extends webComponentBaseClass {
 		return {
 			open: {
 				type: Boolean,
-				reflect: true,
+				reflectToAttribute: true,
 				value: false,
 			},
 			outsideCloses: {
 				type: Boolean,
-				reflect: true,
+				reflectToAttribute: true,
 				value: false,
 			},
 		};

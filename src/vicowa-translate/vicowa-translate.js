@@ -22,7 +22,7 @@ class VicowaTranslate extends webComponentBaseClass {
 			translationLocation: {
 				type: String,
 				value: "",
-				reflect: true,
+				reflectToAttribute: true,
 				observer: (inst) => {
 					translator.addTranslationLocation(inst.translationLocation);
 				},

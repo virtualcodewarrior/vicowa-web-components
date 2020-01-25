@@ -31,7 +31,7 @@ class VicowaIcon extends webComponentBaseClass {
 		return {
 			icon: {
 				type: String,
-				reflect: true,
+				reflectToAttribute: true,
 				value: "",
 				observer: iconChanged,
 			},
