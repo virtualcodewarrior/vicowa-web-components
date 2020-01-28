@@ -107,7 +107,7 @@ class VicowaP2PConnect extends webComponentBaseClass {
 		</style>
 		<div id="peers"></div>
 		<vicowa-button id="connect" string="Connect"><slot name="custom-connect"></slot></vicowa-button>
-		<slot id="peer-template" name="peer-template"><template><div name="peer"></div></template></slot>
+		<slot id="peer-template" name="peer-template"><template><div name="peer"></div></template></slot>`;
 	}
 }
 
