@@ -1,27 +1,27 @@
 {
-  "_from": "intersection-observer@0.5.1",
-  "_id": "intersection-observer@0.5.1",
+  "_from": "intersection-observer@0.7.0",
+  "_id": "intersection-observer@0.7.0",
   "_inBundle": false,
-  "_integrity": "sha512-Zd7Plneq82kiXFixs7bX62YnuZ0BMRci9br7io88LwDyF3V43cQMI+G5IiTlTNTt+LsDUppl19J/M2Fp9UkH6g==",
+  "_integrity": "sha512-Id0Fij0HsB/vKWGeBe9PxeY45ttRiBmhFyyt/geBdDHBYNctMRTE3dC1U3ujzz3lap+hVXlEcVaB56kZP/eEUg==",
   "_location": "/intersection-observer",
   "_phantomChildren": {},
   "_requested": {
     "type": "version",
     "registry": true,
-    "raw": "intersection-observer@0.5.1",
+    "raw": "intersection-observer@0.7.0",
     "name": "intersection-observer",
     "escapedName": "intersection-observer",
-    "rawSpec": "0.5.1",
+    "rawSpec": "0.7.0",
     "saveSpec": null,
-    "fetchSpec": "0.5.1"
+    "fetchSpec": "0.7.0"
   },
   "_requiredBy": [
     "#USER",
     "/"
   ],
-  "_resolved": "https://registry.npmjs.org/intersection-observer/-/intersection-observer-0.5.1.tgz",
-  "_shasum": "e340fc56ce74290fe2b2394d1ce88c4353ac6dfa",
-  "_spec": "intersection-observer@0.5.1",
+  "_resolved": "https://registry.npmjs.org/intersection-observer/-/intersection-observer-0.7.0.tgz",
+  "_shasum": "ee16bee978db53516ead2f0a8154b09b400bbdc9",
+  "_spec": "intersection-observer@0.7.0",
   "_where": "/home/rodney/prj/webcomponents/vicowa-web-components",
   "author": {
     "name": "Philip Walton",
@@ -46,5 +46,5 @@
     "type": "git",
     "url": "git+ssh://git@github.com/w3c/IntersectionObserver.git"
   },
-  "version": "0.5.1"
+  "version": "0.7.0"
 }

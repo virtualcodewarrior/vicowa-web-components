@@ -1,27 +1,27 @@
 {
-  "_from": "babylonjs@3.3.0",
-  "_id": "babylonjs@3.3.0",
+  "_from": "babylonjs@4.0.3",
+  "_id": "babylonjs@4.0.3",
   "_inBundle": false,
-  "_integrity": "sha512-3Gn9kAEPejJN4+HMKGAKbhsCsrysvaORqi07Bdr9Xmy3KRt/BxyGwepzfcqFIe8+94SWszPDeJC9peICfHdCKw==",
+  "_integrity": "sha512-S5PoPmf0Vo03FDmF9z8djBiIm8GSLvCesln/9aKV9RbD4W+NTqVmMKhR8CQoMRCQNb2JSKKUuyUygXxCRVG37Q==",
   "_location": "/babylonjs",
   "_phantomChildren": {},
   "_requested": {
     "type": "version",
     "registry": true,
-    "raw": "babylonjs@3.3.0",
+    "raw": "babylonjs@4.0.3",
     "name": "babylonjs",
     "escapedName": "babylonjs",
-    "rawSpec": "3.3.0",
+    "rawSpec": "4.0.3",
     "saveSpec": null,
-    "fetchSpec": "3.3.0"
+    "fetchSpec": "4.0.3"
   },
   "_requiredBy": [
     "#USER",
     "/"
   ],
-  "_resolved": "https://registry.npmjs.org/babylonjs/-/babylonjs-3.3.0.tgz",
-  "_shasum": "f7636c3761cc3260dac8adf26767bc6323e74181",
-  "_spec": "babylonjs@3.3.0",
+  "_resolved": "https://registry.npmjs.org/babylonjs/-/babylonjs-4.0.3.tgz",
+  "_shasum": "5dba9a96a7cb70634338e8dd7a17081e9f902cf6",
+  "_spec": "babylonjs@4.0.3",
   "_where": "/home/rodney/prj/webcomponents/vicowa-web-components",
   "author": {
     "name": "David CATUHE"
@@ -32,32 +32,22 @@
   "bundleDependencies": false,
   "contributors": [
     {
-      "name": "David ROUSSET"
-    },
-    {
       "name": "Sebastien VANDENBERGHE"
-    },
-    {
-      "name": "Raanan Weber"
     }
   ],
   "dependencies": {},
   "deprecated": false,
   "description": "Babylon.js is a JavaScript 3D engine based on webgl.",
-  "devDependencies": {
-    "base64-font-loader": "0.0.4",
-    "typescript": "~3.0.1"
-  },
+  "devDependencies": {},
   "engines": {
     "node": "*"
   },
+  "esnext": "babylon.js",
   "files": [
-    "package.json",
-    "babylon.d.ts",
-    "es6.js",
+    "babylon.module.d.ts",
     "babylon.js",
     "babylon.max.js",
-    "babylon.worker.js",
+    "babylon.max.js.map",
     "Oimo.js",
     "readme.md"
   ],
@@ -70,11 +60,12 @@
   ],
   "license": "Apache-2.0",
   "main": "babylon.js",
+  "module": "babylon.js",
   "name": "babylonjs",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/BabylonJS/Babylon.js.git"
   },
-  "typings": "babylon.d.ts",
-  "version": "3.3.0"
+  "typings": "babylon.module.d.ts",
+  "version": "4.0.3"
 }

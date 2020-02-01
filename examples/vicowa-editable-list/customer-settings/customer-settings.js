@@ -2,6 +2,7 @@
 // ////////////////////////////////////////////////////////////
 // this web component allows a user to change settings for a business owned by a user
 import { webComponentBaseClass } from "../../../src/third_party/web-component-base-class/src/webComponentBaseClass.js";
+import "../../../src/vicowa-single-selection/vicowa-single-selection.js";
 
 const customElementName = "customer-settings";
 
@@ -77,7 +78,7 @@ window.customElements.define(customElementName, class extends webComponentBaseCl
 	}
 
 	get valid() {
-		return Object.keys(this.data).every((p_Key) => !this.$[p_Key] || this.$[p_Key].valid);
+		return Object.keys(this.data).every((p_Key) => !this.$[p_Key] || p_Key === "id" || this.$[p_Key].valid);
 	}
 
 	doSave() {
@@ -119,5 +120,63 @@ window.customElements.define(customElementName, class extends webComponentBaseCl
 		this.$.channel.options = channelOptions;
 		this.$.country.onAttached = () => { if (this.onReady) { this.onReady(); } };
 		this.$$$(".input").forEach((p_Control) => { p_Control.onChange = handleChanged; p_Control.onInput = handleChanged; });
+	}
+
+	static get template() {
+		return 	`
+			<template id="customer-settings">
+				<style>
+					.customer-card {
+						display: flex;
+						flex-direction: row;
+					}
+			
+					.info {
+						width: 150px;
+					}
+					vicowa-input {
+						--vicowa-input-control-width: 150px;
+					}
+			
+					:host([expanded]) .customer-card {
+						flex-direction: column;
+						--vicowa-single-selection-width: 300px;
+					}
+			
+					:host([expanded]) .info {
+						margin-bottom: 3px;
+						width: auto;
+					}
+				</style>
+				<div>
+					<div class="customer-card">
+						<div class="info">
+							<vicowa-input id="name" static inline label="Name" hide-label class="input" validatorType="notEmpty"></vicowa-input>
+						</div>
+						<div class="info">
+							<vicowa-input id="email" static inline label="EMail" hide-label class="input" validatorType="email"></vicowa-input>
+						</div>
+						<div class="info">
+							<vicowa-single-selection id="channel" static inline label="Channel" hide-label class="input"></vicowa-single-selection>
+						</div>
+						<div class="info">
+							<vicowa-input id="address" static inline label="Address" hide-label class="input" validatorType="notEmpty"></vicowa-input>
+						</div>
+						<div class="info">
+							<vicowa-input id="postal" static inline label="Zip code" hide-label class="input" validatorType="postalCodeCA"></vicowa-input>
+						</div>
+						<div class="info">
+							<vicowa-input id="city" static inline label="City" hide-label class="input" validatorType="notEmpty"></vicowa-input>
+						</div>
+						<div class="info">
+							<vicowa-input id="province" static inline label="State" hide-label class="input" validatorType="notEmpty"></vicowa-input>
+						</div>
+						<div class="info">
+							<vicowa-input id="country" static inline label="Country" hide-label class="input" validatorType="notEmpty"></vicowa-input>
+						</div>
+					</div>
+				</div>
+			</template>
+		`;
 	}
 });

@@ -33,6 +33,14 @@ class VicowaP2pfiletransfer extends webComponentBaseClass {
 
 	attached() {
 	}
+
+	static get template() {
+		return `
+			<style>
+			</style>
+			<span id="string"></span>
+		`;
+	}
 }
 
 window.customElements.define(componentName, VicowaP2pfiletransfer);

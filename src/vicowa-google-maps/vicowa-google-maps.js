@@ -1,4 +1,6 @@
 import { webComponentBaseClass } from "../third_party/web-component-base-class/src/webComponentBaseClass.js";
+import "../vicowa-string/vicowa-string.js";
+import "../vicowa-icon/vicowa-icon.js";
 import translator from "../utilities/translate.js";
 
 const componentName = "vicowa-google-maps";
@@ -220,6 +222,23 @@ class VicowaGoogleMaps extends webComponentBaseClass {
 			this._activeTranslator = p_Translator;
 			this.updateTranslation();
 		}, this);
+	}
+
+	static get template() {
+		return `
+			<style>
+				:host {
+					display: block;
+				}
+			
+				#map {
+					position: relative;
+					width: 100%;
+					height: 100%;
+				}
+			</style>
+			<div id="map"></div>
+		`;
 	}
 }
 

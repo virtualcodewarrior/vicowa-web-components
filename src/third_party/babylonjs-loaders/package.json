@@ -1,27 +1,27 @@
 {
-  "_from": "babylonjs-loaders@3.3.0",
-  "_id": "babylonjs-loaders@3.3.0",
+  "_from": "babylonjs-loaders@4.0.3",
+  "_id": "babylonjs-loaders@4.0.3",
   "_inBundle": false,
-  "_integrity": "sha512-Gqp/o/Mb9A/9uLKlUzk6jbzOm69Ftc+4MLDftR9D+VBPYkYfuR04Wx7Wb8W6ggIExmoN9JdGqVClN1OlkXzccg==",
+  "_integrity": "sha512-pdJElZpxZlh/c0wVeDcxhcQ2y5TRvEKbhO8HEiMo43At0FQm281EpIYIvvpWBkmNcPQoYJig63RSJxR9vHtUhw==",
   "_location": "/babylonjs-loaders",
   "_phantomChildren": {},
   "_requested": {
     "type": "version",
     "registry": true,
-    "raw": "babylonjs-loaders@3.3.0",
+    "raw": "babylonjs-loaders@4.0.3",
     "name": "babylonjs-loaders",
     "escapedName": "babylonjs-loaders",
-    "rawSpec": "3.3.0",
+    "rawSpec": "4.0.3",
     "saveSpec": null,
-    "fetchSpec": "3.3.0"
+    "fetchSpec": "4.0.3"
   },
   "_requiredBy": [
     "#USER",
     "/"
   ],
-  "_resolved": "https://registry.npmjs.org/babylonjs-loaders/-/babylonjs-loaders-3.3.0.tgz",
-  "_shasum": "7900badac3060eaec5aadb56f2fbbbb45e9b0e4c",
-  "_spec": "babylonjs-loaders@3.3.0",
+  "_resolved": "https://registry.npmjs.org/babylonjs-loaders/-/babylonjs-loaders-4.0.3.tgz",
+  "_shasum": "aab7fbc695eed29ebe7971e4d9797a385bd365dc",
+  "_spec": "babylonjs-loaders@4.0.3",
   "_where": "/home/rodney/prj/webcomponents/vicowa-web-components",
   "author": {
     "name": "David CATUHE"
@@ -31,7 +31,8 @@
   },
   "bundleDependencies": false,
   "dependencies": {
-    "babylonjs-gltf2interface": "3.3.0"
+    "babylonjs": "4.0.3",
+    "babylonjs-gltf2interface": "4.0.3"
   },
   "deprecated": false,
   "description": "The Babylon.js file loaders library is an extension you can use to load different 3D file types into a Babylon scene.",
@@ -39,6 +40,7 @@
     "node": "*"
   },
   "files": [
+    "babylonjs.loaders.js.map",
     "babylonjs.loaders.js",
     "babylonjs.loaders.min.js",
     "babylonjs.loaders.module.d.ts",
@@ -56,13 +58,10 @@
   "license": "Apache-2.0",
   "main": "babylonjs.loaders.min.js",
   "name": "babylonjs-loaders",
-  "peerDependencies": {
-    "babylonjs": ">=3.3.0-rc.4"
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/BabylonJS/Babylon.js.git"
   },
   "typings": "babylonjs.loaders.module.d.ts",
-  "version": "3.3.0"
+  "version": "4.0.3"
 }

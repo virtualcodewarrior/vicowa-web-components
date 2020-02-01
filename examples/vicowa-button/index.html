@@ -4,9 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <title>ViCoWa Web Components - vicowa-button</title>
-    <script src="../../node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js"></script>
-    <script src="../../node_modules/@webcomponents/html-imports/html-imports.min.js"></script>
-    <link rel="import" href="../../src/vicowa-button/vicowa-button.html">
+	<script type="module" src="../../src/vicowa-button/vicowa-button.js"></script>
 
 	<style>
 		body {
@@ -117,7 +115,7 @@
 			width: 100%;
 		}
 	</style>
-	<vicowa-button class="prop3" string="test string %2$s %1$s %3$s" parameters='["first", "second", "third"]'></vicowa-button>
+	<vicowa-button id="button" class="prop3" string="test string %2$s %1$s %3$s" parameters='["first", "second", "third"]'></vicowa-button>
 </template>
 <body lang="en_US">
 	<div id="translations">
@@ -127,59 +125,72 @@
 	<div class="themes">
 		<div class="un-themed">
 			<p>Default</p>
-			<vicowa-button string="test string 1" tooltip="test string 1"></vicowa-button>
-			<vicowa-button class="prop1" string="test string 2 %1$s element" plural-number=1 parameters='["1"]'></vicowa-button>
-			<vicowa-button class="prop2" string="test string 2 %1$s element" plural-number=2 parameters='["2"]' disabled></vicowa-button>
+			<vicowa-button id="button-default1" string="test string 1" tooltip="test string 1"></vicowa-button>
+			<vicowa-button id="button-default2" class="prop1" string="test string 2 %1$s element" plural-number=1 parameters='["1"]'></vicowa-button>
+			<vicowa-button id="button-default3" class="prop2" string="test string 2 %1$s element" plural-number=2 parameters='["2"]' disabled></vicowa-button>
 			<test-container></test-container>
-			<vicowa-button class="custom" parameters='["first", "second", "third"]'><div slot="custom-content"><div class="red-square"></div><div class="blue-square"></div><div class="green-square"></div></div></vicowa-button>
+			<vicowa-button id="button-default4" class="custom"><div slot="custom-content"><div class="red-square"></div><div class="blue-square"></div><div class="green-square"></div></div></vicowa-button>
 		</div>
 		<div class="individual-styles">
 			<p>Individual styles using css</p>
-			<vicowa-button string="test string 1"></vicowa-button>
-			<vicowa-button class="prop1" string="test string 2 %1$s element" plural-number=1 parameters='["1"]'></vicowa-button>
-			<vicowa-button class="prop2" string="test string 2 %1$s element" plural-number=2 parameters='["2"]' disabled></vicowa-button>
+			<vicowa-button id="button-individual-styles1" string="test string 1"></vicowa-button>
+			<vicowa-button id="button-individual-styles2" class="prop1" string="test string 2 %1$s element" plural-number=1 parameters='["1"]'></vicowa-button>
+			<vicowa-button id="button-individual-styles3" class="prop2" string="test string 2 %1$s element" plural-number=2 parameters='["2"]' disabled></vicowa-button>
 			<test-container></test-container>
-			<vicowa-button class="custom" parameters='["first", "second", "third"]'><div slot="custom-content"><div class="red-square"></div><div class="blue-square"></div><div class="green-square"></div></div></vicowa-button>
+			<vicowa-button id="button-individual-styles4" class="custom"><div slot="custom-content"><div class="red-square"></div><div class="blue-square"></div><div class="green-square"></div></div></vicowa-button>
 		</div>
 		<div class="css-theme">
 			<p>Themed using css<br/> (note style does not penetrate<br/> test-container in<br/> native implementations)</p>
-			<vicowa-button string="test string 1"></vicowa-button>
-			<vicowa-button class="prop1" string="test string 2 %1$s element" plural-number=1 parameters='["1"]'></vicowa-button>
-			<vicowa-button class="prop2" string="test string 2 %1$s element" plural-number=2 parameters='["2"]' disabled></vicowa-button>
+			<vicowa-button id="button-css-theme1" string="test string 1"></vicowa-button>
+			<vicowa-button id="button-css-theme2" class="prop1" string="test string 2 %1$s element" plural-number=1 parameters='["1"]'></vicowa-button>
+			<vicowa-button id="button-css-theme3" class="prop2" string="test string 2 %1$s element" plural-number=2 parameters='["2"]' disabled></vicowa-button>
 			<test-container></test-container>
-			<vicowa-button class="custom" parameters='["first", "second", "third"]'><div slot="custom-content"><div class="red-square"></div><div class="blue-square"></div><div class="green-square"></div></div></vicowa-button>
+			<vicowa-button id="button-css-theme4" class="custom"><div slot="custom-content"><div class="red-square"></div><div class="blue-square"></div><div class="green-square"></div></div></vicowa-button>
 		</div>
 		<div class="custom-var-theme">
 			<p>Themed using custom variables<br/> (note style will penetrate<br/> test-container)</p>
-			<vicowa-button string="test string 1"></vicowa-button>
-			<vicowa-button class="prop1" string="test string 2 %1$s element" plural-number=1 parameters='["1"]'></vicowa-button>
-			<vicowa-button class="prop2" string="test string 2 %1$s element" plural-number=2 parameters='["2"]' disabled></vicowa-button>
+			<vicowa-button id="button-custom-var-theme1" string="test string 1"></vicowa-button>
+			<vicowa-button id="button-custom-var-theme2" class="prop1" string="test string 2 %1$s element" plural-number=1 parameters='["1"]'></vicowa-button>
+			<vicowa-button id="button-custom-var-theme3" class="prop2" string="test string 2 %1$s element" plural-number=2 parameters='["2"]' disabled></vicowa-button>
 			<test-container></test-container>
-			<vicowa-button class="custom" parameters='["first", "second", "third"]'><div slot="custom-content"><div class="red-square"></div><div class="blue-square"></div><div class="green-square"></div></div></vicowa-button>
+			<vicowa-button id="button-custom-var-theme4" class="custom"><div slot="custom-content"><div class="red-square"></div><div class="blue-square"></div><div class="green-square"></div></div></vicowa-button>
 		</div>
 	</div>
 	<script type="module">
 		import translator from '../../src/utilities/translate.js';
-		import { webComponentBaseClass } from '../../src/third_party/web-component-base-class/src/webComponentBaseClass.js';
+		import { webComponentBaseClass  } from '../../src/third_party/web-component-base-class/src/webComponentBaseClass.js';
+		import { createQuickAccess } from '../../src/third_party/web-component-base-class/src/tools.js';
+
+		const elements = createQuickAccess(document, 'id');
 
 		// create a web component on the fly to show nested button theming
 		const componentName = 'test-container';
 		const template = document.querySelector(`#${componentName}`);
-		window.webComponentTemplates = window.webComponentTemplates || new Map();
-		window.webComponentTemplates.set(componentName, template);
 		window.customElements.define(componentName, class extends webComponentBaseClass {
 			static get is() { return componentName; }
 			constructor() { super(); }
+			attached() {
+				this.$.button.addEventListener('click', () => alert('clicked button inside container'));
+			}
+			static get template() {
+				return template.innerHTML;
+			}
 		});
 		// setup the translator
 		translator.addTranslationLocation('../resources/translations');
 		translator.addTranslationUpdatedObserver((p_Translator) => {
 			document.body.setAttribute('lang', p_Translator.language);
 		}, null);
-		translator.language = document.body.getAttribute('lang');
+		translator.language = 'en_US';
 
-		document.querySelector('#english').addEventListener('click', () => { translator.language = 'en_US'; });
-		document.querySelector('#dutch').addEventListener('click', () => { translator.language = 'nl_NL'; });
+		elements.english.addEventListener('click', () => { translator.language = 'en_US'; });
+		elements.dutch.addEventListener('click', () => { translator.language = 'nl_NL'; });
+
+		Object.keys(elements).filter((key) => /^button/.test(key)).forEach((key) => {
+			const element = elements[key];
+			element.addEventListener('click', () => alert(`pressed button with id ${element.getAttribute('id')}`));
+		});
+
 	</script>
 </body>
 

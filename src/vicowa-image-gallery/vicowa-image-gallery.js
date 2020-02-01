@@ -1,4 +1,6 @@
 import { webComponentBaseClass } from "../third_party/web-component-base-class/src/webComponentBaseClass.js";
+import "../vicowa-image-carousel/vicowa-image-carousel.js";
+import "../vicowa-modal/vicowa-modal.js";
 
 const componentName = "vicowa-image-gallery";
 
@@ -86,6 +88,90 @@ class VicowaImageGallery extends webComponentBaseClass {
 		if (this._imageProvider) {
 			retrieveImages(this);
 		}
+	}
+
+	static get template() {
+		return `
+			<style>
+				:host {
+					display: block;
+					position: relative;
+				}
+		
+				#images {
+					display: flex;
+					flex-wrap: wrap;
+				}
+		
+				vicowa-image-container {
+					box-sizing: border-box;
+					flex: 0 0 auto;
+					margin-right: 1em;
+					margin-bottom: 1em;
+					width: var(--vicowa-image-gallery-tile-width, 200px);
+					height: var(--vicowa-image-gallery-tile-height, 200px);
+					box-shadow: var(--vicowa-image-gallery-tile-shadow, 2px 2px 8px grey);
+					border: var(--vicowa-image-gallery-tile-border, none);
+				}
+		
+				vicowa-modal [slot] {
+					position: relative;
+					display: flex;
+					flex-direction: column;
+					width: 90vw;
+					height: 90vh;
+					box-shadow: 10px 10px 30px black;
+					align-content: stretch;
+					align-items: stretch;
+					background: lightgrey;
+				}
+		
+				#carousel {
+					flex: 1 1 auto;
+					height: calc(100% - 40px);
+					--vicowa-image-carousel-width: 100%;
+					font-size: 1.5em;
+					padding: .5em .5em 0;
+					background: white;
+				}
+		
+				#close-carousel {
+					flex: 0 0 40px;
+					text-align: center;
+					align-self: center;
+					width: 50px;
+					font: bold 2em sans-serif;
+					cursor: pointer;
+					padding-top: 5px;
+				}
+		
+				#custom-tile {
+					display: none;
+				}
+		
+				:host([no-grid-description]) #images vicowa-image-container {
+					--vicowa-image-container-description-visibility: hidden;
+				}
+				:host([no-grid-tooltip]) #images vicowa-image-container {
+					--vicowa-image-container-image-pointer-events: none;
+				}
+		
+				:host([no-carousel-description]) vicowa-image-carousel {
+					--vicowa-image-container-description-visibility: hidden;
+				}
+				:host([no-carousel-tooltip]) vicowa-image-carousel {
+					--vicowa-image-container-image-pointer-events: none;
+				}
+			</style>
+			<div id="images">
+			</div>
+			<vicowa-modal id="modal" outside-closes>
+				<div slot="content">
+					<vicowa-image-carousel id="carousel" loop></vicowa-image-carousel>
+					<div id="close-carousel">X</div>
+				</div>
+			</vicowa-modal>
+		`;
 	}
 }
 

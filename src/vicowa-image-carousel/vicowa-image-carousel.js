@@ -1,4 +1,6 @@
 import { webComponentBaseClass } from "../third_party/web-component-base-class/src/webComponentBaseClass.js";
+import "../vicowa-image-container/vicowa-image-container.js";
+import "../vicowa-button/vicowa-button.js";
 
 function updateControls(p_ImageControl) {
 	p_ImageControl.classList.toggle("start", p_ImageControl._activeImage === 0);
@@ -144,6 +146,136 @@ class VicowaImageCarousel extends webComponentBaseClass {
 		this.startIndex = Math.min(Math.max(0, p_Index), this.images.length - 1);
 		this._activeImage = this.startIndex;
 		updateActiveImages(this);
+	}
+
+	static get template() {
+		return `
+			<style>
+				:host {
+					position: relative;
+					box-sizing: border-box;
+					display: inline-block;
+					width: var(--vicowa-image-carousel-width, 200px);
+				}
+		
+				#controls {
+					position: absolute;
+					left: 0;
+					top: 0;
+					right: 0;
+					bottom: 0;
+					display: grid;
+					grid-template-columns: 50px auto 50px;
+					grid-template-rows: auto 40px;
+					pointer-events: none;
+				}
+		
+				.left,
+				.right {
+					display: flex;
+					justify-content: center;
+					align-items: center;
+					grid-row-start: span 2;
+				}
+		
+				#pictures {
+					position: relative;
+					height: 100%;
+					width: 100%;
+					overflow: hidden;
+				}
+		
+				vicowa-image-container {
+					width: var(--vicowa-image-carousel-width, 200px);
+					height: 100%;
+				}
+		
+				#moving-part {
+					position: relative;
+					display: flex;
+					width: calc(var(--vicowa-image-carousel-width, 200px) * 3);
+					height: 100%;
+					left: calc(-1 * var(--vicowa-image-carousel-width, 200px));
+				}
+		
+				:host(.transitioning) #moving-part {
+					transition: left var(--vicowa-image-carousel-animation-time, 1s);
+				}
+				:host(.next) #moving-part {
+					left: calc(-2 * var(--vicowa-image-carousel-width, 200px));
+				}
+				:host(.previous) #moving-part {
+					left: 0;
+				}
+		
+				:host(.transitioning) .right,
+				:host(.transitioning) .left {
+					opacity: 0;
+				}
+		
+				.right,
+				.left {
+					opacity: 0.5;
+					transition: opacity .5s;
+				}
+		
+				:host(:not(.transitioning)[loop]) .right,
+				:host(:not(.transitioning)[loop]) .left,
+				:host(:not(.transitioning):not(.end)) .right,
+				:host(:not(.transitioning):not(.start)) .left {
+					pointer-events: all;
+					cursor: pointer;
+					opacity: 1;
+				}
+		
+				.arrow-top {
+					position: absolute;
+					width: 31px;
+					height: 3px;
+					left: 10px;
+					top: 16px;
+					border: 2px solid black;
+					background: white;
+					transform: rotate(45deg);
+				}
+		
+				.arrow-bottom {
+					position: absolute;
+					top: 38px;
+					left: 10px;
+					width: 29px;
+					height: 3px;
+					border: 2px solid black;
+					border-right: none;
+					background: white;
+					transform: rotate(-45deg);
+				}
+		
+				.arrow-container {
+					position: relative;
+					width: 50px;
+					height: 60px;
+				}
+		
+				#previous .arrow-container {
+					transform: rotate(180deg);
+				}
+		
+			</style>
+			<div id="pictures">
+				<div id="moving-part">
+					<vicowa-image-container id="previous-image"></vicowa-image-container>
+					<vicowa-image-container id="current-image"></vicowa-image-container>
+					<vicowa-image-container id="next-image"></vicowa-image-container>
+				</div>
+			</div>
+			<div id="controls">
+				<div class="left"><slot id="previous" name="previous-control"><div class="arrow-container"><div class="arrow-top"></div><div class="arrow-bottom"></div></div></slot></div>
+				<div class="center"></div>
+				<div class="right"><slot id="next" name="next-control"><div class="arrow-container"><div class="arrow-top"></div><div class="arrow-bottom"></div></div></slot></div>
+				<div class="bottom"><div id="progress"></div></div>
+			</div>
+		`;
 	}
 }
 

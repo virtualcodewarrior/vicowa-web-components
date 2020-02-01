@@ -38,6 +38,17 @@ class VicowaP2PMessage extends webComponentBaseClass {
 
 	attached() {
 	}
+
+	static get template() {
+		return `
+			<style>
+			</style>
+			<div id="message-output"></div>
+			<div id="message-input"></div>
+			<slot name="incoming-template"></slot>
+			<slot name="outgoing-template"></slot>
+		`;
+	}
 }
 
 window.customElements.define(componentName, VicowaP2PMessage);

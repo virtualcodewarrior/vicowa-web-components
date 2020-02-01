@@ -1,4 +1,5 @@
 import { webComponentBaseClass } from "../third_party/web-component-base-class/src/webComponentBaseClass.js";
+import observerFactory from "../utilities/observerFactory.js";
 
 const privateData = Symbol("privateData");
 
@@ -31,22 +32,26 @@ function handleChangeLocation(p_Control) {
 					p_Control.$.container.innerHTML = "";
 					controlData.elementInstance = document.createElement(controlData.currentElement);
 					p_Control.$.container.appendChild(controlData.elementInstance);
+					if (p_Control.pageTitle) {
+						document.title = p_Control.pageTitle;
+					}
+					controlData.changeObserver.notify("change", { contentInstance: controlData.elementInstance, control: p_Control });
 					if (controlData.onChange) {
 						controlData.onChange(controlData.elementInstance);
 					}
 				}
 			};
 
-			if (!window.webComponentTemplates.get(element)) {
+			if (!window.customElements.get(element)) {
 				const head = document.querySelector("head");
-				let link = head.querySelector(`link[href="${location}"]`);
-				if (!link) {
-					link = document.createElement("link");
-					link.rel = "import";
-					link.href = location;
-					head.appendChild(link);
+				let script = head.querySelector(`script[src="${location}"]`);
+				if (!script) {
+					script = document.createElement("script");
+					script.type = "module";
+					script.src = location;
+					head.appendChild(script);
 				}
-				link.addEventListener("load", createElement);
+				script.addEventListener("load", createElement);
 			} else {
 				createElement();
 			}
@@ -100,7 +105,16 @@ class VicowaContentContainer extends webComponentBaseClass {
 			currentTitle: "",
 			elementInstance: null,
 			onChange: null,
+			changeObserver: observerFactory(),
 		};
+	}
+
+	addChangeListener(callback) {
+		this[privateData].changeObserver.addObserver("change", callback);
+	}
+
+	removeChangeListener(callback) {
+		this[privateData].changeObserver.removeObserver("change", callback);
 	}
 
 	attached() {
@@ -134,6 +148,20 @@ class VicowaContentContainer extends webComponentBaseClass {
 		window.addEventListener("popstate", (p_Event) => {
 			handleLoadState(p_Event.state, (p_Event.state) ? "" : document.location.hash);
 		});
+	}
+
+	static get template() {
+		return `
+			<style>
+				:host {
+						position: relative;
+						display: block;
+						box-sizing: border-box;
+					}
+			
+			</style>
+			<div id="container"></div>
+		`;
 	}
 }
 

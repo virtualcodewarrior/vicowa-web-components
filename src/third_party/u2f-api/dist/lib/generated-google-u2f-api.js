@@ -7,7 +7,7 @@
 /**
  * @fileoverview The U2F api.
  */
-'use strict';
+// 'use strict';
 
 
 /**
@@ -16,7 +16,7 @@
  */
 var u2f = u2f || {};
 
-module.exports = u2f; // Adaptation for u2f-api package
+module.exports.chromeApi = u2f; // Adaptation for u2f-api package
 
 /**
  * FIDO U2F Javascript API Version
@@ -632,8 +632,8 @@ u2f.isSupported = function(callback) {
       reply(true);
     }
   );
-  // No response from extension within 500ms -> no support
-  setTimeout(reply.bind(null, false), 500);
+  // No response from extension within 1500ms -> no support
+  setTimeout(reply.bind(null, false), 1500);
 };
 
 /**

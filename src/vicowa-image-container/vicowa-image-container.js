@@ -1,5 +1,6 @@
 import { webComponentBaseClass } from "../third_party/web-component-base-class/src/webComponentBaseClass.js";
 import translator from "../utilities/translate.js";
+import "../vicowa-string/vicowa-string.js";
 import "../third_party/intersection-observer/intersection-observer.js";
 
 /**
@@ -156,6 +157,82 @@ class VicowaImageContainer extends webComponentBaseClass {
 			this._activeTranslator = p_Translator;
 			this.updateTranslation();
 		}, this);
+
+		this.$.image.onload = () => {
+			if (this.onload) {
+				this.onload();
+			}
+		};
+	}
+
+	static get template() {
+		return `
+			<style>
+				:host {
+					position: relative;
+					box-sizing: border-box;
+					display: inline-block;
+				}
+		
+				#image-container {
+					position: relative;
+					width: 100%;
+					height: 100%;
+				}
+		
+				.description-container {
+					box-sizing: border-box;
+					position: absolute;
+					bottom: 0;
+					width: 100%;
+					text-align: center;
+					visibility: var(--vicowa-image-container-description-visibility, visible);
+				}
+		
+				.description-container .background {
+					position: absolute;
+					left: 0;
+					top: 0;
+					right: 0;
+					bottom: 0;
+					background: var(--vicowa-image-container-description-background, rgba(0, 0, 0, 0.7));
+				}
+		
+				#description {
+					display: block;
+					position: relative;
+					padding: 3px;
+					color: var(--vicowa-image-container-description-color, white);
+				}
+		
+				#description[string=""],
+					#description:not([string]) {
+					display: none;
+				}
+		
+				#image {
+					pointer-events: var(--vicowa-image-container-image-pointer-events, all);
+				}
+		
+				img {
+					position: absolute;
+					width: 100%;
+					height: 100%;
+					object-fit: var(--vicowa-image-container-object-fit, contain);
+					object-position: 50% 0;
+				}
+		
+			</style>
+			<div id="image-container">
+				<picture id="picture">
+					<img id="image" src="">
+				</picture>
+				<div class="description-container">
+					<div class="background"></div>
+					<vicowa-string id="description"></vicowa-string>
+				</div>
+			</div>
+		`;
 	}
 }
 

@@ -1,39 +1,11 @@
 import { webComponentBaseClass } from "../third_party/web-component-base-class/src/webComponentBaseClass.js";
+import "../vicowa-icon/vicowa-icon.js";
+import "../vicowa-string/vicowa-string.js";
 import translator from "../utilities/translate.js";
 
 const privateData = Symbol("privateData");
 
 const componentName = "vicowa-button";
-
-function ariaLabelChanged(p_ButtonControl) {
-	p_ButtonControl.$.button.setAttribute("aria-label", p_ButtonControl.ariaLabel);
-}
-
-function stringChanged(p_ButtonControl) {
-	p_ButtonControl.$.string.string = p_ButtonControl.string;
-}
-
-function iconChanged(p_ButtonControl) {
-	p_ButtonControl.$.icon.icon = p_ButtonControl.icon;
-}
-
-function pluralNumberChanged(p_ButtonControl) {
-	p_ButtonControl.$.string.pluralNumber = p_ButtonControl.pluralNumber;
-}
-
-function argumentsChanged(p_ButtonControl) {
-	p_ButtonControl.$.string.parameters = p_ButtonControl.parameters;
-}
-
-/**
- * Handler to be called when the tooltip text is changed
- * @param {VicowaButton} p_InputControl The control for which this handler is called
- */
-function tooltipChanged(p_InputControl) {
-	p_InputControl.$.button.setAttribute("title", p_InputControl.tooltip);
-	p_InputControl.updateTranslation();
-}
-
 
 /**
  * Class that represents the vicowa-button custom element
@@ -56,42 +28,13 @@ class VicowaButton extends webComponentBaseClass {
 
 	static get properties() {
 		return {
-			string: {
-				type: String,
-				value: "",
-				observer: stringChanged,
-			},
-			parameters: {
-				type: Array,
-				value: [],
-				observer: argumentsChanged,
-			},
-			pluralNumber: {
-				type: Number,
-				value: 1,
-				observer: pluralNumberChanged,
-			},
-			icon: {
-				type: String,
-				value: "",
-				observer: iconChanged,
-			},
-			ariaLabel: {
-				type: String,
-				value: "",
-				observer: ariaLabelChanged,
-			},
-			disabled: {
-				type: Boolean,
-				value: false,
-				reflectToAttribute: true,
-			},
-			tooltip: {
-				type: String,
-				value: "",
-				reflectToAttribute: true,
-				observer: tooltipChanged,
-			},
+			string: { type: String, value: "", observer: (inst) => { inst.$.string.string = inst.string; } },
+			parameters: { type: Array, value: [], observer: (inst) => { inst.$.string.parameters = inst.parameters; } },
+			pluralNumber: { type: Number, value: 1, observer: (inst) => { inst.$.string.pluralNumber = inst.pluralNumber; } },
+			icon: { type: String, value: "", observer: (inst) => { inst.$.icon.icon = inst.icon; } },
+			ariaLabel: { type: String, value: "", observer: (inst) => { inst.$.button.setAttribute("aria-label", inst.ariaLabel); } },
+			disabled: { type: Boolean, value: false, reflectToAttribute: true },
+			tooltip: { type: String, value: "", reflectToAttribute: true, observer: (inst) => { inst.$.button.setAttribute("title", inst.tooltip); inst.updateTranslation(); } },
 		};
 	}
 
@@ -112,6 +55,94 @@ class VicowaButton extends webComponentBaseClass {
 			this[privateData].activeTranslator = p_Translator;
 			this.updateTranslation();
 		}, this);
+	}
+
+	static get template() {
+		return `
+			<style>
+				:host {
+					position: relative;
+					box-sizing: border-box;
+					display: block;
+					margin: 0;
+					padding: 0;
+					background: var(--vicowa-button-background, transparent);
+					color: var(--vicowa-button-color);
+					font: var(--vicowa-button-font);
+					cursor: var(--vicowa-button-cursor);
+					box-shadow: var(--vicowa-button-box-shadow);
+				}
+	
+				:host(:hover) {
+					background: var(--vicowa-button-background-hover, var(--vicowa-button-background));
+					color: var(--vicowa-button-color-hover, var(--vicowa-button-color));
+					font: var(--vicowa-button-font-hover, var(--vicowa-button-font));
+					cursor: var(--vicowa-button-cursor-hover, var(--vicowa-button-cursor));
+					box-shadow: var(--vicowa-button-box-shadow-hover, var(--vicowa-button-shadow));
+					left: var(--vicowa-button-left-hover);
+					top: var(--vicowa-button-top-hover);
+				}
+		
+				:host(:active) {
+					background: var(--vicowa-button-background-active, var(--vicowa-button-background));
+					color: var(--vicowa-button-color-active, var(--vicowa-button-color));
+					font: var(--vicowa-button-font-active, var(--vicowa-button-font));
+					cursor: var(--vicowa-button-cursor-active, var(--vicowa-button-cursor));
+					box-shadow: var(--vicowa-button-box-shadow-active, var(--vicowa-button-shadow));
+					left: var(--vicowa-button-left-active);
+					top: var(--vicowa-button-top-active);
+					border: var(--vicowa-button-border, none);
+				}
+	
+				button {
+					width: 100%;
+					box-sizing: border-box;
+					position: relative;
+					user-select: none;
+					display: flex;
+					flex-direction: row;
+					align-content: stretch;
+					align-items: center;
+					border: none;
+					background: transparent;
+					color: inherit;
+					font: inherit;
+					cursor: inherit;
+					outline: none;
+				}
+		
+				#icon {
+					position: relative;
+					height: 24px;
+					flex: 0 0 24px;
+				}
+		
+				#icon[icon=""],
+					#icon:not([icon]){
+					flex: 0 0 var(--vicowa-button-min-icon-width, 0);
+					max-width: 0;
+				}
+		
+				:host([disabled]) {
+					pointer-events: none;
+					opacity: 0.5;
+					cursor: default;
+				}
+		
+				#container {
+					display: flex;
+					flex-direction: row;
+					height: 100%;
+				}
+		
+				vicowa-string {
+					flex: 1 1 auto;
+				}
+		
+			</style>
+			<div id="container">
+				<button id="button"><slot name="custom-content"></slot><vicowa-icon id="icon"></vicowa-icon><vicowa-string id="string"></vicowa-string></button>
+			</div>`;
 	}
 }
 

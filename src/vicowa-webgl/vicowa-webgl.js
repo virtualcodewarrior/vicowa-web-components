@@ -1,6 +1,10 @@
 /* eslint new-cap: ["off"] */
 /* switching this off for this file because babylon uses almost all uppercase starting function names */
+import "../third_party/earcut/dist/earcut.dev.js";
+import "../third_party/babylonjs/babylon.max.js";
+import "../third_party/babylonjs-loaders/babylonjs.loaders.js";
 import { webComponentBaseClass } from "../third_party/web-component-base-class/src/webComponentBaseClass.js";
+import "../vicowa-resize-detector/vicowa-resize-detector.js";
 import { CAMERA_TYPES, CAP_TYPES } from "./vicowa-webgl-definitions.js";
 import { intersectRayAndTriangle, toDegrees, toRadians, vectorLength } from "../utilities/mathHelpers.js";
 import debug from "../utilities/debug.js";
@@ -1052,6 +1056,31 @@ export class VicowaWebgl extends webComponentBaseClass {
 		controlData.engine = null;
 		controlData.scene = null;
 		controlData.extensions = [];
+	}
+
+	static get template() {
+		return `
+			<script src="../third_party/earcut/dist/earcut.dev.js"></script>
+			<script src="../third_party/babylonjs/babylon.max.js"></script>
+			<script src="../third_party/babylonjs-loaders/babylonjs.loaders.js"></script>
+			<style>
+				:host {
+					display: block;
+					position: relative;
+				}
+		
+				#main,
+					#canvas {
+					position: relative;
+					width: 100%;
+					height: 100%;
+				}
+			</style>
+			<div id="main">
+				<vicowa-resize-detector id="resize-detector"></vicowa-resize-detector>
+				<canvas id="canvas"></canvas>
+			</div>
+		`;
 	}
 }
 

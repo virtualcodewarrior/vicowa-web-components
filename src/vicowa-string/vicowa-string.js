@@ -1,4 +1,5 @@
 import { webComponentBaseClass } from "../third_party/web-component-base-class/src/webComponentBaseClass.js";
+import "../vicowa-translate/vicowa-translate.js";
 import translator from "../utilities/translate.js";
 
 const privateData = Symbol("privateData");
@@ -43,22 +44,9 @@ class VicowaString extends webComponentBaseClass {
 
 	static get properties() {
 		return {
-			string: {
-				type: String,
-				value: "",
-				reflectToAttribute: true,
-				observer: updateString,
-			},
-			parameters: {
-				type: Array,
-				value: [],
-				observer: updateParameters,
-			},
-			pluralNumber: {
-				type: Number,
-				value: 1,
-				observer: updatePluralNumber,
-			},
+			string: { type: String, value: "", reflectToAttribute: true, observer: updateString },
+			parameters: { type: Array, value: [], observer: updateParameters },
+			pluralNumber: { type: Number, value: 1, observer: updatePluralNumber },
 		};
 	}
 
@@ -82,6 +70,14 @@ class VicowaString extends webComponentBaseClass {
 			this[privateData].activeTranslator = p_Translator;
 			this.updateTranslation();
 		}, this);
+	}
+
+	static get template() {
+		return `
+			<style>
+			</style>
+			<span id="string"></span>
+		`;
 	}
 }
 
