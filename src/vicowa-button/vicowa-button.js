@@ -91,6 +91,7 @@ class VicowaButton extends webComponentBaseClass {
 					box-shadow: var(--vicowa-button-box-shadow-active, var(--vicowa-button-shadow));
 					left: var(--vicowa-button-left-active);
 					top: var(--vicowa-button-top-active);
+					border: var(--vicowa-button-border, none);
 				}
 	
 				button {
@@ -102,11 +103,12 @@ class VicowaButton extends webComponentBaseClass {
 					flex-direction: row;
 					align-content: stretch;
 					align-items: center;
-					border: var(--vicowa-button-border, none);
+					border: none;
 					background: transparent;
 					color: inherit;
 					font: inherit;
 					cursor: inherit;
+					outline: none;
 				}
 		
 				#icon {

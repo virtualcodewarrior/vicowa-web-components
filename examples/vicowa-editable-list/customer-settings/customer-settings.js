@@ -2,6 +2,7 @@
 // ////////////////////////////////////////////////////////////
 // this web component allows a user to change settings for a business owned by a user
 import { webComponentBaseClass } from "../../../src/third_party/web-component-base-class/src/webComponentBaseClass.js";
+import "../../../src/vicowa-single-selection/vicowa-single-selection.js";
 
 const customElementName = "customer-settings";
 
@@ -77,7 +78,7 @@ window.customElements.define(customElementName, class extends webComponentBaseCl
 	}
 
 	get valid() {
-		return Object.keys(this.data).every((p_Key) => !this.$[p_Key] || this.$[p_Key].valid);
+		return Object.keys(this.data).every((p_Key) => !this.$[p_Key] || p_Key === "id" || this.$[p_Key].valid);
 	}
 
 	doSave() {

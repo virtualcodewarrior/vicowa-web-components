@@ -1,4 +1,5 @@
 import { webComponentBaseClass } from "../third_party/web-component-base-class/src/webComponentBaseClass.js";
+import observerFactory from "../utilities/observerFactory.js";
 
 const privateData = Symbol("privateData");
 
@@ -31,6 +32,10 @@ function handleChangeLocation(p_Control) {
 					p_Control.$.container.innerHTML = "";
 					controlData.elementInstance = document.createElement(controlData.currentElement);
 					p_Control.$.container.appendChild(controlData.elementInstance);
+					if (p_Control.pageTitle) {
+						document.title = p_Control.pageTitle;
+					}
+					controlData.changeObserver.notify("change", { contentInstance: controlData.elementInstance, control: p_Control });
 					if (controlData.onChange) {
 						controlData.onChange(controlData.elementInstance);
 					}
@@ -100,7 +105,16 @@ class VicowaContentContainer extends webComponentBaseClass {
 			currentTitle: "",
 			elementInstance: null,
 			onChange: null,
+			changeObserver: observerFactory(),
 		};
+	}
+
+	addChangeListener(callback) {
+		this[privateData].changeObserver.addObserver("change", callback);
+	}
+
+	removeChangeListener(callback) {
+		this[privateData].changeObserver.removeObserver("change", callback);
 	}
 
 	attached() {
