@@ -9,7 +9,7 @@ function handleChangeLocation(p_Control) {
 	const controlData = p_Control[privateData];
 	if (p_Control.location && typeof p_Control.contentBaseLocation === "string") {
 		// get the web component name by taking the location, taking the file name and stripping of the extension. This requires you to always name the
-		// html the same as the web component
+		// target content the same as the web component
 		const element = p_Control.location.trim().split("/").pop().replace(/\..*$/, "");
 		const location = p_Control.contentBaseLocation + p_Control.location;
 
