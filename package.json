@@ -21,7 +21,7 @@
     "start": "npm run server",
     "build": "node ./build.js",
     "doc": "node ./node_modules/jsdoc/jsdoc.js src -r -d doc -c jsdoc.conf.js",
-    "lint": "node ./node_modules/eslint/bin/eslint.js --color -c eslintrc.cjs \\\"src/**/*.js\\\" \\\"test/**/*.js\\\"",
+    "lint": "node ./node_modules/eslint/bin/eslint.js --color -c eslintrc.cjs src/**/*.js test/**/*.js",
     "unittest": "node ./node_modules/karma/bin/karma start karma.conf.js --single-run",
     "watch-test": "node ./node_modules/karma/bin/karma start karma.conf.js --watch",
     "coverage": "node ./node_modules/karma/bin/karma start karma.conf.js coverage --single-run",
