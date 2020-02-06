@@ -72,7 +72,7 @@ function handleRoute(url, routes, notFoundHandler) {
 		};
 
 		doCallback(callbacks.shift());
-	} else {
+	} else if (notFoundHandler) {
 		// do 404 here
 		notFoundHandler();
 	}
@@ -86,13 +86,20 @@ class Router {
 		};
 
 		const handleLoadState = (p_State) => {
+			const controlData = this[privateData];
 			if (p_State && p_State.location) {
-				this.noPush = true;
-				this.pageTitle = targetWindow.history.state.title;
-				this.location = targetWindow.history.state.location;
-				this.noPush = false;
+				controlData.noPush = true;
+				controlData.pageTitle = targetWindow.history.state.title;
+				controlData.location = targetWindow.history.state.location;
+				controlData.noPush = false;
 			} else {
-				handleRoute(this);
+				controlData.noPush = true;
+				// controlData.pageTitle = targetWindow.history.state.title;
+				controlData.location = window.document.location.href;
+				controlData.noPush = false;
+			}
+			if (controlData.location) {
+				handleRoute(controlData.location, controlData.routes);
 			}
 		};
 

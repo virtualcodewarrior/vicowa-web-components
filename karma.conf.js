@@ -62,13 +62,14 @@ module.exports = function(config) {
 
 		// list of files / patterns to load in the browser
 		files: [
-			{ pattern: "src/!third_party/**/*.+(js|map|html)", type: "module", watched: true, served: true, second: false, nocache: true },
+			{ pattern: "src/**/*.+(js|map|html)", type: "module", watched: true, served: true, second: false, nocache: true },
 			{ pattern: "test/**/*.html", type: "module", watched: true, served: true, second: false, nocache: true },
 			{ pattern: "test/**/*.js", type: "module", watched: true, served: true, second: true, nocache: true },
 		],
 
 		// list of files / patterns to exclude
 		exclude: [
+			"src/third_party/**/*",
 		],
 
 
@@ -95,7 +96,7 @@ module.exports = function(config) {
 
 		// start these browsers
 		// first browser launchers: https://npmjs.org/browse/keyword/karma-launcher
-		browsers: ["Chromium", "Firefox"],
+		browsers: ["Chromium"/* , "Firefox" */],
 
 		// Concurrency level
 		// how many browser should be started simultaneous
