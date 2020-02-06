@@ -50,15 +50,15 @@ function handleRoute(url, routes, notFoundHandler) {
 				if (index < route.destinations.length - 1) {
 					const value = urlParts.shift();
 					if (routePart.name) {
-						previous[routePart.name] = value;
+						previous.params[routePart.name] = value;
 					}
 				} else {
-					previous[routePart.name || 0] = urlParts.join("/");
+					previous.params[routePart.name || 0] = urlParts.join("/");
 				}
 			}
 
 			return previous;
-		}, { });
+		}, { params: {} });
 
 		const callbacks = [...route.callbacks];
 		const doCallback = (nextCallback) => {
@@ -112,6 +112,10 @@ class Router {
 
 	addRoute(route, ...callbacks) {
 		this[privateData].routes.push(createRoute(route, callbacks));
+	}
+
+	goTo(url) {
+		handleRoute(url, this[privateData].routes);
 	}
 
 	clearRoutes() {

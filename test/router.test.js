@@ -22,12 +22,14 @@ describe("test router routes match", () => {
 			currentContext = context;
 		});
 
-		frame.src = "/test/location/here.html";
+		router.goTo("/base/test/router-test.html");
 		expect(currentContext).toEqual({
 			params: {
-				0: "/test/location/here.html",
+				0: "/base/test/router-test.html",
 			},
 		});
+
+		frame.src = "/base/test/router-test.html";
 	});
 
 	// it("should give all parameters for wildcard route", () => {
