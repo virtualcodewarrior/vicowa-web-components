@@ -36,8 +36,10 @@ function createRoute(route, callbacks) {
 }
 
 function handleRoute(url, routes, notFoundHandler) {
-	const urlParts = url.split("/");
-	const route = routes.find((testRoute) => testRoute.destinations.every((destination, index) => {
+	const queryParts = url.split("?");
+	const urlParts = queryParts[0].split("/");
+	let query;
+	const route = routes.find((testRoute) => testRoute.destinations.every((destination, index, destArray) => {
 		let result = false;
 		if (destination.slash) {
 			result = urlParts[index] === "";
@@ -46,13 +48,24 @@ function handleRoute(url, routes, notFoundHandler) {
 		} else if (destination.optional) {
 			result = urlParts.length === index || urlParts.length === index - 1;
 		} else if (destination.all) {
-			result = true;
+			result = urlParts.length - 1 >= index;
+		} else if (destination.name) {
+			result = (index === destArray.length - 1 && urlParts.length === destArray.length) || (urlParts.length - 1 > index && destArray.length - 1 > index);
 		} else {
 			result = urlParts.length - 1 === index;
 		}
 
 		return result;
 	}));
+
+	if (queryParts.length > 1) {
+		const parts = queryParts[1].split("&");
+		query = parts.reduce((previous, current) => {
+			const subParts = current.split("=").map((subPart) => subPart.trim());
+			previous[subParts[0]] = subParts[1];
+			return previous;
+		}, {});
+	}
 
 	if (route) {
 		const context = route.destinations.reduce((previous, routePart, index) => {
@@ -68,7 +81,7 @@ function handleRoute(url, routes, notFoundHandler) {
 			}
 
 			return previous;
-		}, { params: { url } });
+		}, { params: {}, url, query });
 
 		const callbacks = [...route.callbacks];
 		const doCallback = (nextCallback) => {
