@@ -3,8 +3,7 @@ const privateData = Symbol("privateData");
 function createRoute(route, callbacks) {
 	const pathParts = route.split("/");
 	const destinations = pathParts.map((part) => {
-		const props = {
-		};
+		const props = {};
 		if (/^:/.test(part)) {
 			if (/\(\.\*\)$/.test(part)) {
 				props.name = part.substring(1, part.length - 4);
@@ -15,8 +14,15 @@ function createRoute(route, callbacks) {
 			} else {
 				props.name = part.substring(1);
 			}
-		} else if (/^\*/.test(part)) {
-			props.all = true;
+		} else if (/\*/.test(part)) {
+			if (/^\*/.test(part)) {
+				props.all = true;
+			} else {
+				props.wildcard = true;
+				props.regExp = new RegExp(`^${part.replace(/\./g, "\\.").replace("*", ".*")}$`);
+			}
+		} else if (!part) {
+			props.slash = true;
 		} else {
 			props.regExp = new RegExp(`^${part}$`);
 		}
@@ -33,12 +39,16 @@ function handleRoute(url, routes, notFoundHandler) {
 	const urlParts = url.split("/");
 	const route = routes.find((testRoute) => testRoute.destinations.every((destination, index) => {
 		let result = false;
-		if (destination.regExp) {
+		if (destination.slash) {
+			result = urlParts[index] === "";
+		} else if (destination.regExp) {
 			result = destination.regExp.test(urlParts[index]);
 		} else if (destination.optional) {
 			result = urlParts.length === index || urlParts.length === index - 1;
 		} else if (destination.all) {
 			result = true;
+		} else {
+			result = urlParts.length - 1 === index;
 		}
 
 		return result;
@@ -58,7 +68,7 @@ function handleRoute(url, routes, notFoundHandler) {
 			}
 
 			return previous;
-		}, { params: {} });
+		}, { params: { url } });
 
 		const callbacks = [...route.callbacks];
 		const doCallback = (nextCallback) => {
