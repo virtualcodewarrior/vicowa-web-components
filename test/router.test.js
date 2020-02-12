@@ -3,8 +3,19 @@ import { getRouter, removeRouter } from "../src/utilities/route.js";
 describe("test router routes match", () => {
 	let frame;
 	let router;
-	beforeAll(() => {
+	let testWindow;
+	let windowDone;
+	const handleLoad = () => {
+		testWindow = frame.contentWindow;
+		windowDone();
+	};
+
+	beforeAll((done) => {
 		frame = document.createElement("iframe");
+
+		windowDone = done;
+		frame.addEventListener('load', handleLoad);
+		frame.src = "/base/test/router-test.html";
 		document.body.appendChild(frame);
 		router = getRouter(frame.contentWindow);
 		router.clearRoutes();
@@ -14,6 +25,7 @@ describe("test router routes match", () => {
 		router.clearRoutes();
 		removeRouter(frame.contentWindow);
 		frame.parentElement.removeChild(frame);
+		frame.removeEventListener('load', handleLoad);
 	});
 
 	beforeEach(() => {
@@ -354,7 +366,7 @@ describe("test router routes match", () => {
 			done();
 		});
 
-		frame.src = "/base/test/router-test.html";
+		testWindow.document.location.href = "/test/route/waffles";
 	})
 });
 

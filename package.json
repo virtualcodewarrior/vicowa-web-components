@@ -21,11 +21,11 @@
     "server": "node server.js",
     "start": "npm run server",
     "build": "node ./build.js",
-    "doc": "node ./node_modules/jsdoc/jsdoc.js src -r -d doc -c jsdoc.conf.js",
+    "doc": "node ./node_modules/jsdoc/jsdoc.js src -r -d doc -c jsdoc.conf.cjs",
     "lint": "node ./node_modules/eslint/bin/eslint.js --color -c eslintrc.cjs src/**/*.js test/**/*.js",
-    "unittest": "node ./node_modules/karma/bin/karma start karma.conf.js --single-run",
-    "watch-test": "node ./node_modules/karma/bin/karma start karma.conf.js --watch",
-    "coverage": "node ./node_modules/karma/bin/karma start karma.conf.js coverage --single-run",
+    "unittest": "node ./node_modules/karma/bin/karma start karma.conf.cjs --single-run",
+    "watch-test": "node ./node_modules/karma/bin/karma start karma.conf.cjs --watch",
+    "coverage": "node ./node_modules/karma/bin/karma start karma.conf.cjs coverage --single-run",
     "test": "npm run lint && npm run unittest",
     "third_party": "node ./node_modules/dependency-relocator/dependency-relocator.js ./src/third_party",
     "prepare": "npm run build -- --npm"
@@ -62,8 +62,7 @@
     "karma-jasmine": "^3.1.0",
     "karma-jasmine-es6": "0.0.3",
     "karma-jasmine-html-reporter": "^1.5.1",
-    "karma-spec-reporter": "0.0.32",
-    "walk": "^2.3.14"
+    "karma-spec-reporter": "0.0.32"
   },
   "dependencies": {
     "babylonjs": "^4.0.3",
@@ -73,6 +72,7 @@
     "jed": "^1.1.1",
     "lodash": "^4.17.15",
     "u2f-api": "^1.1.1",
-    "web-component-base-class": "^1.0.1"
+    "web-component-base-class": "^1.0.1",
+    "walk": "^2.3.14"
   }
 }

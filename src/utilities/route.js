@@ -166,8 +166,8 @@ class Router {
 		targetWindow.addEventListener("popstate", (p_Event) => {
 			handleLoadState(p_Event.state);
 		});
-		targetWindow.addEventListener("load", (event) => {
-			console.log(event);
+		targetWindow.addEventListener("load", () => {
+			this.goTo(document.location.href);
 		});
 	}
 
