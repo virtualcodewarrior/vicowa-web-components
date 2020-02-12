@@ -346,5 +346,15 @@ describe("test router routes match", () => {
 		router.goTo(testUrl);
 		expect(currentContext).toEqual({ params: { birds: "tweety", dogs: "oli", cats: "waffles", fish: "tuna" }, url: testUrl, query: undefined, data: "newdata", foo: "bar" });
 	});
+
+	it("should be called on load", (done) => {
+		let currentContext;
+		router.addRoute("/test/route/:cats", (context) => {
+			currentContext = context;
+			done();
+		});
+
+		frame.src = "/base/test/router-test.html";
+	})
 });
 

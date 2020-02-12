@@ -95,6 +95,11 @@ class VicowaContentContainer extends webComponentBaseClass {
 				reflectToAttribute: true,
 				observer: handleChangeLocation,
 			},
+			router: {
+				type: Object,
+				value: null,
+				reflectToAttribute: false,
+			},
 		};
 	}
 	constructor() {

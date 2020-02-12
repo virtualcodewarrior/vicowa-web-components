@@ -108,6 +108,41 @@ class Router {
 
 		};
 
+		const handleChangeLocation = () => {
+			const controlData = this[privateData];
+			if (p_Control.location) {
+				// make sure we didn't load this already
+				if (controlData.currentElement !== element && controlData.currentLocation !== location) {
+					// only push a new state if we are changing the location not if we are just initializing
+					if (controlData.currentElement && controlData.currentLocation && controlData.currentTitle !== undefined && !p_Control.noPush) {
+						if (!window.history.state) {
+							window.history.replaceState({ location: controlData.currentLocation.replace(p_Control.contentBaseLocation, ""), id: p_Control.getAttribute("id"), title: controlData.currentTitle }, controlData.currentTitle, (p_Control.addLocationToUrl) ? `#${controlData.currentLocation.replace(p_Control.contentBaseLocation, "")}` : undefined);
+						}
+						window.history.pushState({ location: location.replace(p_Control.contentBaseLocation, ""), id: p_Control.getAttribute("id"), title: p_Control.getAttribute("page-title") }, p_Control.getAttribute("page-title"), (p_Control.addLocationToUrl) ? `#${location.replace(p_Control.contentBaseLocation, "")}` : undefined);
+					}
+					controlData.currentElement = element;
+					controlData.elementInstance = null;
+					controlData.currentLocation = location;
+					controlData.currentTitle = p_Control.getAttribute("page-title");
+					const createElement = () => {
+						// test again because importing the document might be out of order
+						if (!controlData.elementInstance || controlData.elementInstance.localName !== controlData.currentElement) {
+							p_Control.$.container.innerHTML = "";
+							controlData.elementInstance = document.createElement(controlData.currentElement);
+							p_Control.$.container.appendChild(controlData.elementInstance);
+							if (p_Control.pageTitle) {
+								document.title = p_Control.pageTitle;
+							}
+							controlData.changeObserver.notify("change", { contentInstance: controlData.elementInstance, control: p_Control });
+							if (controlData.onChange) {
+								controlData.onChange(controlData.elementInstance);
+							}
+						}
+					};
+				}
+			}
+		}
+
 		const handleLoadState = (p_State) => {
 			const controlData = this[privateData];
 			if (p_State && p_State.location) {
@@ -130,6 +165,9 @@ class Router {
 
 		targetWindow.addEventListener("popstate", (p_Event) => {
 			handleLoadState(p_Event.state);
+		});
+		targetWindow.addEventListener("load", (event) => {
+			console.log(event);
 		});
 	}
 
