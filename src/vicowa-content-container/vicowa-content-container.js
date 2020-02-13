@@ -15,12 +15,14 @@ function handleChangeLocation(p_Control) {
 
 		// make sure we didn't load this already
 		if (controlData.currentElement !== element && controlData.currentLocation !== location) {
-			// only push a new state if we are changing the location not if we are just initializing
-			if (controlData.currentElement && controlData.currentLocation && controlData.currentTitle !== undefined && !p_Control.noPush) {
-				if (!window.history.state) {
-					window.history.replaceState({ location: controlData.currentLocation.replace(p_Control.contentBaseLocation, ""), id: p_Control.getAttribute("id"), title: controlData.currentTitle }, controlData.currentTitle, (p_Control.addLocationToUrl) ? `#${controlData.currentLocation.replace(p_Control.contentBaseLocation, "")}` : undefined);
+			if (p_Control.handleHistory) {
+				// only push a new state if we are changing the location not if we are just initializing
+				if (controlData.currentElement && controlData.currentLocation && controlData.currentTitle !== undefined && !p_Control.noPush) {
+					if (!window.history.state) {
+						window.history.replaceState({ location: controlData.currentLocation.replace(p_Control.contentBaseLocation, ""), id: p_Control.getAttribute("id"), title: controlData.currentTitle }, controlData.currentTitle, (p_Control.addLocationToUrl) ? `#${controlData.currentLocation.replace(p_Control.contentBaseLocation, "")}` : undefined);
+					}
+					window.history.pushState({ location: location.replace(p_Control.contentBaseLocation, ""), id: p_Control.getAttribute("id"), title: p_Control.getAttribute("page-title") }, p_Control.getAttribute("page-title"), (p_Control.addLocationToUrl) ? `#${location.replace(p_Control.contentBaseLocation, "")}` : undefined);
 				}
-				window.history.pushState({ location: location.replace(p_Control.contentBaseLocation, ""), id: p_Control.getAttribute("id"), title: p_Control.getAttribute("page-title") }, p_Control.getAttribute("page-title"), (p_Control.addLocationToUrl) ? `#${location.replace(p_Control.contentBaseLocation, "")}` : undefined);
 			}
 			controlData.currentElement = element;
 			controlData.elementInstance = null;
@@ -61,20 +63,22 @@ function handleChangeLocation(p_Control) {
 
 function setupStateHandling(p_Control) {
 	const handleLoadState = (p_State, p_Anchor) => {
-		p_Anchor = (p_Anchor || "").replace(/^#/, "");
-		if (p_Anchor) {
-			p_Control.noPush = true;
-			p_Control.location = p_Anchor;
-			p_Control.noPush = false;
-		} else if (p_State && p_State.location) {
-			if (p_State.id === p_Control.getAttribute("id")) {
+		if (p_Control.handleHistory) {
+			p_Anchor = (p_Anchor || "").replace(/^#/, "");
+			if (p_Anchor) {
 				p_Control.noPush = true;
-				p_Control.pageTitle = window.history.state.title;
-				p_Control.location = window.history.state.location;
+				p_Control.location = p_Anchor;
 				p_Control.noPush = false;
+			} else if (p_State && p_State.location) {
+				if (p_State.id === p_Control.getAttribute("id")) {
+					p_Control.noPush = true;
+					p_Control.pageTitle = window.history.state.title;
+					p_Control.location = window.history.state.location;
+					p_Control.noPush = false;
+				}
+			} else {
+				handleChangeLocation(p_Control);
 			}
-		} else {
-			handleChangeLocation(p_Control);
 		}
 	};
 
@@ -82,25 +86,9 @@ function setupStateHandling(p_Control) {
 		handleLoadState(p_Event.state, (p_Event.state) ? "" : document.location.hash);
 	};
 
-	if (p_Control.router && p_Control.router.addRoute) {
-		window.removeEventListener("popstate", handlePopState);
-		p_Control.router.addRoute("/:path(*)", (result) => {
-			p_Control.location = result.path;
-		});
-	} else {
-		handleLoadState(window.history.state, document.location.hash);
+	handleLoadState(window.history.state, document.location.hash);
 
-		window.addEventListener("popstate", handlePopState);
-	}
-}
-
-function routerChanged(p_Control) {
-	const conrolData = p_Control[privateData];
-	if (p_Control.router && p_Control.router.addRoute) {
-
-	} else {
-
-	}
+	window.addEventListener("popstate", handlePopState);
 }
 
 /**
@@ -139,11 +127,10 @@ class VicowaContentContainer extends webComponentBaseClass {
 				reflectToAttribute: true,
 				observer: handleChangeLocation,
 			},
-			router: {
-				type: Object,
-				value: {},
-				reflectToAttribute: false,
-				observer: routerChanged,
+			handleHistory: {
+				type: Boolean,
+				value: true,
+				reflectToAttribute: true,
 			},
 		};
 	}
