@@ -59,6 +59,50 @@ function handleChangeLocation(p_Control) {
 	}
 }
 
+function setupStateHandling(p_Control) {
+	const handleLoadState = (p_State, p_Anchor) => {
+		p_Anchor = (p_Anchor || "").replace(/^#/, "");
+		if (p_Anchor) {
+			p_Control.noPush = true;
+			p_Control.location = p_Anchor;
+			p_Control.noPush = false;
+		} else if (p_State && p_State.location) {
+			if (p_State.id === p_Control.getAttribute("id")) {
+				p_Control.noPush = true;
+				p_Control.pageTitle = window.history.state.title;
+				p_Control.location = window.history.state.location;
+				p_Control.noPush = false;
+			}
+		} else {
+			handleChangeLocation(p_Control);
+		}
+	};
+
+	const handlePopState = (p_Event) => {
+		handleLoadState(p_Event.state, (p_Event.state) ? "" : document.location.hash);
+	};
+
+	if (p_Control.router && p_Control.router.addRoute) {
+		window.removeEventListener("popstate", handlePopState);
+		p_Control.router.addRoute("/:path(*)", (result) => {
+			p_Control.location = result.path;
+		});
+	} else {
+		handleLoadState(window.history.state, document.location.hash);
+
+		window.addEventListener("popstate", handlePopState);
+	}
+}
+
+function routerChanged(p_Control) {
+	const conrolData = p_Control[privateData];
+	if (p_Control.router && p_Control.router.addRoute) {
+
+	} else {
+
+	}
+}
+
 /**
  * Class to represent the vicowa-content-container custom element
  * This web component allows you to use other web components as your website content, to simply create a single page website
@@ -97,8 +141,9 @@ class VicowaContentContainer extends webComponentBaseClass {
 			},
 			router: {
 				type: Object,
-				value: null,
+				value: {},
 				reflectToAttribute: false,
+				observer: routerChanged,
 			},
 		};
 	}
@@ -130,29 +175,7 @@ class VicowaContentContainer extends webComponentBaseClass {
 			set(p_Callback) { controlData.onChange = p_Callback; controlData.onChange(controlData.elementInstance); },
 		});
 
-		const handleLoadState = (p_State, p_Anchor) => {
-			p_Anchor = (p_Anchor || "").replace(/^#/, "");
-			if (p_Anchor) {
-				this.noPush = true;
-				this.location = p_Anchor;
-				this.noPush = false;
-			} else if (p_State && p_State.location) {
-				if (p_State.id === this.getAttribute("id")) {
-					this.noPush = true;
-					this.pageTitle = window.history.state.title;
-					this.location = window.history.state.location;
-					this.noPush = false;
-				}
-			} else {
-				handleChangeLocation(this);
-			}
-		};
-
-		handleLoadState(window.history.state, document.location.hash);
-
-		window.addEventListener("popstate", (p_Event) => {
-			handleLoadState(p_Event.state, (p_Event.state) ? "" : document.location.hash);
-		});
+		setupStateHandling(this);
 	}
 
 	static get template() {
