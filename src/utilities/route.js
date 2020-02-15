@@ -1,6 +1,7 @@
 const privateData = Symbol("privateData");
 
 function createRoute(route, callbacks) {
+	route = route.replace(/[/]+/g, "/");
 	const pathParts = route.split("/");
 	const destinations = pathParts.map((part) => {
 		const props = {};
@@ -36,6 +37,8 @@ function createRoute(route, callbacks) {
 }
 
 function handleRoute(url, routes, notFoundHandler) {
+	const regExp = new RegExp(`^${document.location.origin}`);
+	url = url.replace(regExp, "").replace(/[/]+/g, "/");
 	const queryParts = url.split("?");
 	const urlParts = queryParts[0].split("/");
 	let query;

@@ -4,53 +4,52 @@
 <head>
     <meta charset="UTF-8">
     <title>ViCoWa Web Components - vicowa-content-container</title>
-	<script type="module" src="../../src/vicowa-content-container/vicowa-content-container.js"></script>
 
-	<style>
-		#content {
-			border: 1px solid grey;
-			box-shadow: 0 0 6px grey;
-			margin-top: 1em;
-		}
+    <style>
+        #content {
+            border: 1px solid grey;
+            box-shadow: 0 0 6px grey;
+            margin-top: 1em;
+        }
 
-		#parent-container {
-			box-sizing: border-box;
-			margin-top: 1em;
-			position: relative;
-			width: 500px;
-			height: 500px;
-			overflow-x: hidden;
-			overflow-y: auto;
-			border: 1px solid grey;
-			box-shadow: 0 0 6px grey;
-		}
-
-		#content2 {
-
-		}
-
-	</style>
+        #parent-container {
+            box-sizing: border-box;
+            margin-top: 1em;
+            position: relative;
+            width: 500px;
+            height: 500px;
+            overflow-x: hidden;
+            overflow-y: auto;
+            border: 1px solid grey;
+            box-shadow: 0 0 6px grey;
+        }
+    </style>
 </head>
 
 <body>
-	<button location="content-test1.js">Load Content 1</button>	<button location="content-test2.js">Load Content 2</button>	<button location="content-test3.js">Load Content 3</button>	<button location="content-test4.js">Load Content 4</button>
-	<vicowa-content-container id="content" location="content-test1.js" content-base-location="./content/" add-location-to-url></vicowa-content-container>
-	<div id="parent-container">
-		<vicowa-content-container id="content2" location="content-test1.js" content-base-location="./content/" add-location-to-url></vicowa-content-container>
-	</div>
-	<script>
-		const content = document.querySelector('#content');
-		content.onChange = (p_ElementInstance) => {
-			p_ElementInstance.testValue = new Date().toString();
-		};
-		const content2 = document.querySelector('#content2');
-			Array.from(document.querySelectorAll('button')).forEach((p_Button) => {
-			p_Button.addEventListener('click', (p_Event) => {
-				content.location = p_Event.target.getAttribute('location');
-				content2.location = p_Event.target.getAttribute('location');
-			});
+<button location="/examples/vicowa-content-container-routed/content-test1.js">Load Content 1</button>
+<button location="/examples/vicowa-content-container-routed/content-test2.js">Load Content 2</button>
+<a href="./content-test3.js">Load Content 3</a>
+<a href="./content-test4.js">Load Content 4</a>
+<vicowa-content-container id="content" handle-history="false" location="content-test1.js"
+                          content-base-location="./content/"></vicowa-content-container>
+<script type="module">
+	import "../../src/vicowa-content-container/vicowa-content-container.js";
+	import { getRouter } from "../../src/utilities/route.js";
+
+	const content = document.querySelector("#content");
+
+	const router = getRouter();
+	router.addRoute("/examples/vicowa-content-container-routed/:location", (result) => {
+		content.location = /\.js$/.test(result.params.location) ? result.params.location : `${result.params.location}.js`;
+	});
+
+	Array.from(document.querySelectorAll("button")).forEach((p_Button) => {
+		p_Button.addEventListener("click", (p_Event) => {
+			router.goTo(p_Event.target.getAttribute("location"));
 		});
-	</script>
+	});
+</script>
 </body>
 
 </html>

@@ -359,14 +359,26 @@ describe("test router routes match", () => {
 		expect(currentContext).toEqual({ params: { birds: "tweety", dogs: "oli", cats: "waffles", fish: "tuna" }, url: testUrl, query: undefined, data: "newdata", foo: "bar" });
 	});
 
-	it("should be called on load", (done) => {
+	it("should strip off the local domain", () => {
+		const domain = document.location.origin;
 		let currentContext;
-		router.addRoute("/test/route/:cats", (context) => {
-			currentContext = context;
-			done();
-		});
 
-		testWindow.document.location.href = "/test/route/waffles";
-	})
+		router.addRoute("/:cats/:dogs/:birds", (context) => { currentContext = context; });
+
+		currentContext = undefined;
+		let testUrl = "/waffles/oli/tweety";
+		router.goTo(`${domain}/${testUrl}`);
+		expect(currentContext).toEqual({ params: { birds: "tweety", dogs: "oli", cats: "waffles" }, url: testUrl, query: undefined });
+	});
+
+	// it("should be called on load", (done) => {
+	// 	let currentContext;
+	// 	router.addRoute("/test/route/:cats", (context) => {
+	// 		currentContext = context;
+	// 		done();
+	// 	});
+	//
+	// 	testWindow.document.location.href = "/test/route/waffles";
+	// })
 });
 
