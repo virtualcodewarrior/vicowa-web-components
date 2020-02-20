@@ -36,7 +36,20 @@ function createRoute(route, callbacks) {
 	};
 }
 
-function handleRoute(url, routes, notFoundHandler) {
+function handleChangeLocation(p_RouterData) {
+	if (p_RouterData.url) {
+		// only push a new state if we are changing the location not if we are just initializing
+		if (!p_RouterData.noPush) {
+			if (!window.history.state) {
+				window.history.replaceState({ url: p_RouterData.url }, "", undefined);
+			}
+			window.history.pushState({ url: p_RouterData.url }, "", undefined);
+		}
+	}
+}
+
+function handleRoute(p_RouterData, url, customData) {
+	const { routes, notFoundHandler } = p_RouterData;
 	const regExp = new RegExp(`^${document.location.origin}`);
 	url = url.replace(regExp, "").replace(/[/]+/g, "/");
 	const queryParts = url.split("?");
@@ -84,14 +97,17 @@ function handleRoute(url, routes, notFoundHandler) {
 			}
 
 			return previous;
-		}, { params: {}, url, query });
+		}, { params: {}, url, query, customData });
 
 		const callbacks = [...route.callbacks];
-		const doCallback = (nextCallback) => {
+		const doCallback = async(nextCallback) => {
 			if (nextCallback) {
-				nextCallback(context, () => {
+				nextCallback(context, async() => {
 					if (callbacks.length) {
-						doCallback(callbacks.shift());
+						await doCallback(callbacks.shift());
+						if (!callbacks.length) {
+							handleChangeLocation(context);
+						}
 					}
 				});
 			}
@@ -108,59 +124,26 @@ class Router {
 	constructor(targetWindow = window) {
 		this[privateData] = {
 			routes: [],
-
+			notFoundHandler: undefined,
 		};
 
-		const handleChangeLocation = () => {
-			const controlData = this[privateData];
-			if (p_Control.location) {
-				// make sure we didn't load this already
-				if (controlData.currentElement !== element && controlData.currentLocation !== location) {
-					// only push a new state if we are changing the location not if we are just initializing
-					if (controlData.currentElement && controlData.currentLocation && controlData.currentTitle !== undefined && !p_Control.noPush) {
-						if (!window.history.state) {
-							window.history.replaceState({ location: controlData.currentLocation.replace(p_Control.contentBaseLocation, ""), id: p_Control.getAttribute("id"), title: controlData.currentTitle }, controlData.currentTitle, (p_Control.addLocationToUrl) ? `#${controlData.currentLocation.replace(p_Control.contentBaseLocation, "")}` : undefined);
-						}
-						window.history.pushState({ location: location.replace(p_Control.contentBaseLocation, ""), id: p_Control.getAttribute("id"), title: p_Control.getAttribute("page-title") }, p_Control.getAttribute("page-title"), (p_Control.addLocationToUrl) ? `#${location.replace(p_Control.contentBaseLocation, "")}` : undefined);
-					}
-					controlData.currentElement = element;
-					controlData.elementInstance = null;
-					controlData.currentLocation = location;
-					controlData.currentTitle = p_Control.getAttribute("page-title");
-					const createElement = () => {
-						// test again because importing the document might be out of order
-						if (!controlData.elementInstance || controlData.elementInstance.localName !== controlData.currentElement) {
-							p_Control.$.container.innerHTML = "";
-							controlData.elementInstance = document.createElement(controlData.currentElement);
-							p_Control.$.container.appendChild(controlData.elementInstance);
-							if (p_Control.pageTitle) {
-								document.title = p_Control.pageTitle;
-							}
-							controlData.changeObserver.notify("change", { contentInstance: controlData.elementInstance, control: p_Control });
-							if (controlData.onChange) {
-								controlData.onChange(controlData.elementInstance);
-							}
-						}
-					};
-				}
-			}
-		}
-
 		const handleLoadState = (p_State) => {
-			const controlData = this[privateData];
+			const routerData = this[privateData];
 			if (p_State && p_State.location) {
-				controlData.noPush = true;
-				controlData.pageTitle = targetWindow.history.state.title;
-				controlData.location = targetWindow.history.state.location;
-				controlData.noPush = false;
-			} else {
-				controlData.noPush = true;
-				// controlData.pageTitle = targetWindow.history.state.title;
-				controlData.location = window.document.location.href;
-				controlData.noPush = false;
+				routerData.noPush = true;
+				routerData.pageTitle = p_State.title;
+				routerData.url = p_State.url;
+				routerData.noPush = false;
+			} else if (targetWindow.history.state) {
+				routerData.noPush = true;
+				routerData.pageTitle = targetWindow.history.state.title;
+				routerData.url = targetWindow.history.state.url;
+				routerData.noPush = false;
 			}
-			if (controlData.location) {
-				handleRoute(controlData.location, controlData.routes);
+			if (routerData.url) {
+				handleRoute(routerData, routerData.url, p_State);
+			} else if (document.location.href) {
+				handleRoute(routerData, document.location.href, null);
 			}
 		};
 
@@ -174,12 +157,20 @@ class Router {
 		});
 	}
 
+	set onNotFound(handler) {
+		this[privateData].notFoundHandler = handler;
+	}
+
+	get onNotFound() {
+		return this[privateData].notFoundHandler;
+	}
+
 	addRoute(route, ...callbacks) {
 		this[privateData].routes.push(createRoute(route, callbacks));
 	}
 
-	goTo(url) {
-		handleRoute(url, this[privateData].routes);
+	goTo(url, customData) {
+		handleRoute(this[privateData], url, customData);
 	}
 
 	clearRoutes() {

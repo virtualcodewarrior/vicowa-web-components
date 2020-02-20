@@ -371,14 +371,14 @@ describe("test router routes match", () => {
 		expect(currentContext).toEqual({ params: { birds: "tweety", dogs: "oli", cats: "waffles" }, url: testUrl, query: undefined });
 	});
 
-	// it("should be called on load", (done) => {
-	// 	let currentContext;
-	// 	router.addRoute("/test/route/:cats", (context) => {
-	// 		currentContext = context;
-	// 		done();
-	// 	});
-	//
-	// 	testWindow.document.location.href = "/test/route/waffles";
-	// })
+	it("should be called on load", (done) => {
+		let currentContext;
+		router.addRoute("/test/route/:cats", (context) => {
+			currentContext = context;
+			done();
+		});
+
+		testWindow.document.location.href = "/test/route/waffles";
+	})
 });
 
