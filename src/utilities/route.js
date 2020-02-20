@@ -39,11 +39,11 @@ function createRoute(route, callbacks) {
 function handleChangeLocation(p_RouterData) {
 	if (p_RouterData.url) {
 		// only push a new state if we are changing the location not if we are just initializing
-		if (!p_RouterData.noPush) {
+		if (!p_RouterData.noPush && (!window.history.state || p_RouterData.url !== window.history.state.url)) {
 			if (!window.history.state) {
-				window.history.replaceState({ url: p_RouterData.url }, "", undefined);
+				window.history.replaceState({ url: p_RouterData.url, customData: p_RouterData.customData }, "", p_RouterData.url);
 			}
-			window.history.pushState({ url: p_RouterData.url }, "", undefined);
+			window.history.pushState({ url: p_RouterData.url, customData: p_RouterData.customData }, "", p_RouterData.url);
 		}
 	}
 }
@@ -102,14 +102,19 @@ function handleRoute(p_RouterData, url, customData) {
 		const callbacks = [...route.callbacks];
 		const doCallback = async(nextCallback) => {
 			if (nextCallback) {
-				nextCallback(context, async() => {
-					if (callbacks.length) {
-						await doCallback(callbacks.shift());
-						if (!callbacks.length) {
-							handleChangeLocation(context);
+				if (nextCallback.length > 1) {
+					await nextCallback(context, async() => {
+						if (callbacks.length) {
+							await doCallback(callbacks.shift());
+							if (!callbacks.length) {
+								handleChangeLocation(context);
+							}
 						}
-					}
-				});
+					});
+				} else {
+					await nextCallback(context);
+					handleChangeLocation(context);
+				}
 			}
 		};
 
