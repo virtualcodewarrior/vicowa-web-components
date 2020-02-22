@@ -1,8 +1,8 @@
 const privateData = Symbol("privateData");
 
-function createRoute(route, callbacks) {
-	route = route.replace(/[/]+/g, "/");
-	const pathParts = route.split("/");
+function createRoute(p_Route, p_Callbacks) {
+	p_Route = p_Route.replace(/[/]+/g, "/");
+	const pathParts = p_Route.split("/");
 	const destinations = pathParts.map((part) => {
 		const props = {};
 		if (/^:/.test(part)) {
@@ -32,7 +32,7 @@ function createRoute(route, callbacks) {
 
 	return {
 		destinations,
-		callbacks,
+		callbacks: p_Callbacks,
 	};
 }
 
@@ -45,11 +45,11 @@ function handleChangeLocation(p_RouterData, p_TargetWindow) {
 	}
 }
 
-function handleRoute(p_RouterData, url, customData) {
+function handleRoute(p_RouterData, p_Url, p_CustomData) {
 	const { routes, notFoundHandler, targetwindow } = p_RouterData;
 	const regExp = new RegExp(`^${document.location.origin}`);
-	url = url.replace(regExp, "").replace(/[/]+/g, "/");
-	const queryParts = url.split("?");
+	p_Url = p_Url.replace(regExp, "").replace(/[/]+/g, "/");
+	const queryParts = p_Url.split("?");
 	const urlParts = queryParts[0].split("/");
 	let query;
 	const route = routes.find((testRoute) => testRoute.destinations.every((destination, index, destArray) => {
@@ -94,7 +94,7 @@ function handleRoute(p_RouterData, url, customData) {
 			}
 
 			return previous;
-		}, { params: {}, url, query, customData });
+		}, { params: {}, url: p_Url, query, customData: p_CustomData });
 
 		const callbacks = [...route.callbacks];
 		const doCallback = async(nextCallback) => {
@@ -119,9 +119,9 @@ function handleRoute(p_RouterData, url, customData) {
 	} else if (notFoundHandler) {
 		// do 404 here
 		notFoundHandler({
-			url,
+			url: p_Url,
 			query,
-			customData,
+			customData: p_CustomData,
 		});
 	}
 }
@@ -161,20 +161,20 @@ class Router {
 		});
 	}
 
-	set onNotFound(handler) {
-		this[privateData].notFoundHandler = handler;
+	set onNotFound(p_Handler) {
+		this[privateData].notFoundHandler = p_Handler;
 	}
 
 	get onNotFound() {
 		return this[privateData].notFoundHandler;
 	}
 
-	addRoute(route, ...callbacks) {
-		this[privateData].routes.push(createRoute(route, callbacks));
+	addRoute(p_Route, ...p_Callbacks) {
+		this[privateData].routes.push(createRoute(p_Route, p_Callbacks));
 	}
 
-	goTo(url, customData) {
-		handleRoute(this[privateData], url, customData);
+	goTo(p_Url, p_CustomData) {
+		handleRoute(this[privateData], p_Url, p_CustomData);
 	}
 
 	clearRoutes() {
@@ -184,13 +184,13 @@ class Router {
 
 const routers = new Map();
 
-export function getRouter(window) {
-	if (!routers.has(window)) {
-		routers.set(window, new Router(window));
+export function getRouter(p_Window) {
+	if (!routers.has(p_Window)) {
+		routers.set(p_Window, new Router(p_Window));
 	}
-	return routers.get(window);
+	return routers.get(p_Window);
 }
 
-export function removeRouter(window) {
-	routers.delete(window);
+export function removeRouter(p_Window) {
+	routers.delete(p_Window);
 }

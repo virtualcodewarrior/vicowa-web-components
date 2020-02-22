@@ -1,3 +1,6 @@
+/* eslint-disable */
+// disable eslint while this code is not done
+
 import { webComponentBaseClass } from "../third_party/web-component-base-class/src/webComponentBaseClass.js";
 import { COMMANDS, SIGNALING_EVENTS, WebRTCHandler } from "../utilities/webrtc.js";
 import { uuidv4 } from "../utilities/utilities.js";

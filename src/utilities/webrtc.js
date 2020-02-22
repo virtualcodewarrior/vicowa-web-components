@@ -1,3 +1,5 @@
+/* eslint-disable */
+// disable eslint while this code is not done
 import observerFactory from "./observerFactory.js";
 
 const privateData = Symbol("privateData");

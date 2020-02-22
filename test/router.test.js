@@ -3,10 +3,8 @@ import { getRouter, removeRouter } from "../src/utilities/route.js";
 describe("test router routes match", () => {
 	let frame;
 	let router;
-	let testWindow;
 	let windowDone;
 	const handleLoad = () => {
-		testWindow = frame.contentWindow;
 		windowDone();
 	};
 
@@ -14,7 +12,7 @@ describe("test router routes match", () => {
 		frame = document.createElement("iframe");
 
 		windowDone = done;
-		frame.addEventListener('load', handleLoad);
+		frame.addEventListener("load", handleLoad);
 		frame.src = "/base/test/router-test.html";
 		document.body.appendChild(frame);
 		router = getRouter(frame.contentWindow);
@@ -25,7 +23,7 @@ describe("test router routes match", () => {
 		router.clearRoutes();
 		removeRouter(frame.contentWindow);
 		frame.parentElement.removeChild(frame);
-		frame.removeEventListener('load', handleLoad);
+		frame.removeEventListener("load", handleLoad);
 	});
 
 	beforeEach(() => {
@@ -338,14 +336,14 @@ describe("test router routes match", () => {
 		expect(currentContext).toEqual(null);
 
 		router.clearRoutes();
-		router.addRoute("/:cats/:dogs/:birds/:fish", (context, next) => { currentContext = context; next(); }, (context, next) => { currentContext = { data: "newdata", ...context}; next(); });
+		router.addRoute("/:cats/:dogs/:birds/:fish", (context, next) => { currentContext = context; next(); }, (context, next) => { currentContext = { data: "newdata", ...context }; next(); });
 
 		testUrl = "/waffles/oli/tweety/tuna";
 		router.goTo(testUrl);
 		expect(currentContext).toEqual({ params: { birds: "tweety", dogs: "oli", cats: "waffles", fish: "tuna" }, url: testUrl, query: undefined, data: "newdata", customData: undefined });
 
 		router.clearRoutes();
-		router.addRoute("/:cats/:dogs/:birds/:fish", (context, next) => { next(); }, (context, next) => { context.data = "newdata"; next(); }, (context) => currentContext = context);
+		router.addRoute("/:cats/:dogs/:birds/:fish", (context, next) => { next(); }, (context, next) => { context.data = "newdata"; next(); }, (context) => { currentContext = context; });
 
 		testUrl = "/waffles/oli/tweety/tuna";
 		router.goTo(testUrl);
@@ -366,7 +364,7 @@ describe("test router routes match", () => {
 		router.addRoute("/:cats/:dogs/:birds", (context) => { currentContext = context; });
 
 		currentContext = undefined;
-		let testUrl = "/waffles/oli/tweety";
+		const testUrl = "/waffles/oli/tweety";
 		router.goTo(`${domain}/${testUrl}`);
 		expect(currentContext).toEqual({ params: { birds: "tweety", dogs: "oli", cats: "waffles" }, url: testUrl, query: undefined, customData: undefined });
 	});
@@ -376,7 +374,7 @@ describe("test router routes match", () => {
 		router.addRoute("/:cats/:dogs/:birds", (context) => { currentContext = context; });
 
 		currentContext = undefined;
-		let testUrl = "/waffles/oli/tweety";
+		const testUrl = "/waffles/oli/tweety";
 		router.goTo(testUrl, { test: "myData" });
 		expect(currentContext).toEqual({ params: { birds: "tweety", dogs: "oli", cats: "waffles" }, url: testUrl, query: undefined, customData: { test: "myData" } });
 	});
@@ -391,10 +389,10 @@ describe("test router routes match", () => {
 		};
 
 		currentContext = undefined;
-		let testUrl = "/bla";
+		const testUrl = "/bla";
 		router.goTo(testUrl, { test: "myData" });
 		expect(currentContext).toEqual(undefined);
-		expect(notFoundContext).toEqual({ url: testUrl, query: undefined, customData: { test: "myData" } })
+		expect(notFoundContext).toEqual({ url: testUrl, query: undefined, customData: { test: "myData" } });
 	});
 });
 

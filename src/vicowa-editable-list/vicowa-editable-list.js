@@ -67,7 +67,7 @@ function createItem(p_Control, p_Done) {
 				applyActions.removeEditArea();
 			}
 		});
-		p_Control.addAutoEventListener(itemClone.querySelector("[name=\"delete\"]"), "click", async () => {
+		p_Control.addAutoEventListener(itemClone.querySelector("[name=\"delete\"]"), "click", async() => {
 			const continueDelete = await p_Control.continueDelete(editArea.item);
 			if (continueDelete) {
 				applyActions.removeEditArea();
@@ -210,7 +210,7 @@ class VicowaEditableList extends webComponentBaseClass {
 		};
 		this.factory = null;
 		this.getData = null;
-		this.continueDelete = async () => true;
+		this.continueDelete = async() => true;
 		this.itemInterface = {
 			setItemData(p_Item, p_Data) { p_Item.data = p_Data; },
 			getItemData(p_Item) { return p_Item.data; },

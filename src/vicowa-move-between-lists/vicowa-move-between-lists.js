@@ -65,7 +65,7 @@ class VicowaMoveBetweenLists extends webComponentBaseClass {
 		const updateStates = () => {
 			this.$.secondToFirst.classList.toggle("disabled", !this.$.secondList.selectedOptions.length);
 			this.$.firstToSecond.classList.toggle("disabled", !this.$.firstList.selectedOptions.length);
-		}
+		};
 
 		this.addAutoEventListener(this.$.secondList, "change", updateStates);
 		this.addAutoEventListener(this.$.firstList, "change", updateStates);
