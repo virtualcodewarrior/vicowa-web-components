@@ -27,10 +27,10 @@
 </head>
 
 <body>
-<button location="/examples/vicowa-content-container-routed/content-test1.js">Load Content 1</button>
-<button location="/examples/vicowa-content-container-routed/content-test2.js">Load Content 2</button>
-<a href="./content-test3.js">Load Content 3</a>
-<a href="./content-test4.js">Load Content 4</a>
+<button location="/examples/vicowa-content-container-routed/content-test1">Load Content 1</button>
+<button location="/examples/vicowa-content-container-routed/content-test2">Load Content 2</button>
+<a href="./content-test3">Load Content 3</a>
+<a href="./content-test4">Load Content 4</a>
 <vicowa-content-container id="content" handle-history="false" location="content-test1.js"
                           content-base-location="./content/"></vicowa-content-container>
 <script type="module">
@@ -40,13 +40,17 @@
 	const content = document.querySelector("#content");
 
 	const router = getRouter();
-	router.addRoute("/examples/vicowa-content-container-routed/:location", (result) => {
-		content.location = /\.js$/.test(result.params.location) ? result.params.location : `${result.params.location}.js`;
+	const basePath = "/examples/vicowa-content-container-routed/";
+	router.addRoute(`${basePath}:location`, (result) => {
+		const location = (/content/.test(result.params.location)) ? result.params.location : "content-test1";
+		content.location = /\.js$/.test(location) ? location : `${location}.js`;
+		result.url = `${basePath}${location}`;
+		console.log({ myData: result.customData ? result.customData.myData : undefined });
 	});
 
 	Array.from(document.querySelectorAll("button")).forEach((p_Button) => {
 		p_Button.addEventListener("click", (p_Event) => {
-			router.goTo(p_Event.target.getAttribute("location"));
+			router.goTo(p_Event.target.getAttribute("location"), { myData: `test-${p_Event.target.getAttribute("location")}`});
 		});
 	});
 </script>

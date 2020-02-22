@@ -36,20 +36,17 @@ function createRoute(route, callbacks) {
 	};
 }
 
-function handleChangeLocation(p_RouterData) {
-	if (p_RouterData.url) {
-		// only push a new state if we are changing the location not if we are just initializing
-		if (!p_RouterData.noPush && (!window.history.state || p_RouterData.url !== window.history.state.url)) {
-			if (!window.history.state) {
-				window.history.replaceState({ url: p_RouterData.url, customData: p_RouterData.customData }, "", p_RouterData.url);
-			}
-			window.history.pushState({ url: p_RouterData.url, customData: p_RouterData.customData }, "", p_RouterData.url);
+function handleChangeLocation(p_RouterData, p_TargetWindow) {
+	if (p_RouterData.url && (!p_TargetWindow.history.state || p_RouterData.url !== p_TargetWindow.history.state.url)) {
+		if (!p_TargetWindow.history.state) {
+			p_TargetWindow.history.replaceState({ url: p_RouterData.url, customData: p_RouterData.customData }, p_RouterData.title, p_RouterData.url);
 		}
+		p_TargetWindow.history.pushState({ url: p_RouterData.url, customData: p_RouterData.customData }, p_RouterData.title, p_RouterData.url);
 	}
 }
 
 function handleRoute(p_RouterData, url, customData) {
-	const { routes, notFoundHandler } = p_RouterData;
+	const { routes, notFoundHandler, targetwindow } = p_RouterData;
 	const regExp = new RegExp(`^${document.location.origin}`);
 	url = url.replace(regExp, "").replace(/[/]+/g, "/");
 	const queryParts = url.split("?");
@@ -107,13 +104,13 @@ function handleRoute(p_RouterData, url, customData) {
 						if (callbacks.length) {
 							await doCallback(callbacks.shift());
 							if (!callbacks.length) {
-								handleChangeLocation(context);
+								handleChangeLocation(context, targetwindow);
 							}
 						}
 					});
 				} else {
 					await nextCallback(context);
-					handleChangeLocation(context);
+					handleChangeLocation(context, targetwindow);
 				}
 			}
 		};
@@ -121,43 +118,45 @@ function handleRoute(p_RouterData, url, customData) {
 		doCallback(callbacks.shift());
 	} else if (notFoundHandler) {
 		// do 404 here
-		notFoundHandler();
+		notFoundHandler({
+			url,
+			query,
+			customData,
+		});
 	}
 }
 
 class Router {
-	constructor(targetWindow = window) {
+	constructor(p_TargetWindow = window) {
 		this[privateData] = {
 			routes: [],
 			notFoundHandler: undefined,
+			targetWindow: p_TargetWindow,
 		};
 
 		const handleLoadState = (p_State) => {
 			const routerData = this[privateData];
-			if (p_State && p_State.location) {
-				routerData.noPush = true;
-				routerData.pageTitle = p_State.title;
+			delete routerData.url;
+			delete routerData.title;
+			if (p_State && p_State.url) {
+				routerData.title = p_State.title;
 				routerData.url = p_State.url;
-				routerData.noPush = false;
-			} else if (targetWindow.history.state) {
-				routerData.noPush = true;
-				routerData.pageTitle = targetWindow.history.state.title;
-				routerData.url = targetWindow.history.state.url;
-				routerData.noPush = false;
+			} else if (routerData.targetWindow.history.state) {
+				routerData.title = routerData.targetWindow.history.state.title;
+				routerData.url = routerData.targetWindow.history.state.url;
 			}
 			if (routerData.url) {
-				handleRoute(routerData, routerData.url, p_State);
+				handleRoute(routerData, routerData.url, p_State.customData);
 			} else if (document.location.href) {
 				handleRoute(routerData, document.location.href, null);
 			}
 		};
 
-		handleLoadState(targetWindow.history.state);
-
-		targetWindow.addEventListener("popstate", (p_Event) => {
+		handleLoadState(p_TargetWindow.history.state);
+		p_TargetWindow.addEventListener("popstate", (p_Event) => {
 			handleLoadState(p_Event.state);
 		});
-		targetWindow.addEventListener("load", () => {
+		p_TargetWindow.addEventListener("load", () => {
 			this.goTo(document.location.href);
 		});
 	}
