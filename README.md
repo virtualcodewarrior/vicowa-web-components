@@ -1,3 +1,5 @@
+https://github.com/virtualcodewarrior/vicowa-web-components/workflows/vicowa-web-components-test-and-build/badge.svg
+
 # Introduction
 This is a collection of web components that make use of web-component-base-class
 Usage examples of the web components can be found in the examples folder.

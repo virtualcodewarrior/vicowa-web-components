@@ -1,4 +1,4 @@
-name: Node.js CI
+name: vicowa-web-components-test-and-build
 
 on: [push]
 
