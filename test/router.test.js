@@ -394,17 +394,7 @@ describe("test router routes match", () => {
 		let testUrl = "/bla";
 		router.goTo(testUrl, { test: "myData" });
 		expect(currentContext).toEqual(undefined);
-		expect(notFoundContext).toEqual({ url: testUrl, query: undefined, customData: undefined })
+		expect(notFoundContext).toEqual({ url: testUrl, query: undefined, customData: { test: "myData" } })
 	});
-
-	// it("should be called on load", (done) => {
-	// 	let currentContext;
-	// 	router.addRoute("/test/route/:cats", (context) => {
-	// 		currentContext = context;
-	// 		done();
-	// 	});
-	//
-	// 	testWindow.document.location.href = "/test/route/waffles";
-	// })
 });
 
