@@ -96,7 +96,7 @@ module.exports = function(config) {
 
 		// start these browsers
 		// first browser launchers: https://npmjs.org/browse/keyword/karma-launcher
-		browsers: ["ChromeHeadless"/* , "Firefox" */],
+		browsers: ["ChromeHeadless", "FirefoxHeadless"],
 
 		// Concurrency level
 		// how many browser should be started simultaneous
