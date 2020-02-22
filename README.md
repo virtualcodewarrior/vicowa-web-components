@@ -17,7 +17,7 @@ Start the server
 ```
 npm start
 ```
-Browse to ```http://localhost:8989/examples``` and open any of the example folders.
+Browse to ```http://localhost:8989``` and open any of the example folders.
 
 
 # vicowa-string
@@ -33,7 +33,7 @@ Shows an icon from a collection of icons
 Text input field with build-in validation support
 
 # vicowa-panel
-A optionaly collapsible panel, containing a header and footer
+A optionally collapsible panel, containing a header and footer
 
 # vicowa-resize-detector
 Place this web component within a positioned block element (e.g. <div style="position: relative"></div>) to be able to detect if the parent div's
