@@ -1,4 +1,4 @@
-https://github.com/virtualcodewarrior/vicowa-web-components/workflows/vicowa-web-components-test-and-build/badge.svg
+![](https://github.com/virtualcodewarrior/vicowa-web-components/workflows/vicowa-web-components-test-and-build/badge.svg)
 
 # Introduction
 This is a collection of web components that make use of web-component-base-class
