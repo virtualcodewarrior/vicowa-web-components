@@ -49,7 +49,7 @@ const port = process.env.PORT || 8989;
 	});
 
 	// if we get to here we will just return the examples directory
-	app.get('/examples/*', (req, res) => {
+	app.get('/', (req, res) => {
 		let fileContent = fs.readFileSync(path.join(__dirname, websiteDirectory, 'index.html'), { encoding: "utf8" });
 		fileContent = fileContent.replace('{{directory}}', `<li>${examples.sort((first, second) => first.name.localeCompare(second.name)).map((exampleInfo) => `<a href="${exampleInfo.root}/index.html">${exampleInfo.name}</a>`).join('</li><li>')}</li>`);
 		res.send(fileContent);

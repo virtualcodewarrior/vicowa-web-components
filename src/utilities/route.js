@@ -46,7 +46,7 @@ function handleChangeLocation(p_RouterData, p_TargetWindow) {
 }
 
 function handleRoute(p_RouterData, p_Url, p_CustomData) {
-	const { routes, notFoundHandler, targetwindow } = p_RouterData;
+	const { routes, notFoundHandler, targetWindow } = p_RouterData;
 	const regExp = new RegExp(`^${document.location.origin}`);
 	p_Url = p_Url.replace(regExp, "").replace(/[/]+/g, "/");
 	const queryParts = p_Url.split("?");
@@ -104,13 +104,13 @@ function handleRoute(p_RouterData, p_Url, p_CustomData) {
 						if (callbacks.length) {
 							await doCallback(callbacks.shift());
 							if (!callbacks.length) {
-								handleChangeLocation(context, targetwindow);
+								handleChangeLocation(context, targetWindow);
 							}
 						}
 					});
 				} else {
 					await nextCallback(context);
-					handleChangeLocation(context, targetwindow);
+					handleChangeLocation(context, targetWindow);
 				}
 			}
 		};

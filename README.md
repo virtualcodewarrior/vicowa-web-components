@@ -11,17 +11,13 @@ npm install --save vicowa-web-components
 ```
 
 ## Examples
-You can test the examples if you do the following in the project where you added this as a dependency:
+You can test the examples by starting the server
 
-Install http-server
-```
-npm install --save-dev http-server
-```
 Start the server
 ```
-node ./node_modules/http-server/bin/http-server -c-1 -p 8989
+npm start
 ```
-Browse to ```http://localhost:8989/node_modules/vicowa-web-components/dist/examples``` and open any of the example folders.
+Browse to ```http://localhost:8989/examples``` and open any of the example folders.
 
 
 # vicowa-string
