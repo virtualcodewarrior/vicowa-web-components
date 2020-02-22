@@ -57,7 +57,7 @@ async function fillPaletteItems(p_Control, p_Target) {
 			p_Control.appendChild(itemContent);
 			// itemContainer.appendChild(itemContent);
 			p_Target.appendChild(itemContainer);
-			itemContainer.addEventListener("click", async () => {
+			itemContainer.addEventListener("click", async() => {
 				if (p_Item.subLevel) {
 					p_Control.$.back.setAttribute("target", controlData.activePaletteRoot || "root");
 					controlData.path.push({
@@ -182,7 +182,7 @@ class VicowaHierarchicalPalette extends webComponentBaseClass {
 			updateScrollButtons(this);
 		});
 
-		this.addAutoEventListener(this.$.back, "click", async () => {
+		this.addAutoEventListener(this.$.back, "click", async() => {
 			controlData.activePaletteRoot = this.$.back.getAttribute("target");
 			const targetContainer = this.$.prevItemsContainer;
 			await fillPaletteItems(this, targetContainer);

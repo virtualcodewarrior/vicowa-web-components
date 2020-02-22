@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>ViCoWa Web Components - vicowa-content-container</title>
+
+    <style>
+        #content {
+            border: 1px solid grey;
+            box-shadow: 0 0 6px grey;
+            margin-top: 1em;
+        }
+
+        #parent-container {
+            box-sizing: border-box;
+            margin-top: 1em;
+            position: relative;
+            width: 500px;
+            height: 500px;
+            overflow-x: hidden;
+            overflow-y: auto;
+            border: 1px solid grey;
+            box-shadow: 0 0 6px grey;
+        }
+    </style>
+</head>
+
+<body>
+<button location="/examples/vicowa-content-container-routed/content-test1">Load Content 1</button>
+<button location="/examples/vicowa-content-container-routed/content-test2">Load Content 2</button>
+<a href="./content-test3">Load Content 3</a>
+<a href="./content-test4">Load Content 4</a>
+<vicowa-content-container id="content" handle-history="false" location="content-test1.js"
+                          content-base-location="./content/"></vicowa-content-container>
+<script type="module">
+	import "../../src/vicowa-content-container/vicowa-content-container.js";
+	import { getRouter } from "../../src/utilities/route.js";
+
+	const content = document.querySelector("#content");
+
+	const router = getRouter();
+	const basePath = "/examples/vicowa-content-container-routed/";
+	router.addRoute(`${basePath}:location`, (result) => {
+		const location = (/content/.test(result.params.location)) ? result.params.location : "content-test1";
+		content.location = /\.js$/.test(location) ? location : `${location}.js`;
+		result.url = `${basePath}${location}`;
+		console.log({ myData: result.customData ? result.customData.myData : undefined });
+	});
+
+	Array.from(document.querySelectorAll("button")).forEach((p_Button) => {
+		p_Button.addEventListener("click", (p_Event) => {
+			router.goTo(p_Event.target.getAttribute("location"), { myData: `test-${p_Event.target.getAttribute("location")}`});
+		});
+	});
+</script>
+</body>
+
+</html>

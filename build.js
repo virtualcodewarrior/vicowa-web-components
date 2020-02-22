@@ -1,8 +1,8 @@
 /* eslint-env node */
-const minify = require("babel-minify");
-const fs = require("fs-extra");
-const walk = require("walk");
-const path = require("path");
+import minify from "babel-minify";
+import fs from "fs-extra";
+import walk from "walk";
+import path from "path";
 
 const inputPath = "src";
 const examplePath = "examples";

@@ -1,3 +1,5 @@
+https://github.com/virtualcodewarrior/vicowa-web-components/workflows/vicowa-web-components-test-and-build/badge.svg
+
 # Introduction
 This is a collection of web components that make use of web-component-base-class
 Usage examples of the web components can be found in the examples folder.
@@ -9,17 +11,13 @@ npm install --save vicowa-web-components
 ```
 
 ## Examples
-You can test the examples if you do the following in the project where you added this as a dependency:
+You can test the examples by starting the server
 
-Install http-server
-```
-npm install --save-dev http-server
-```
 Start the server
 ```
-node ./node_modules/http-server/bin/http-server -c-1 -p 8989
+npm start
 ```
-Browse to ```http://localhost:8989/node_modules/vicowa-web-components/dist/examples``` and open any of the example folders.
+Browse to ```http://localhost:8989``` and open any of the example folders.
 
 
 # vicowa-string
@@ -35,7 +33,7 @@ Shows an icon from a collection of icons
 Text input field with build-in validation support
 
 # vicowa-panel
-A optionaly collapsible panel, containing a header and footer
+A optionally collapsible panel, containing a header and footer
 
 # vicowa-resize-detector
 Place this web component within a positioned block element (e.g. <div style="position: relative"></div>) to be able to detect if the parent div's

@@ -9,18 +9,20 @@ function handleChangeLocation(p_Control) {
 	const controlData = p_Control[privateData];
 	if (p_Control.location && typeof p_Control.contentBaseLocation === "string") {
 		// get the web component name by taking the location, taking the file name and stripping of the extension. This requires you to always name the
-		// html the same as the web component
+		// target content the same as the web component
 		const element = p_Control.location.trim().split("/").pop().replace(/\..*$/, "");
 		const location = p_Control.contentBaseLocation + p_Control.location;
 
 		// make sure we didn't load this already
 		if (controlData.currentElement !== element && controlData.currentLocation !== location) {
-			// only push a new state if we are changing the location not if we are just initializing
-			if (controlData.currentElement && controlData.currentLocation && controlData.currentTitle !== undefined && !p_Control.noPush) {
-				if (!window.history.state) {
-					window.history.replaceState({ location: controlData.currentLocation.replace(p_Control.contentBaseLocation, ""), id: p_Control.getAttribute("id"), title: controlData.currentTitle }, controlData.currentTitle, (p_Control.addLocationToUrl) ? `#${controlData.currentLocation.replace(p_Control.contentBaseLocation, "")}` : undefined);
+			if (p_Control.handleHistory) {
+				// only push a new state if we are changing the location not if we are just initializing
+				if (controlData.currentElement && controlData.currentLocation && controlData.currentTitle !== undefined && !p_Control.noPush) {
+					if (!window.history.state) {
+						window.history.replaceState({ location: controlData.currentLocation.replace(p_Control.contentBaseLocation, ""), id: p_Control.getAttribute("id"), title: controlData.currentTitle }, controlData.currentTitle, (p_Control.addLocationToUrl) ? `#${controlData.currentLocation.replace(p_Control.contentBaseLocation, "")}` : undefined);
+					}
+					window.history.pushState({ location: location.replace(p_Control.contentBaseLocation, ""), id: p_Control.getAttribute("id"), title: p_Control.getAttribute("page-title") }, p_Control.getAttribute("page-title"), (p_Control.addLocationToUrl) ? `#${location.replace(p_Control.contentBaseLocation, "")}` : undefined);
 				}
-				window.history.pushState({ location: location.replace(p_Control.contentBaseLocation, ""), id: p_Control.getAttribute("id"), title: p_Control.getAttribute("page-title") }, p_Control.getAttribute("page-title"), (p_Control.addLocationToUrl) ? `#${location.replace(p_Control.contentBaseLocation, "")}` : undefined);
 			}
 			controlData.currentElement = element;
 			controlData.elementInstance = null;
@@ -59,6 +61,36 @@ function handleChangeLocation(p_Control) {
 	}
 }
 
+function setupStateHandling(p_Control) {
+	const handleLoadState = (p_State, p_Anchor) => {
+		if (p_Control.handleHistory) {
+			p_Anchor = (p_Anchor || "").replace(/^#/, "");
+			if (p_Anchor) {
+				p_Control.noPush = true;
+				p_Control.location = p_Anchor;
+				p_Control.noPush = false;
+			} else if (p_State && p_State.location) {
+				if (p_State.id === p_Control.getAttribute("id")) {
+					p_Control.noPush = true;
+					p_Control.pageTitle = window.history.state.title;
+					p_Control.location = window.history.state.location;
+					p_Control.noPush = false;
+				}
+			} else {
+				handleChangeLocation(p_Control);
+			}
+		}
+	};
+
+	const handlePopState = (p_Event) => {
+		handleLoadState(p_Event.state, (p_Event.state) ? "" : document.location.hash);
+	};
+
+	handleLoadState(window.history.state, document.location.hash);
+
+	window.addEventListener("popstate", handlePopState);
+}
+
 /**
  * Class to represent the vicowa-content-container custom element
  * This web component allows you to use other web components as your website content, to simply create a single page website
@@ -95,6 +127,11 @@ class VicowaContentContainer extends webComponentBaseClass {
 				reflectToAttribute: true,
 				observer: handleChangeLocation,
 			},
+			handleHistory: {
+				type: Boolean,
+				value: true,
+				reflectToAttribute: true,
+			},
 		};
 	}
 	constructor() {
@@ -125,29 +162,7 @@ class VicowaContentContainer extends webComponentBaseClass {
 			set(p_Callback) { controlData.onChange = p_Callback; controlData.onChange(controlData.elementInstance); },
 		});
 
-		const handleLoadState = (p_State, p_Anchor) => {
-			p_Anchor = (p_Anchor || "").replace(/^#/, "");
-			if (p_Anchor) {
-				this.noPush = true;
-				this.location = p_Anchor;
-				this.noPush = false;
-			} else if (p_State && p_State.location) {
-				if (p_State.id === this.getAttribute("id")) {
-					this.noPush = true;
-					this.pageTitle = window.history.state.title;
-					this.location = window.history.state.location;
-					this.noPush = false;
-				}
-			} else {
-				handleChangeLocation(this);
-			}
-		};
-
-		handleLoadState(window.history.state, document.location.hash);
-
-		window.addEventListener("popstate", (p_Event) => {
-			handleLoadState(p_Event.state, (p_Event.state) ? "" : document.location.hash);
-		});
+		setupStateHandling(this);
 	}
 
 	static get template() {
