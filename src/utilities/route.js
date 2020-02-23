@@ -141,12 +141,14 @@ class Router {
 			if (p_State && p_State.url) {
 				routerData.title = p_State.title;
 				routerData.url = p_State.url;
+				routerData.customData = p_State.customData;
 			} else if (routerData.targetWindow.history.state) {
 				routerData.title = routerData.targetWindow.history.state.title;
 				routerData.url = routerData.targetWindow.history.state.url;
+				routerData.customData = routerData.targetWindow.history.state.customData;
 			}
 			if (routerData.url) {
-				handleRoute(routerData, routerData.url, p_State.customData);
+				handleRoute(routerData, routerData.url, routerData.customData);
 			} else if (document.location.href) {
 				handleRoute(routerData, document.location.href, null);
 			}

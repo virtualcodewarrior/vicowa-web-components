@@ -83,7 +83,9 @@ function setupStateHandling(p_Control) {
 	};
 
 	const handlePopState = (p_Event) => {
-		handleLoadState(p_Event.state, (p_Event.state) ? "" : document.location.hash);
+		if (p_Control.handleHistory) {
+			handleLoadState(p_Event.state, (p_Event.state) ? "" : document.location.hash);
+		}
 	};
 
 	handleLoadState(window.history.state, document.location.hash);
