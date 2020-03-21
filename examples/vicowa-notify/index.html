@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>ViCoWa Web Components - vicowa-notify</title>
+
+	<style>
+		body {
+			font-family: sans-serif;
+		}
+		body[lang="en_US"] #english,
+		body[lang="nl_NL"] #dutch {
+			background-color: blue;
+			color: white;
+		}
+
+		.button-container {
+			display: flex;
+			flex-direction:column;
+			position: relative;
+			width: 150px;
+			height: 100px;
+			margin: 1em;
+			justify-content: space-between;
+		}
+
+		.button-grid {
+			margin-top: 1em;
+			display: flex;
+			position: relative;
+			width: 100px;
+			height: 100px;
+			justify-content: space-between;
+			flex-wrap: wrap;
+		}
+
+		.button-grid button {
+			position: relative;
+			flex: 0 0 30px;
+			height: 30px;
+			padding: 2px 0;
+			box-shadow: 3px 3px 3px grey;
+		}
+
+		button.active {
+			box-shadow: 3px 3px 3px rgb(0, 50, 0) inset;
+			background: rgb(0, 127, 0);
+			color: white;
+		}
+
+		#some-control {
+			position: absolute;
+			left: 60%;
+			top: 30%;
+		}
+
+		.absolute-positioned-box {
+			margin-top: 1em;
+		}
+
+		.absolute-positioned-box input {
+			width: 50px;
+		}
+	</style>
+</head>
+<body lang="en_US">
+	<div id="translations">
+		<button id="english">English</button>
+		<button id="dutch">Nederlands</button>
+
+	</div>
+	<vicowa-notify id="notify"></vicowa-notify>
+	<div class="button-container">
+		<button id="info">Info notification</button>
+		<button id="warning">warning notification</button>
+		<button id="error">Error notification</button>
+	</div>
+	<div>popup location</div>
+	<div class="button-grid">
+		<button id="left-top">l-t</button>
+		<button id="center-top">c-t</button>
+		<button id="right-top">r-t</button>
+		<button id="left-center">l-c</button>
+		<button id="center-center">c-c</button>
+		<button id="right-center">r-c</button>
+		<button id="left-bottom">l-b</button>
+		<button id="center-bottom">c-b</button>
+		<button id="right-bottom">r-b</button>
+	</div>
+	<div class="absolute-positioned-box">
+		<label for="x-location">X</label>
+		<input id="x-location" type="number">
+		<label for="y-location">Y</label>
+		<input id="y-location" type="number">
+		<button id="absolute-positioned">absolute position</button>
+	</div>
+	<div class="absolute-positioned-box">
+		<label for="duration-number">time in ms</label>
+		<input id="duration-number" type="number">
+		<button id="duration">test duration</button>
+	</div>
+
+	<div>
+		<button id="some-control">Some control</button>
+	</div>
+	<script type="module">
+		import translator from '../../src/utilities/translate.js';
+		import { DEFAULT_LOCATIONS } from "../../src/vicowa-notify/vicowa-notify.js";
+		import { createQuickAccess } from '../../src/third_party/web-component-base-class/src/tools.js';
+
+		const elements = createQuickAccess(document, 'id');
+		const { notify, english, dutch, info, warning, error, someControl, xLocation, yLocation, absolutePositioned, durationNumber, duration } = elements;
+
+		// setup the translator
+		translator.addTranslationLocation('../resources/translations');
+		translator.addTranslationUpdatedObserver((p_Translator) => {
+			document.body.setAttribute('lang', p_Translator.language);
+		}, null);
+		translator.language = 'en_US';
+
+		english.addEventListener('click', () => { translator.language = 'en_US'; });
+		dutch.addEventListener('click', () => { translator.language = 'nl_NL'; });
+
+		info.addEventListener('click', () =>  {
+			notify.info("info message");
+		});
+		warning.addEventListener('click', () => {
+			notify.warning("warning message");
+		});
+		error.addEventListener('click', () => {
+			notify.error("error message");
+		});
+
+		const locations = {
+			leftTop: { locationX: DEFAULT_LOCATIONS.START, locationY: DEFAULT_LOCATIONS.START },
+			centerTop: { locationX: DEFAULT_LOCATIONS.CENTER, locationY: DEFAULT_LOCATIONS.START },
+			rightTop: { locationX: DEFAULT_LOCATIONS.END, locationY: DEFAULT_LOCATIONS.START },
+			leftCenter: { locationX: DEFAULT_LOCATIONS.START, locationY: DEFAULT_LOCATIONS.CENTER },
+			centerCenter: { locationX: DEFAULT_LOCATIONS.CENTER, locationY: DEFAULT_LOCATIONS.CENTER },
+			rightCenter: { locationX: DEFAULT_LOCATIONS.END, locationY: DEFAULT_LOCATIONS.CENTER },
+			leftBottom: { locationX: DEFAULT_LOCATIONS.START, locationY: DEFAULT_LOCATIONS.END },
+			centerBottom: { locationX: DEFAULT_LOCATIONS.CENTER, locationY: DEFAULT_LOCATIONS.END },
+			rightBottom: { locationX: DEFAULT_LOCATIONS.END, locationY: DEFAULT_LOCATIONS.END },
+		};
+		Object.entries(locations).forEach(([key, value]) => {
+			elements[key].addEventListener('click', () => {
+				notify.locationX = value.locationX;
+				notify.locationY = value.locationY;
+				notify.alignControl = undefined;
+				notify.info(`Now changed to ${key}`);
+				updateButtons();
+			});
+		});
+
+		function updateButtons() {
+			Object.entries(locations).forEach(([key, value]) => {
+				elements[key].classList.toggle("active", notify.locationX === value.locationX && notify.locationY === value.locationY);
+			});
+		}
+
+		someControl.addEventListener("click", () => {
+			notify.alignControl = someControl;
+			notify.info("now aligned with some control");
+		});
+
+		absolutePositioned.addEventListener('click', () => {
+			notify.locationX = xLocation.value;
+			notify.locationY = yLocation.value;
+			notify.info(`now positioned at ${xLocation.value}, ${yLocation.value}`);
+		});
+
+		xLocation.value = 100;
+		yLocation.value = 200;
+
+		duration.addEventListener('click', () => {
+			notify.info({ message: `show for ${durationNumber.value} ms`, duration: parseFloat(durationNumber.value) });
+		});
+
+		durationNumber.value = 1000;
+
+		notify.onAttached = updateButtons;
+	</script>
+</body>
+
+</html>
