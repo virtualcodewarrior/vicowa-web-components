@@ -6,6 +6,10 @@ function ariaLabelChanged(p_InputControl) {
 	p_InputControl.$.input.setAttribute("aria-label", p_InputControl.ariaLabel);
 }
 
+function autocompleteChanged(p_InputControl) {
+	p_InputControl.$.input.setAttribute("autocomplete", p_InputControl.autocomplete);
+}
+
 /**
  * Validate the value for the given input element
  * @param {VicowaInputBase} p_InputControl Element for which the value is validated
@@ -168,6 +172,11 @@ export class VicowaInputBaseClass extends webComponentBaseClass {
 				type: String,
 				value: "",
 				observer: ariaLabelChanged,
+			},
+			autocomplete: {
+				type: String,
+				value: undefined,
+				observer: autocompleteChanged,
 			},
 		};
 	}
