@@ -62,14 +62,19 @@ module.exports = function(config) {
 
 		// list of files / patterns to load in the browser
 		files: [
-			{ pattern: "src/**/*.+(js|map|html)", type: "module", watched: true, served: true, second: false, nocache: true },
-			{ pattern: "test/**/*.html", type: "module", watched: true, served: true, second: false, nocache: true },
-			{ pattern: "test/**/*.js", type: "module", watched: true, served: true, second: true, nocache: true },
+			{ pattern: "node_modules/**/*.+(js|map|html)", type: "module", watched: false, served: true, included: false, nocache: false },
+			{ pattern: "src/**/*.+(js|map|html)", type: "module", watched: true, served: true, included: false, nocache: true },
+			{ pattern: "test/**/*.html", type: "module", watched: true, served: true, included: false, nocache: true },
+			{ pattern: "test/**/*.js", type: "module", watched: true, served: true, included: true, nocache: true },
 		],
+
+		proxies: {
+			"/base/src/third_party/": "/base/node_modules/",
+		},
 
 		// list of files / patterns to exclude
 		exclude: [
-			"src/third_party/**/*",
+			"src/third_party/babylonjs-gltf2interface/**/*",
 		],
 
 

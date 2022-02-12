@@ -1,23 +1,17 @@
 import * as translate from "../src/utilities/translate.js";
+import "../src/vicowa-string/vicowa-string.js";
 
 describe("test vicowa-string creation", () => {
 	const container = document.createElement("div");
 	const elementContainer = document.createElement("div");
-	const head = document.querySelector("head");
 	container.appendChild(elementContainer);
-	beforeAll((done) => {
-		const link = document.createElement("link");
-		link.rel = "import";
-		link.href = "base/src/vicowa-string/vicowa-string.html";
-		link.onload = done;
 
+	beforeAll(() => {
 		document.body.appendChild(container);
-		head.appendChild(link);
 	});
 
 	afterAll(() => {
 		document.body.removeChild(container);
-		Array.from(document.querySelectorAll('link[rel="import"]')).forEach((p_Element) => p_Element.parentNode.removeChild(p_Element));
 	});
 
 	afterEach(() => {
@@ -41,22 +35,14 @@ describe("test vicowa-string creation", () => {
 describe("test vicowa-string usage", () => {
 	const container = document.createElement("div");
 	const elementContainer = document.createElement("div");
-	const head = document.querySelector("head");
 	let stringElement = null;
 	container.appendChild(elementContainer);
-	beforeAll((done) => {
-		const link = document.createElement("link");
-		link.rel = "import";
-		link.href = "base/src/vicowa-string/vicowa-string.html";
-		link.onload = done;
-
+	beforeAll(() => {
 		document.body.appendChild(container);
-		head.appendChild(link);
 	});
 
 	afterAll(() => {
 		document.body.removeChild(container);
-		Array.from(document.querySelectorAll('link[rel="import"]')).forEach((p_Element) => p_Element.parentNode.removeChild(p_Element));
 	});
 
 	beforeEach((done) => {
@@ -130,23 +116,15 @@ describe("test vicowa-string usage", () => {
 describe("test vicowa-string translation updates", () => {
 	const container = document.createElement("div");
 	const elementContainer = document.createElement("div");
-	const head = document.querySelector("head");
 	let translationObservers = [];
 	let stringElement = null;
 	container.appendChild(elementContainer);
-	beforeAll((done) => {
-		const link = document.createElement("link");
-		link.rel = "import";
-		link.href = "base/src/vicowa-string/vicowa-string.html";
-		link.onload = done;
-
+	beforeAll(() => {
 		document.body.appendChild(container);
-		head.appendChild(link);
 	});
 
 	afterAll(() => {
 		document.body.removeChild(container);
-		Array.from(document.querySelectorAll('link[rel="import"]')).forEach((p_Element) => p_Element.parentNode.removeChild(p_Element));
 	});
 
 	beforeEach((done) => {

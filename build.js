@@ -17,7 +17,7 @@ const exampleWalker = walk.walk(examplePath, { followLinks: false });
 fs.emptyDirSync(outputPath);
 
 const exclude = [
-	/eslintrc.cjs/i,
+	/.eslintrc.cjs/i,
 	/karma.conf.js/i,
 ];
 
