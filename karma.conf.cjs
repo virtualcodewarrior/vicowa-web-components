@@ -68,15 +68,13 @@ module.exports = function(config) {
 			{ pattern: "test/**/*.js", type: "module", watched: true, served: true, included: true, nocache: true },
 		],
 
+		// all references to third_party actually go to node_modules
 		proxies: {
 			"/base/src/third_party/": "/base/node_modules/",
 		},
 
 		// list of files / patterns to exclude
-		exclude: [
-			"src/third_party/babylonjs-gltf2interface/**/*",
-		],
-
+		exclude: [],
 
 		// preprocess matching files before serving them to the browser
 		// first preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
