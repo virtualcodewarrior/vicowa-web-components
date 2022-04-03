@@ -43,8 +43,8 @@ const translationInfo = {
 	_is_default_content: true,
 };
 
-function loadTranslationFiles(language) {
-	const languageParts = language.split("_");
+function loadTranslationFiles(languageName) {
+	const languageParts = languageName.split("_");
 	// we might have a specific locale version of a language (e.g. en_US, en_UK, en_CA etc)
 	// in this case we will try to load both the base and the specific version of the language e.g. en.json and en_CA.json
 	const locationsToLoad = [];
@@ -53,7 +53,7 @@ function loadTranslationFiles(language) {
 			// load the base first so the more specific values can overrule the less specific ones
 			locationsToLoad.push({ translations: {}, finished: false, url: `${location.url}/${languageParts[0]}.json` });
 		}
-		locationsToLoad.push({ translations: {}, finished: false, url: `${location.url}/${language}.json` });
+		locationsToLoad.push({ translations: {}, finished: false, url: `${location.url}/${languageName}.json` });
 	});
 
 	const applyTranslations = () => {

@@ -70,7 +70,7 @@ module.exports = function(config) {
 
 		// all references to third_party actually go to node_modules
 		proxies: {
-			"/base/src/third_party/": "/base/node_modules/",
+			"/third_party/": "/base/node_modules/",
 		},
 
 		// list of files / patterns to exclude

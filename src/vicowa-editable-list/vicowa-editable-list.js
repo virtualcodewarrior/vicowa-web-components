@@ -265,7 +265,7 @@ class VicowaEditableList extends WebComponentBaseClass {
 	#updateJumpButton() {
 		const listData = this.#privateData;
 		const value = parseInt(this.$.jumpTo.value, 10);
-		this.$.jump.disabled = isNaN(value) || value < 1 || value > Math.ceil(listData.retrievedData.totalItemCount / control.maxPageItems);
+		this.$.jump.disabled = isNaN(value) || value < 1 || value > Math.ceil(listData.retrievedData.totalItemCount / this.maxPageItems);
 	}
 
 	async #fillList(start, count, filter) {

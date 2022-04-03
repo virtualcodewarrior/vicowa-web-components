@@ -48,8 +48,8 @@ class VicowaButton extends WebComponentBaseClass {
 		};
 		this.$.button.setAttribute("aria-label", this.$.string.displayString);
 
-		translator.addTranslationUpdatedObserver((translator) => {
-			this.#privateData.activeTranslator = translator;
+		translator.addTranslationUpdatedObserver((translatorInstance) => {
+			this.#privateData.activeTranslator = translatorInstance;
 			this.updateTranslation();
 		}, this);
 	}
