@@ -1,17 +1,15 @@
-import { webComponentBaseClass } from "../third_party/web-component-base-class/src/webComponentBaseClass.js";
+import { WebComponentBaseClass } from "/third_party/web-component-base-class/src/web-component-base-class.js";
 import "../vicowa-string/vicowa-string.js";
 import "../vicowa-icon/vicowa-icon.js";
 
-const componentName = "vicowa-panel";
 /**
- * @extends webComponentBaseClass
+ * @extends WebComponentBaseClass
  * @property {string} header The header text
  * @property {boolean} collapsible Indicates if the control is collapsible
  * @property {boolean} expanded Indicates if the panel is expanded
  * @property {string} expandControlAnimation Type of animation to use on the collapse control. Defaults to rotate
  */
-class VicowaPanel extends webComponentBaseClass {
-	static get is() { return componentName; }
+class VicowaPanel extends WebComponentBaseClass {
 	constructor() {
 		super();
 	}
@@ -153,4 +151,4 @@ class VicowaPanel extends webComponentBaseClass {
 	}
 }
 
-window.customElements.define(componentName, VicowaPanel);
+window.customElements.define("vicowa-panel", VicowaPanel);

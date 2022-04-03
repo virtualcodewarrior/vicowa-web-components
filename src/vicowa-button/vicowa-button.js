@@ -1,15 +1,11 @@
-import { webComponentBaseClass } from "../third_party/web-component-base-class/src/webComponentBaseClass.js";
+import { WebComponentBaseClass } from "/third_party/web-component-base-class/src/web-component-base-class.js";
 import "../vicowa-icon/vicowa-icon.js";
 import "../vicowa-string/vicowa-string.js";
 import translator from "../utilities/translate.js";
 
-const privateData = Symbol("privateData");
-
-const componentName = "vicowa-button";
-
 /**
  * Class that represents the vicowa-button custom element
- * @extends webComponentBaseClass
+ * @extends WebComponentBaseClass
  * @property {string} string The text to be displayed on the button
  * @property {array} parameters Arguments that can be used in combination with the button text to do printf type insertions
  * @property {number} pluralNumber A number to indicate the number of items a string applies to. The translator will use this to determine if a plural form should be used
@@ -17,11 +13,12 @@ const componentName = "vicowa-button";
  * @property {string} ariaLabel The name of the button, used for accessibility, if this is not set it will use any string set for the button
  * @property {string} tooltip A tooltip for the button
  */
-class VicowaButton extends webComponentBaseClass {
-	static get is() { return componentName; }
+class VicowaButton extends WebComponentBaseClass {
+	#privateData;
+
 	constructor() {
 		super();
-		this[privateData] = {
+		this.#privateData = {
 			activeTranslator: null,
 		};
 	}
@@ -39,20 +36,20 @@ class VicowaButton extends webComponentBaseClass {
 	}
 
 	updateTranslation() {
-		const controlData = this[privateData];
+		const controlData = this.#privateData;
 		this.$.button.setAttribute("title", (controlData.activeTranslator && this.tooltip) ? controlData.activeTranslator.translate(this.tooltip).fetch() : this.tooltip);
 	}
 
 	attached() {
-		this.$.string.onTranslationUpdated = (p_String) => {
+		this.$.string.onTranslationUpdated = (text) => {
 			if (!this.ariaLabel) {
-				this.$.button.setAttribute("aria-label", p_String);
+				this.$.button.setAttribute("aria-label", text);
 			}
 		};
 		this.$.button.setAttribute("aria-label", this.$.string.displayString);
 
-		translator.addTranslationUpdatedObserver((p_Translator) => {
-			this[privateData].activeTranslator = p_Translator;
+		translator.addTranslationUpdatedObserver((translator) => {
+			this.#privateData.activeTranslator = translator;
 			this.updateTranslation();
 		}, this);
 	}
@@ -146,4 +143,4 @@ class VicowaButton extends webComponentBaseClass {
 	}
 }
 
-window.customElements.define(componentName, VicowaButton);
+window.customElements.define("vicowa-button", VicowaButton);

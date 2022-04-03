@@ -1,7 +1,7 @@
 // business-settings.js
 // ////////////////////////////////////////////////////////////
 // this web component allows a user to change settings for a business owned by a user
-import { webComponentBaseClass } from "../../../src/third_party/web-component-base-class/src/webComponentBaseClass.js";
+import { WebComponentBaseClass } from "/third_party/web-component-base-class/src/web-component-base-class.js";
 import "../../../src/vicowa-single-selection/vicowa-single-selection.js";
 
 const customElementName = "customer-settings";
@@ -25,7 +25,7 @@ function fillData(p_Control) {
 	};
 }
 
-window.customElements.define(customElementName, class extends webComponentBaseClass {
+window.customElements.define(customElementName, class extends WebComponentBaseClass {
 	/**
 	 * return this web components name
 	 * @returns {String} The name of this element

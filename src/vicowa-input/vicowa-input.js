@@ -3,17 +3,6 @@ import "../vicowa-string/vicowa-string.js";
 import translator from "../utilities/translate.js";
 
 /**
- * Handler to be called when the placeholder text is changed
- * @param {VicowaInput} p_InputControl The control for which this handler is called
- */
-function placeholderChanged(p_InputControl) {
-	p_InputControl.$.input.placeholder = p_InputControl.placeholder;
-	p_InputControl.updateTranslation();
-}
-
-const componentName = "vicowa-input";
-
-/**
  * Class that represents the vicowa-input custom element
  * @extends VicowaInputBaseClass
  * @property {string} validatorName Name of the validator function to use with this instance or empty for no validation
@@ -30,7 +19,7 @@ const componentName = "vicowa-input";
  * @property {function} validator Assign a custom validator function to this to use instead of one of the pre defined ones
  */
 class VicowaInput extends VicowaInputBaseClass {
-	static get is() { return componentName; }
+	#activeTranslator;
 	constructor() {
 		super();
 	}
@@ -41,14 +30,14 @@ class VicowaInput extends VicowaInputBaseClass {
 				type: String,
 				value: "",
 				reflectToAttribute: true,
-				observer: placeholderChanged,
+				observer: (control) => control.#placeholderChanged(),
 			},
 		});
 	}
 
 	updateTranslation() {
 		super.updateTranslation();
-		this.$.input.placeholder = (this._activeTranslator && this.placeholder) ? this._activeTranslator.translate(this.placeholder).fetch() : this.placeholder;
+		this.$.input.placeholder = (this.#activeTranslator && this.placeholder) ? this.#activeTranslator.translate(this.placeholder).fetch() : this.placeholder;
 	}
 
 	attached() {
@@ -68,10 +57,15 @@ class VicowaInput extends VicowaInputBaseClass {
 		this.addAutoEventListener(this.$.input, "input", validateAndSetNoErrorMessage); // inputting text
 
 		this.$.input.placeholder = this.placeholder;
-		translator.addTranslationUpdatedObserver((p_Translator) => {
-			this._activeTranslator = p_Translator;
+		translator.addTranslationUpdatedObserver((translatorInstance) => {
+			this.#activeTranslator = translatorInstance;
 			this.updateTranslation();
 		}, this);
+	}
+
+	#placeholderChanged() {
+		this.$.input.placeholder = this.placeholder;
+		this.updateTranslation();
 	}
 
 	static get template() {
@@ -182,4 +176,4 @@ class VicowaInput extends VicowaInputBaseClass {
 	}
 }
 
-window.customElements.define(componentName, VicowaInput);
+window.customElements.define("vicowa-input", VicowaInput);

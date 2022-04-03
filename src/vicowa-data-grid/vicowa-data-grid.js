@@ -1,169 +1,60 @@
-import { webComponentBaseClass } from "../third_party/web-component-base-class/src/webComponentBaseClass.js";
+import { WebComponentBaseClass } from "/third_party/web-component-base-class/src/web-component-base-class.js";
 import "../vicowa-resize-detector/vicowa-resize-detector.js";
 
-const componentName = "vicowa-data-grid";
-
-function updateSizes(p_Control) {
-	if (p_Control._dataInfo.length) {
-		const rect = p_Control.$.verMain.getBoundingClientRect();
-
-		const totalWidth = p_Control._dataInfo[0].subData.reduce((p_Previous, p_Data) => p_Previous + (p_Data.width || p_Control.defaultWidth), 0);
-		const totalHeight = p_Control._dataInfo.reduce((p_Previous, p_Data) => p_Previous + (p_Data.height || p_Control.defaultHeight), 0);
-
-		p_Control.$.hscrollcontent.style.width = `${totalWidth}px`;
-		p_Control.$.vscrollcontent.style.height = `${totalHeight}px`;
-
-		const hScrollActive = p_Control.$.hscrollcontent.getBoundingClientRect().width > rect.width;
-		const vScrollActive = p_Control.$.vscrollcontent.getBoundingClientRect().height > rect.height;
-
-		p_Control.$.hscrollarea.style.flexBasis = (hScrollActive) ? "10px" : "0";
-		p_Control.$.vscrollarea.style.flexBasis = (vScrollActive) ? "15px" : "0";
-	}
-}
-
-function updateData(p_Control, p_StartRow, p_StartColumn) {
-	const rows = p_Control.$$$("#rows > .row");
-	rows.forEach((p_Row, p_RowIndex) => {
-		const rowOffset = (p_RowIndex < p_Control.fixedHeaderRows) ? 0 : p_StartRow;
-		const data = p_Control._dataInfo[Math.min(p_RowIndex + rowOffset, p_Control._dataInfo.length - 1)];
-		p_Row.querySelector(".force-height").style.maxHeight = p_Row.style.minHeight = `${data.height | p_Control.defaultHeight}px`;
-		p_Row.classList.toggle("fixed", p_RowIndex < p_Control.fixedHeaderRows);
-		Array.from(p_Row.querySelectorAll(".cell")).forEach((p_Cell, p_CellIndex) => {
-			const columnOffset = (p_CellIndex < p_Control.fixedStartColumns) ? 0 : p_StartColumn;
-			p_Cell.querySelector(".cell-content").innerHTML = data.subData[Math.min(p_CellIndex + columnOffset, data.subData.length - 1)].value;
-			p_Cell.classList.toggle("fixed", p_CellIndex < p_Control.fixedStartColumns);
-			if (p_RowIndex === 0) {
-				p_Cell.style.minWidth = p_Cell.style.maxWidth = `${p_Control._dataInfo[0].subData[p_CellIndex].width || p_Control.defaultWidth}px`;
-			}
-		});
-	});
-	p_Control._startRowIndex = p_StartRow;
-	p_Control._startColumnIndex = p_StartColumn;
-}
-
-function updateVScroll(p_Control, p_ScrollArea) {
-	let dist = 0;
-	let startIndex = 0;
-	for (let index = 0; index < p_Control._dataInfo.length; index++) {
-		const newDist = dist + (p_Control._dataInfo[index].height || p_Control.defaultHeight);
-		if (newDist > p_ScrollArea.scrollTop) {
-			break;
-		}
-		dist = newDist;
-		startIndex = index + 1;
-	}
-
-	updateData(p_Control, startIndex, p_Control._startColumnIndex);
-
-	p_Control.$.contentMain.style.top = (p_Control.snapToCellBoundaries) ? "0" : `-${(dist) ? p_ScrollArea.scrollTop % dist : p_ScrollArea.scrollTop}px`;
-}
-
-function updateHScroll(p_Control, p_ScrollArea) {
-	let dist = 0;
-	let startIndex = 0;
-	for (let index = 0; index < p_Control._dataInfo[0].subData.length; index++) {
-		const newDist = dist + (p_Control._dataInfo[0].subData[index].width || p_Control.defaultWidth);
-		if (newDist > p_ScrollArea.scrollLeft) {
-			break;
-		}
-		dist = newDist;
-		startIndex = index + 1;
-	}
-
-	updateData(p_Control, p_Control._startRowIndex, startIndex);
-
-	p_Control.$.contentMain.style.left = (p_Control.snapToCellBoundaries) ? "0" : `-${(dist) ? p_ScrollArea.scrollLeft % dist : p_ScrollArea.scrollLeft}px`;
-}
-
-export function nestedArrayToDataInfo(p_Data) {
+export function nestedArrayToDataInfo(data) {
 	return {
-		subData: p_Data.map((p_DataValue) => ({ value: p_DataValue })),
+		subData: data.map((dataValue) => ({ value: dataValue })),
 	};
 }
 
-export function arrayToDataInfo(p_Data) {
+export function arrayToDataInfo(data) {
 	return {
-		subData: [{ value: p_Data }],
+		subData: [{ value: data }],
 	};
-}
-
-function dataChanged(p_Control) {
-	const controlRect = p_Control.$.verMain.getBoundingClientRect();
-	p_Control.$.rows.innerHTML = "";
-
-	p_Control._dataInfo = p_Control.data.map(p_Control.dataToDataInfo);
-	let totalHeight = 0;
-	let first = true;
-	let maxColumns = 0;
-
-	for (let index = 0; index < p_Control._dataInfo.length && totalHeight < controlRect.height; index++) {
-		const rowInfo = p_Control._dataInfo[index];
-		const rowTemplate = document.importNode(p_Control.$.row.content, true);
-		const row = rowTemplate.querySelector(".row");
-		const forceHeight = rowTemplate.querySelector(".force-height");
-		const height = rowInfo.height || p_Control.defaultHeight;
-		totalHeight += height;
-		forceHeight.style.minHeight = forceHeight.style.maxHeight = `${height}px`;
-		let totalWidth = 0;
-		for (let columnIndex = 0; columnIndex < rowInfo.subData.length && ((!first && columnIndex <= maxColumns) || (first && totalWidth < controlRect.width + p_Control.defaultWidth)); columnIndex++) { /* eslint-disable-line */
-			const cellInfo = rowInfo.subData[columnIndex];
-			const cellTemplate = document.importNode(p_Control.$.cell.content, true);
-			const cell = cellTemplate.querySelector(".cell");
-
-			if (first) {
-				const width = cellInfo.width || p_Control.defaultWidth;
-				totalWidth += width;
-				cell.style.minWidth = cell.style.maxWidth = `${width}px`;
-				maxColumns = columnIndex;
-			}
-			row.appendChild(cell);
-		}
-
-		p_Control.$.rows.appendChild(rowTemplate);
-		first = false;
-	}
-
-	updateSizes(p_Control);
-	updateData(p_Control, 0, 0);
 }
 
 /**
  * Class to represent the vicowa-data-grid custom element
- * @extends webComponentBaseClass
+ * @extends WebComponentBaseClass
  * @property {array} data The data that will be displayed in the grid
  */
-class VicowaDataGrid extends webComponentBaseClass {
-	static get is() { return componentName; }
+class VicowaDataGrid extends WebComponentBaseClass {
+	#dataInfo;
+	#columns;
+	#startColumnIndex;
+	#startRowIndex;
+	#onGetDataRange;
+
 	constructor() {
 		super();
-		this._dataInfo = [];
-		this._columns = [];
-		this._startColumnIndex = 0;
-		this._startRowIndex = 0;
+		this.#dataInfo = [];
+		this.#columns = [];
+		this.#startColumnIndex = 0;
+		this.#startRowIndex = 0;
 		this.dataToDataInfo = nestedArrayToDataInfo;
-		this.onGetColumnInfo = (p_StartColumn, p_EndColumn) => new Promise((resolve) => {
+		this.onGetColumnInfo = (startColumn, endColumn) => new Promise((resolve) => {
 			// optional value items to provide
 			// headingKey: key to a translatable string
 			// heading: non translatable string
 			// width: width of the column
-			const lastItem = Math.min(this.columns, p_EndColumn);
+			const lastItem = Math.min(this.columns, endColumn);
 			const result = [];
-			for (let index = p_StartColumn; index < lastItem; index++) {
+			for (let index = startColumn; index < lastItem; index++) {
 				result.push({});
 			}
 			resolve(result);
 		});
-		this._onGetDataRange = null;
+		this.#onGetDataRange = null;
 
-		/*	(p_StartRow, p_EndRow, p_StartColumn, p_EndColumn, p_Callback) => new Promise((resolve, reject) => {
+		/*	(startRow, endRow, startColumn, endColumn, callback) => new Promise((resolve, reject) => {
 			reject(new Error('No implementation for onGetDataRange\n' +
 				'You should implement an onGetDataRange function with the following signature: \n' +
-				'onGetDataRange(p_StartRow, p_EndRow, p_StartColumn, p_EndColumn, p_Callback), where: \n' +
-				'p_StartRow is the index of the first row that should be returned\n' +
-				'p_EndRow is the index of the last row to be returned' +
-				'p_StartColumn is the index of the first column to be returned' +
-				'p_EndColumn is the index of the last column to be returned' +
-				'p_Callback is a callback to call with the result of the data retrieval' +
+				'onGetDataRange(startRow, endRow, startColumn, endColumn, callback), where: \n' +
+				'startRow is the index of the first row that should be returned\n' +
+				'endRow is the index of the last row to be returned' +
+				'startColumn is the index of the first column to be returned' +
+				'endColumn is the index of the last column to be returned' +
+				'callback is a callback to call with the result of the data retrieval' +
 				'The data should be in the format: ' +
 				'[{ subData: [{ value: <cell value html>}, ...], height: <optional height of a data row>}, ...]'));
 		});*/
@@ -174,51 +65,163 @@ class VicowaDataGrid extends webComponentBaseClass {
 			data: {
 				type: Array,
 				value: [],
-				observer: dataChanged,
+				observer: (control) => control.#dataChanged(),
 			},
 			defaultHeight: {
 				type: Number,
 				value: 15,
 				reflectToAttribute: true,
-				observer: dataChanged,
+				observer: (control) => control.#dataChanged(),
 			},
 			defaultWidth: {
 				type: Number,
 				value: 50,
 				reflectToAttribute: true,
-				observer: dataChanged,
+				observer: (control) => control.#dataChanged(),
 			},
 			snapToCellBoundaries: {
 				type: Boolean,
 				value: false,
 				reflectToAttribute: true,
-				observer: dataChanged,
+				observer: (control) => control.#dataChanged(),
 			},
 			fixedHeaderRows: {
 				type: Number,
 				value: 0,
 				reflectToAttribute: true,
-				observer: dataChanged,
+				observer: (control) => control.#dataChanged(),
 			},
 			fixedStartColumns: {
 				type: Number,
 				value: 0,
 				reflectToAttribute: true,
-				observer: dataChanged,
+				observer: (control) => control.#dataChanged(),
 			},
 		};
 	}
 
 	attached() {
-		this.$.resizeDetector.addObserver((p_ResizeResult) => {
-			updateSizes(this, p_ResizeResult.newRect);
+		this.$.resizeDetector.addObserver((resizeResult) => {
+			this.#updateSizes(resizeResult.newRect);
 		}, this);
-		this.addAutoEventListener(this.$.vscrollarea, "scroll", () => { updateVScroll(this, this.$.vscrollarea); });
-		this.addAutoEventListener(this.$.hscrollarea, "scroll", () => { updateHScroll(this, this.$.hscrollarea); });
+		this.addAutoEventListener(this.$.vscrollarea, "scroll", () => { this.#updateVScroll(this.$.vscrollarea); });
+		this.addAutoEventListener(this.$.hscrollarea, "scroll", () => { this.#updateHScroll(this.$.hscrollarea); });
 	}
 
 	detached() {
 		this.$.resizeDetector.removeOwner(this);
+	}
+
+	#dataChanged() {
+		const controlRect = this.$.verMain.getBoundingClientRect();
+		this.$.rows.innerHTML = "";
+
+		this.#dataInfo = this.data.map(this.dataToDataInfo);
+		let totalHeight = 0;
+		let first = true;
+		let maxColumns = 0;
+
+		for (let index = 0; index < this.#dataInfo.length && totalHeight < controlRect.height; index++) {
+			const rowInfo = this.#dataInfo[index];
+			const rowTemplate = document.importNode(this.$.row.content, true);
+			const row = rowTemplate.querySelector(".row");
+			const forceHeight = rowTemplate.querySelector(".force-height");
+			const height = rowInfo.height || this.defaultHeight;
+			totalHeight += height;
+			forceHeight.style.minHeight = forceHeight.style.maxHeight = `${height}px`;
+			let totalWidth = 0;
+			for (let columnIndex = 0; columnIndex < rowInfo.subData.length && ((!first && columnIndex <= maxColumns) || (first && totalWidth < controlRect.width + this.defaultWidth)); columnIndex++) { /* eslint-disable-line */
+				const cellInfo = rowInfo.subData[columnIndex];
+				const cellTemplate = document.importNode(this.$.cell.content, true);
+				const cell = cellTemplate.querySelector(".cell");
+
+				if (first) {
+					const width = cellInfo.width || this.defaultWidth;
+					totalWidth += width;
+					cell.style.minWidth = cell.style.maxWidth = `${width}px`;
+					maxColumns = columnIndex;
+				}
+				row.appendChild(cell);
+			}
+
+			this.$.rows.appendChild(rowTemplate);
+			first = false;
+		}
+
+		this.#updateSizes();
+		this.#updateData(0, 0);
+	}
+
+	#updateSizes() {
+		if (this.#dataInfo.length) {
+			const rect = this.$.verMain.getBoundingClientRect();
+
+			const totalWidth = this.#dataInfo[0].subData.reduce((previous, data) => previous + (data.width || this.defaultWidth), 0);
+			const totalHeight = this.#dataInfo.reduce((previous, data) => previous + (data.height || this.defaultHeight), 0);
+
+			this.$.hscrollcontent.style.width = `${totalWidth}px`;
+			this.$.vscrollcontent.style.height = `${totalHeight}px`;
+
+			const hScrollActive = this.$.hscrollcontent.getBoundingClientRect().width > rect.width;
+			const vScrollActive = this.$.vscrollcontent.getBoundingClientRect().height > rect.height;
+
+			this.$.hscrollarea.style.flexBasis = (hScrollActive) ? "10px" : "0";
+			this.$.vscrollarea.style.flexBasis = (vScrollActive) ? "15px" : "0";
+		}
+	}
+
+	#updateData(startRow, startColumn) {
+		const rows = this.$$$("#rows > .row");
+		rows.forEach((row, rowIndex) => {
+			const rowOffset = (rowIndex < this.fixedHeaderRows) ? 0 : startRow;
+			const data = this.#dataInfo[Math.min(rowIndex + rowOffset, this.#dataInfo.length - 1)];
+			row.querySelector(".force-height").style.maxHeight = row.style.minHeight = `${data.height | this.defaultHeight}px`;
+			row.classList.toggle("fixed", rowIndex < this.fixedHeaderRows);
+			Array.from(row.querySelectorAll(".cell")).forEach((cell, cellIndex) => {
+				const columnOffset = (cellIndex < this.fixedStartColumns) ? 0 : startColumn;
+				cell.querySelector(".cell-content").innerHTML = data.subData[Math.min(cellIndex + columnOffset, data.subData.length - 1)].value;
+				cell.classList.toggle("fixed", cellIndex < this.fixedStartColumns);
+				if (rowIndex === 0) {
+					cell.style.minWidth = cell.style.maxWidth = `${this.#dataInfo[0].subData[cellIndex].width || this.defaultWidth}px`;
+				}
+			});
+		});
+		this.#startRowIndex = startRow;
+		this.#startColumnIndex = startColumn;
+	}
+
+	#updateVScroll(scrollArea) {
+		let dist = 0;
+		let startIndex = 0;
+		for (let index = 0; index < this.#dataInfo.length; index++) {
+			const newDist = dist + (this.#dataInfo[index].height || this.defaultHeight);
+			if (newDist > scrollArea.scrollTop) {
+				break;
+			}
+			dist = newDist;
+			startIndex = index + 1;
+		}
+
+		this.#updateData(startIndex, this.#startColumnIndex);
+
+		this.$.contentMain.style.top = (this.snapToCellBoundaries) ? "0" : `-${(dist) ? scrollArea.scrollTop % dist : scrollArea.scrollTop}px`;
+	}
+
+	#updateHScroll(scrollArea) {
+		let dist = 0;
+		let startIndex = 0;
+		for (let index = 0; index < this.#dataInfo[0].subData.length; index++) {
+			const newDist = dist + (this.#dataInfo[0].subData[index].width || this.defaultWidth);
+			if (newDist > scrollArea.scrollLeft) {
+				break;
+			}
+			dist = newDist;
+			startIndex = index + 1;
+		}
+
+		this.#updateData(this.#startRowIndex, startIndex);
+
+		this.$.contentMain.style.left = (this.snapToCellBoundaries) ? "0" : `-${(dist) ? scrollArea.scrollLeft % dist : scrollArea.scrollLeft}px`;
 	}
 
 	static get template() {
@@ -371,4 +374,4 @@ class VicowaDataGrid extends webComponentBaseClass {
 	}
 }
 
-window.customElements.define(componentName, VicowaDataGrid);
+window.customElements.define("vicowa-data-grid", VicowaDataGrid);

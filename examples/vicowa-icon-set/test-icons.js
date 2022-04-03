@@ -1,8 +1,8 @@
-import { webComponentBaseClass } from '../../src/third_party/web-component-base-class/src/webComponentBaseClass.js';
+import { WebComponentBaseClass } from '/third_party/web-component-base-class/src/web-component-base-class.js';
 import '../../src/vicowa-icon-set/vicowa-icon-set.js';
 
 const customElementName = 'test-icons';
-window.customElements.define(customElementName, class extends webComponentBaseClass {
+window.customElements.define(customElementName, class extends WebComponentBaseClass {
 	static get is() { return customElementName; }
 	constructor() { super(); }
 	static get template() {

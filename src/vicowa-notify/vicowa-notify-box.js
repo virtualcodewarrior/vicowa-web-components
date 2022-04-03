@@ -1,4 +1,4 @@
-import { webComponentBaseClass } from "../third_party/web-component-base-class/src/webComponentBaseClass.js";
+import { WebComponentBaseClass } from "/third_party/web-component-base-class/src/web-component-base-class.js";
 
 export const DEFAULT_LEVELS = Object.freeze({
 	INFO: "INFO",
@@ -6,43 +6,27 @@ export const DEFAULT_LEVELS = Object.freeze({
 	ERROR: "ERROR",
 });
 
-const privateData = Symbol("privateData");
-
-function closeBox(control) {
-	control.$.box.classList.add("closing");
-	clearTimeout(control[privateData].timeoutId);
-	control[privateData].timeoutId = undefined;
-}
-function setMessage(control) { control.$.message.string = control.message; }
-function setLevel(control) {
-	Object.values(DEFAULT_LEVELS).filter((level) => level !== control.level).forEach((level) => control.$.box.classList.remove(`level-${level.toLowerCase()}`));
-	control.$.box.classList.add(`level-${control.level.toLowerCase()}`);
-}
-
-const customElementName = "vicowa-notify-box";
-window.customElements.define(customElementName, class extends webComponentBaseClass {
-	static get is() { return customElementName; }
-
+class VicowaNotifyBox extends WebComponentBaseClass {
+	#privateData;
 	constructor() {
 		super();
-		this[privateData] = { timeoutId: undefined };
+		this.#privateData = { timeoutId: undefined };
 	}
 
 	static get properties() {
 		return {
-			message: { type: String, value: "", reflectToAttribute: true, notify: (control) => { setMessage(control); } },
-			level: { type: String, value: DEFAULT_LEVELS.INFO, reflectToAttribute: true, notify: (control) => { setLevel(control); } },
+			message: { type: String, value: "", reflectToAttribute: true, notify: (control) => { control.#setMessage(); } },
+			level: { type: String, value: DEFAULT_LEVELS.INFO, reflectToAttribute: true, notify: (control) => { control.#setLevel(); } },
 			duration: { type: Number, value: 2000, reflectToAttribute: true },
 		};
 	}
 
 	attached() {
-		const controlData = this[privateData];
-		setMessage(this);
-		setLevel(this);
-		controlData.timeoutId = setTimeout(() => closeBox(this), this.duration);
+		this.#setMessage();
+		this.#setLevel();
+		this.#privateData.timeoutId = setTimeout(() => this.#closeBox(), this.duration);
 
-		this.addAutoEventListener(this.$.close, "click", () => closeBox(this));
+		this.addAutoEventListener(this.$.close, "click", () => this.#closeBox());
 		this.addAutoEventListener(this.$.box, "transitionend", () => {
 			if (this.$.box.classList.contains("closing") && !this.$.box.classList.contains("collapsing")) {
 				this.$.box.classList.add("collapsing");
@@ -52,7 +36,18 @@ window.customElements.define(customElementName, class extends webComponentBaseCl
 		});
 	}
 
-	detached() { closeBox(this); }
+	detached() { this.#closeBox(); }
+
+	#closeBox() {
+		this.$.box.classList.add("closing");
+		clearTimeout(this.#privateData.timeoutId);
+		this.#privateData.timeoutId = undefined;
+	}
+	#setMessage() { this.$.message.string = this.message; }
+	#setLevel() {
+		Object.values(DEFAULT_LEVELS).filter((level) => level !== this.level).forEach((level) => this.$.box.classList.remove(`level-${level.toLowerCase()}`));
+		this.$.box.classList.add(`level-${this.level.toLowerCase()}`);
+	}
 
 	static get template() {
 		return `
@@ -126,4 +121,6 @@ window.customElements.define(customElementName, class extends webComponentBaseCl
 			</div>
         `;
 	}
-});
+}
+
+window.customElements.define("vicowa-notify-box", VicowaNotifyBox);

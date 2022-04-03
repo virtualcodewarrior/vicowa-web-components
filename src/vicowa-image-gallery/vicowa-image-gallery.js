@@ -1,48 +1,21 @@
-import { webComponentBaseClass } from "../third_party/web-component-base-class/src/webComponentBaseClass.js";
+import { WebComponentBaseClass } from "/third_party/web-component-base-class/src/web-component-base-class.js";
 import "../vicowa-image-carousel/vicowa-image-carousel.js";
 import "../vicowa-modal/vicowa-modal.js";
 
-const componentName = "vicowa-image-gallery";
-
-async function retrieveImages(p_GalleryControl) {
-	const images = await p_GalleryControl._imageProvider.getImages();
-	images.forEach((p_ImageInfo, p_Index) => {
-		p_GalleryControl._imageInfo[p_Index] = { thumbNail: (p_ImageInfo.thumbNail || p_ImageInfo.fullSize || []).slice(), fullSize: (p_ImageInfo.fullSize || p_ImageInfo.thumbNail || []).slice(), description: p_ImageInfo.description, tooltip: p_ImageInfo.tooltip, alt: p_ImageInfo.alt };
-
-		let tile = document.querySelector(`[carousel-index="${p_Index}]"`);
-		let imageContainer = null;
-		if (!tile) {
-			imageContainer = (tile) ? tile.querySelector("vicowa-image-container") : null;
-			if (!imageContainer) {
-				tile = imageContainer = document.createElement("vicowa-image-container");
-				tile.setAttribute("lazyload", "");
-			}
-			p_GalleryControl.$.images.appendChild(tile);
-		}
-
-		tile.setAttribute("carousel-index", p_Index);
-		imageContainer.alternates = p_GalleryControl._imageInfo[p_Index].thumbNail.slice();
-		imageContainer.description = p_ImageInfo.description;
-		imageContainer.tooltip = p_ImageInfo.tooltip;
-		imageContainer.alt = (p_ImageInfo.alt || p_ImageInfo.description || p_ImageInfo.tooltip || "").trim();
-	});
-
-	p_GalleryControl.$.carousel.images = p_GalleryControl._imageInfo.map((p_Info) => ({ alternates: p_Info.fullSize.slice(), description: p_Info.description, alt: p_Info.alt, tooltip: p_Info.tooltip }));
-}
-
 /**
  * Class that represents the vicowa-input custom element
- * @extends webComponentBaseClass
+ * @extends WebComponentBaseClass
  * @property {array} images The list of images for this carousel, should be an array of { alternates: [string], description: string }
  * @property {boolean} loop Indicates if we loop back to the first picture when we reach the end
  * @property {number} auto If this value is not 0, it indicates the time in seconds to go to the next image automatically. If <= 0 automatic is off
  */
-class VicowaImageGallery extends webComponentBaseClass {
-	static get is() { return componentName; }
+class VicowaImageGallery extends WebComponentBaseClass {
+	#imageProvider;
+	#imageInfo;
 	constructor() {
 		super();
-		this._imageProvider = null;
-		this._imageInfo = [];
+		this.#imageProvider = null;
+		this.#imageInfo = [];
 	}
 
 	static get properties() {
@@ -70,12 +43,12 @@ class VicowaImageGallery extends webComponentBaseClass {
 		};
 	}
 
-	setImageProvider(p_Provider) {
-		this._imageProvider = p_Provider;
+	setImageProvider(provider) {
+		this.#imageProvider = provider;
 
-		this.addAutoEventListener(this.$.images, "click", (p_Event) => {
+		this.addAutoEventListener(this.$.images, "click", (event) => {
 			// get the item under the mouse
-			const container = (p_Event.target) ? p_Event.target.closest("[carousel-index]") : null;
+			const container = (event.target) ? event.target.closest("[carousel-index]") : null;
 			if (container) {
 				this.$.modal.open = true;
 				this.$.carousel.startIndex = parseInt(container.getAttribute("carousel-index"), 10);
@@ -85,9 +58,35 @@ class VicowaImageGallery extends webComponentBaseClass {
 			this.$.modal.open = false;
 		});
 		this.$.images.innerHTML = "";
-		if (this._imageProvider) {
-			retrieveImages(this);
+		if (this.#imageProvider) {
+			this.#retrieveImages();
 		}
+	}
+
+	async #retrieveImages() {
+		const images = await this.#imageProvider.getImages();
+		images.forEach((imageInfo, index) => {
+			this.#imageInfo[index] = { thumbNail: (imageInfo.thumbNail || imageInfo.fullSize || []).slice(), fullSize: (imageInfo.fullSize || imageInfo.thumbNail || []).slice(), description: imageInfo.description, tooltip: imageInfo.tooltip, alt: imageInfo.alt };
+
+			let tile = document.querySelector(`[carousel-index="${index}]"`);
+			let imageContainer = null;
+			if (!tile) {
+				imageContainer = (tile) ? tile.querySelector("vicowa-image-container") : null;
+				if (!imageContainer) {
+					tile = imageContainer = document.createElement("vicowa-image-container");
+					tile.setAttribute("lazyload", "");
+				}
+				this.$.images.appendChild(tile);
+			}
+
+			tile.setAttribute("carousel-index", index);
+			imageContainer.alternates = this.#imageInfo[index].thumbNail.slice();
+			imageContainer.description = imageInfo.description;
+			imageContainer.tooltip = imageInfo.tooltip;
+			imageContainer.alt = (imageInfo.alt || imageInfo.description || imageInfo.tooltip || "").trim();
+		});
+
+		this.$.carousel.images = this.#imageInfo.map((info) => ({ alternates: info.fullSize.slice(), description: info.description, alt: info.alt, tooltip: info.tooltip }));
 	}
 
 	static get template() {
@@ -175,4 +174,4 @@ class VicowaImageGallery extends webComponentBaseClass {
 	}
 }
 
-window.customElements.define(componentName, VicowaImageGallery);
+window.customElements.define("vicowa-image-gallery", VicowaImageGallery);

@@ -9,7 +9,7 @@ module.exports = {
 	],
 	parserOptions: {
 		sourceType: "module",
-		ecmaVersion: 2019,
+		ecmaVersion: 13,
 		ecmaFeatures: {
 			experimentalObjectRestSpread: true,
 		},

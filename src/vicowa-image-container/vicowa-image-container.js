@@ -1,102 +1,21 @@
-import { webComponentBaseClass } from "../third_party/web-component-base-class/src/webComponentBaseClass.js";
+import { WebComponentBaseClass } from "/third_party/web-component-base-class/src/web-component-base-class.js";
 import translator from "../utilities/translate.js";
 import "../vicowa-string/vicowa-string.js";
-import "../third_party/intersection-observer/intersection-observer.js";
-
-/**
- * Handler to be called when the tooltip text is changed
- * @param {VicowaImageContainer} p_ImageControl The control for which this handler is called
- */
-function tooltipChanged(p_ImageControl) {
-	if (p_ImageControl.tooltip) {
-		p_ImageControl.$.image.title = p_ImageControl.tooltip;
-		p_ImageControl.updateTranslation();
-	} else {
-		p_ImageControl.$.image.removeAttribute("title");
-	}
-}
-
-/**
- * Handler to be called when the alt text is changed
- * @param {VicowaImageContainer} p_ImageControl The control for which this handler is called
- */
-function altChanged(p_ImageControl) {
-	if (p_ImageControl.alt) {
-		p_ImageControl.$.image.alt = p_ImageControl.alt;
-		p_ImageControl.updateTranslation();
-	} else {
-		p_ImageControl.$.image.removeAttribute("alt");
-	}
-}
-
-/**
- * Handler to be called when the description text is changed
- * @param {VicowaImageContainer} p_ImageControl The control for which this handler is called
- */
-function descriptionChanged(p_ImageControl) {
-	p_ImageControl.$.description.string = p_ImageControl.description;
-	p_ImageControl.updateTranslation();
-}
-
-function alternatesChanged(p_ImageControl) {
-	if (!p_ImageControl.hasAttribute("lazyload") || p_ImageControl._visible) {
-		const alternates = (p_ImageControl.alternates || []).slice();
-		p_ImageControl.$$$("picture source").forEach((p_Source) => { p_Source.parentNode.removeChild(p_Source); });
-		if (alternates.length || p_ImageControl.src) {
-			if ((!alternates.length || alternates[alternates.length - 1] !== p_ImageControl.src) && p_ImageControl.src) {
-				alternates.push(p_ImageControl.src);
-			}
-			alternates.slice(0, -1).forEach((p_Alternate) => {
-				const source = document.createElement("source");
-				source.setAttribute("srcset", p_Alternate.replace(/ /g, "%20"));
-				if (/\./.test(p_Alternate)) {
-					source.setAttribute("type", `image/${p_Alternate.split(".").slice(-1)[0]}`);
-				}
-				p_ImageControl.$.picture.insertBefore(source, p_ImageControl.$.image);
-			});
-			p_ImageControl.$.image.src = alternates.slice(-1)[0].replace(/ /g, "%20");
-		}
-	}
-}
-
-/**
- * Handler to be called when the src is changed
- * @param {VicowaImageContainer} p_ImageControl The control for which this handler is called
- */
-function srcChanged(p_ImageControl) {
-	alternatesChanged(p_ImageControl);
-}
-
-function lazyloadChanged(p_ImageControl) {
-	if (p_ImageControl.lazyload) {
-		p_ImageControl._intersectionObserver = new IntersectionObserver((p_Entries) => {
-			if (p_Entries[0].intersectionRatio > 0) {
-				// set the image containers
-				p_ImageControl._visible = true;
-				alternatesChanged(p_ImageControl);
-			}
-		});
-
-		p_ImageControl._intersectionObserver.observe(p_ImageControl);
-	} else if (p_ImageControl._intersectionObserver) {
-		p_ImageControl._intersectionObserver.disconnect();
-		p_ImageControl._intersectionObserver = null;
-	}
-}
-
-const componentName = "vicowa-image-container";
+import "/third_party/intersection-observer/intersection-observer.js";
 
 /**
  * Class that represents the vicowa-input custom element
- * @extends webComponentBaseClass
+ * @extends WebComponentBaseClass
  * @property {string} imageTitle The t
  * @property {string} alt The string representation of the value for this instance
  * @property {string} description The label for this input element or empty if it has no label
  * @property {string} src The source of the image
  * @property {string} galleryGroup The gallery group this image belongs to
  */
-class VicowaImageContainer extends webComponentBaseClass {
-	static get is() { return componentName; }
+class VicowaImageContainer extends WebComponentBaseClass {
+	#visible;
+	#activeTranslator;
+	#intersectionObserver;
 	constructor() {
 		super();
 	}
@@ -107,25 +26,25 @@ class VicowaImageContainer extends webComponentBaseClass {
 				type: String,
 				value: "",
 				reflectToAttribute: true,
-				observer: tooltipChanged,
+				observer: (control) => control.#tooltipChanged(),
 			},
 			alt: {
 				type: String,
 				value: "",
 				reflectToAttribute: true,
-				observer: altChanged,
+				observer: (control) => control.#altChanged(),
 			},
 			description: {
 				type: String,
 				value: "",
 				reflectToAttribute: true,
-				observer: descriptionChanged,
+				observer: (control) => control.#descriptionChanged(),
 			},
 			src: {
 				type: String,
 				value: "",
 				reflectToAttribute: true,
-				observer: srcChanged,
+				observer: (control) => control.#srcChanged(),
 			},
 			galleryGroup: {
 				type: String,
@@ -136,25 +55,25 @@ class VicowaImageContainer extends webComponentBaseClass {
 				type: Array,
 				value: [],
 				reflectToAttribute: true,
-				observer: alternatesChanged,
+				observer: (control) => control.#alternatesChanged(),
 			},
 			lazyload: {
 				type: Boolean,
 				value: false,
 				reflectToAttribute: true,
-				observer: lazyloadChanged,
+				observer: (control) => control.#lazyloadChanged(),
 			},
 		});
 	}
 
 	updateTranslation() {
-		this.$.image.title = (this._activeTranslator && this.tooltip) ? this._activeTranslator.translate(this.tooltip).fetch() : this.tooltip;
-		this.$.image.alt = (this._activeTranslator && this.alt) ? this._activeTranslator.translate(this.alt).fetch() : this.alt;
+		this.$.image.title = (this.#activeTranslator && this.tooltip) ? this.#activeTranslator.translate(this.tooltip).fetch() : this.tooltip;
+		this.$.image.alt = (this.#activeTranslator && this.alt) ? this.#activeTranslator.translate(this.alt).fetch() : this.alt;
 	}
 
 	attached() {
-		translator.addTranslationUpdatedObserver((p_Translator) => {
-			this._activeTranslator = p_Translator;
+		translator.addTranslationUpdatedObserver((translatorInstance) => {
+			this.#activeTranslator = translatorInstance;
 			this.updateTranslation();
 		}, this);
 
@@ -163,6 +82,71 @@ class VicowaImageContainer extends webComponentBaseClass {
 				this.onload();
 			}
 		};
+	}
+
+	#tooltipChanged() {
+		if (this.tooltip) {
+			this.$.image.title = this.tooltip;
+			this.updateTranslation();
+		} else {
+			this.$.image.removeAttribute("title");
+		}
+	}
+
+	#altChanged() {
+		if (this.alt) {
+			this.$.image.alt = this.alt;
+			this.updateTranslation();
+		} else {
+			this.$.image.removeAttribute("alt");
+		}
+	}
+
+	#descriptionChanged() {
+		this.$.description.string = this.description;
+		this.updateTranslation();
+	}
+
+	#alternatesChanged() {
+		if (!this.hasAttribute("lazyload") || this.#visible) {
+			const alternates = (this.alternates || []).slice();
+			this.$$$("picture source").forEach((source) => { source.parentNode.removeChild(source); });
+			if (alternates.length || this.src) {
+				if ((!alternates.length || alternates[alternates.length - 1] !== this.src) && this.src) {
+					alternates.push(this.src);
+				}
+				alternates.slice(0, -1).forEach((alternate) => {
+					const source = document.createElement("source");
+					source.setAttribute("srcset", alternate.replace(/ /g, "%20"));
+					if (/\./.test(alternate)) {
+						source.setAttribute("type", `image/${alternate.split(".").slice(-1)[0]}`);
+					}
+					this.$.picture.insertBefore(source, this.$.image);
+				});
+				this.$.image.src = alternates.slice(-1)[0].replace(/ /g, "%20");
+			}
+		}
+	}
+
+	#srcChanged() {
+		this.#alternatesChanged();
+	}
+
+	#lazyloadChanged() {
+		if (this.lazyload) {
+			this.#intersectionObserver = new IntersectionObserver((entries) => {
+				if (entries[0].intersectionRatio > 0) {
+					// set the image containers
+					this.#visible = true;
+					this.#alternatesChanged();
+				}
+			});
+
+			this.#intersectionObserver.observe(this);
+		} else if (this.#intersectionObserver) {
+			this.#intersectionObserver.disconnect();
+			this.#intersectionObserver = null;
+		}
 	}
 
 	static get template() {
@@ -236,4 +220,4 @@ class VicowaImageContainer extends webComponentBaseClass {
 	}
 }
 
-window.customElements.define(componentName, VicowaImageContainer);
+window.customElements.define("vicowa-image-container", VicowaImageContainer);

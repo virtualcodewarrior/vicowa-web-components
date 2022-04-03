@@ -1,46 +1,15 @@
 /* eslint-disable */
 // disable eslint while this code is not done
-
-import { webComponentBaseClass } from "../third_party/web-component-base-class/src/webComponentBaseClass.js";
+import { WebComponentBaseClass } from "/third_party/web-component-base-class/src/web-component-base-class.js";
 import { COMMANDS, SIGNALING_EVENTS, WebRTCHandler } from "../utilities/webrtc.js";
 import { uuidv4 } from "../utilities/utilities.js";
 import { createQuickAccess } from "../../node_modules/web-component-base-class/src/tools.js";
 
-const privateData = Symbol("privateData");
-
-const componentName = "vicowa-p2pconnect";
-
-function handleSignalingChange(p_Control) {
-
-}
-
-function handleIdChange(p_Control) {
-
-}
-
-function createPeer(p_Control, p_PeerInfo) {
-	if (!Array.from(p_Control.$.peers.children).find((p_Child) => p_Child.peerId === p_PeerInfo.id)) {
-		const wrapper = document.createElement("div");
-		wrapper.classList.add("peer");
-		const newElement = (p_Control.$.peerTemplate.assignedNodes().length ? p_Control.$.peerTemplate.assignedNodes() : p_Control.$.peerTemplate.children)[0].content.cloneNode(true);
-		const controls = createQuickAccess(newElement, "name");
-		controls.peer.textContent = p_PeerInfo.displayName;
-		wrapper.appendChild(newElement);
-		p_Control.$.peers.appendChild(wrapper);
-		wrapper.peerId = p_PeerInfo.id;
-	}
-}
-
-function removePeer(p_Control, p_PeerID) {
-	const peer = Array.from(p_Control.$.peers.children).find((p_Child) => p_Child.peerId === p_PeerID);
-	peer.parentNode.removeChild(peer);
-}
-
-class VicowaP2PConnect extends webComponentBaseClass {
-	static get is() { return componentName; }
+class VicowaP2PConnect extends WebComponentBaseClass {
+	#privateData;
 	constructor() {
 		super();
-		this[privateData] = {
+		this.#privateData = {
 			webRTC: null,
 			signaling: null,
 			channelGuid: null,
@@ -64,32 +33,58 @@ class VicowaP2PConnect extends webComponentBaseClass {
 		};
 	}
 
-	set signalingHandler(p_Handler) {
-		this[privateData].webRTC = new WebRTCHandler(p_Handler);
-		p_Handler.addObserver(SIGNALING_EVENTS.PEER_LIST, (p_Peers) => {
-			p_Peers.forEach((p_PeerInfo) => {
-				createPeer(this, p_PeerInfo);
+	set signalingHandler(handler) {
+		this.#privateData.webRTC = new WebRTCHandler(handler);
+		handler.addObserver(SIGNALING_EVENTS.PEER_LIST, (peers) => {
+			peers.forEach((peerInfo) => {
+				createPeer(this, peerInfo);
 			});
 		});
-		p_Handler.addObserver(SIGNALING_EVENTS.PEER_UPDATE, (p_Update) => {
-			switch (p_Update.update) {
-				case "add": createPeer(this, p_Update.data); break;
-				case "remove": removePeer(this, p_Update.data.id); break;
+		handler.addObserver(SIGNALING_EVENTS.PEER_UPDATE, (update) => {
+			switch (update.update) {
+				case "add": createPeer(this, update.data); break;
+				case "remove": removePeer(this, update.data.id); break;
 			}
 		});
-		this[privateData].signaling = p_Handler;
-		this[privateData].signaling.send({ command: COMMANDS.peerList });
+		this.#privateData.signaling = handler;
+		this.#privateData.signaling.send({ command: COMMANDS.peerList });
 	}
 
 	detached() {
 	}
 
 	attached() {
-		const controlData = this[privateData];
+		const controlData = this.#privateData;
 		this.addAutoEventListener(this.$.connect, "click", () => {
 			controlData.channelGuid = uuidv4();
 			controlData.signaling.send({ command: COMMANDS.inviteChannel, channel: controlData.channelGuid, peers: [] });
 		});
+	}
+
+	#handleSignalingChange() {
+
+	}
+
+	#handleIdChange() {
+
+	}
+
+	#createPeer(peerInfo) {
+		if (!Array.from(this.$.peers.children).find((child) => child.peerId === peerInfo.id)) {
+			const wrapper = document.createElement("div");
+			wrapper.classList.add("peer");
+			const newElement = (this.$.peerTemplate.assignedNodes().length ? this.$.peerTemplate.assignedNodes() : this.$.peerTemplate.children)[0].content.cloneNode(true);
+			const controls = createQuickAccess(newElement, "name");
+			controls.peer.textContent = peerInfo.displayName;
+			wrapper.appendChild(newElement);
+			this.$.peers.appendChild(wrapper);
+			wrapper.peerId = peerInfo.id;
+		}
+	}
+
+	#removePeer(peerID) {
+		const peer = Array.from(this.$.peers.children).find((child) => child.peerId === peerID);
+		peer.parentNode.removeChild(peer);
 	}
 
 	static get template() {
@@ -114,4 +109,4 @@ class VicowaP2PConnect extends webComponentBaseClass {
 	}
 }
 
-window.customElements.define(componentName, VicowaP2PConnect);
+window.customElements.define("vicowa-p2pconnect", VicowaP2PConnect);

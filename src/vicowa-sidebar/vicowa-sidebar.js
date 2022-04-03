@@ -1,18 +1,15 @@
-import { webComponentBaseClass } from "../third_party/web-component-base-class/src/webComponentBaseClass.js";
-
-const componentName = "vicowa-sidebar";
+import { WebComponentBaseClass } from "/third_party/web-component-base-class/src/web-component-base-class.js";
 
 /**
  * Class that represents the vicowa-sidebar custom element
- * @extends webComponentBaseClass
+ * @extends WebComponentBaseClass
  * @property {string} location The location where the expandable bar is located.This can be one of left,right,top,bottom
  * @property {boolean} expanded Indicate if the bar should be expanded or not
  * @property {boolean} resizeable Indicate if the bar is user resizeable
  * @property {boolean} floating Indicate if the bar if in floating (on top) mode
  * @property {boolean} forceNonFloating Indicate that the bar will not switch automatically to floating when running in a small size (like mobile phone)
  */
-class VicowaSideBar extends webComponentBaseClass {
-	static get is() { return componentName; }
+class VicowaSideBar extends WebComponentBaseClass {
 	constructor() {
 		super();
 	}
@@ -53,8 +50,8 @@ class VicowaSideBar extends webComponentBaseClass {
 		let vertical = false;
 		let invertFactor = 1;
 		let maxSize = 0;
-		const handleDrag = (p_Event) => {
-			const dragPos = (vertical) ? p_Event.clientY : p_Event.clientX;
+		const handleDrag = (event) => {
+			const dragPos = (vertical) ? event.clientY : event.clientX;
 			const delta = startPos - dragPos;
 			const newSize = startSize - (invertFactor * delta);
 			this.$.sideContent.style.flexBasis = `${Math.min(maxSize, Math.max(0, newSize))}px`;
@@ -68,10 +65,10 @@ class VicowaSideBar extends webComponentBaseClass {
 				this.$.sideContent.style.width = `${Math.min(maxSize, Math.max(0, newSize))}px`;
 			}
 		};
-		const handleTouchDrag = (p_Event) => {
-			p_Event.clientX = p_Event.touches[0].clientX;
-			p_Event.clientY = p_Event.touches[0].clientY;
-			handleDrag(p_Event);
+		const handleTouchDrag = (event) => {
+			event.clientX = event.touches[0].clientX;
+			event.clientY = event.touches[0].clientY;
+			handleDrag(event);
 		};
 
 		const handleDragEnd = () => {
@@ -82,7 +79,7 @@ class VicowaSideBar extends webComponentBaseClass {
 			this.removeAutoEventListener(window, "touchmove", handleTouchDrag);
 		};
 
-		const handleDragStart = (p_Event) => {
+		const handleDragStart = (event) => {
 			vertical = this.location === "top" || this.location === "bottom";
 			invertFactor = (this.location === "bottom" || this.location === "right") ? -1 : 1;
 			maxSize = (vertical) ? this.$.main.getBoundingClientRect().height : this.getBoundingClientRect().width;
@@ -92,13 +89,13 @@ class VicowaSideBar extends webComponentBaseClass {
 			this.addAutoEventListener(window, "mousemove", handleDrag);
 			this.addAutoEventListener(window, "touchmove", handleTouchDrag);
 			this.classList.toggle("resizing", true);
-			startPos = (vertical) ? p_Event.clientY : p_Event.clientX;
+			startPos = (vertical) ? event.clientY : event.clientX;
 			console.log(`start ${startPos}`);
 		};
-		const handleTouchDragStart = (p_Event) => {
-			p_Event.clientX = p_Event.touches[0].clientX;
-			p_Event.clientY = p_Event.touches[0].clientY;
-			handleDragStart(p_Event);
+		const handleTouchDragStart = (event) => {
+			event.clientX = event.touches[0].clientX;
+			event.clientY = event.touches[0].clientY;
+			handleDragStart(event);
 		};
 
 		this.addAutoEventListener(this.$.resizeHandle, "mousedown", handleDragStart);
@@ -351,4 +348,4 @@ class VicowaSideBar extends webComponentBaseClass {
 	}
 }
 
-window.customElements.define(componentName, VicowaSideBar);
+window.customElements.define("vicowa-sidebar", VicowaSideBar);

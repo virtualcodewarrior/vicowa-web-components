@@ -1,30 +1,16 @@
-import { webComponentBaseClass } from "../third_party/web-component-base-class/src/webComponentBaseClass.js";
+import { WebComponentBaseClass } from "/third_party/web-component-base-class/src/web-component-base-class.js";
 import "../vicowa-icon-set/vicowa-icon-set.js";
-
-const componentName = "vicowa-icon";
-
-function iconChanged(p_IconControl) {
-	p_IconControl.$.iconContainer.innerHTML = "";
-	p_IconControl.$.iconSource.onAttached = () => {
-		p_IconControl.$.iconSource.constructor.getIcon(p_IconControl, p_IconControl.icon, (p_Icon) => {
-			p_IconControl.$.iconContainer.innerHTML = "";
-			if (p_Icon) {
-				p_IconControl.$.iconContainer.appendChild(p_Icon.cloneNode(true));
-			}
-		});
-	};
-}
 
 /**
  * Class to represent the vicowa-icon custom element
- * @extends webComponentBaseClass
+ * @extends WebComponentBaseClass
  * @property {string} icon Name of the icon to use this should be in the form <iconSet>:<iconName> (e.g general:file)
  */
-class VicowaIcon extends webComponentBaseClass {
-	static get is() { return componentName; }
+class VicowaIcon extends WebComponentBaseClass {
+	#activeTranslator;
 	constructor() {
 		super();
-		this._activeTranslator = null;
+		this.#activeTranslator = null;
 	}
 
 	static get properties() {
@@ -33,13 +19,25 @@ class VicowaIcon extends webComponentBaseClass {
 				type: String,
 				reflectToAttribute: true,
 				value: "",
-				observer: iconChanged,
+				observer: (control) => control.#iconChanged(),
 			},
 		};
 	}
 
 	detached() {
 		this.$.iconSource.constructor.removeCallback(this);
+	}
+
+	#iconChanged() {
+		this.$.iconContainer.innerHTML = "";
+		this.$.iconSource.onAttached = () => {
+			this.$.iconSource.constructor.getIcon(this, this.icon, (icon) => {
+				this.$.iconContainer.innerHTML = "";
+				if (icon) {
+					this.$.iconContainer.appendChild(icon.cloneNode(true));
+				}
+			});
+		};
 	}
 
 	static get template() {
@@ -73,4 +71,4 @@ class VicowaIcon extends webComponentBaseClass {
 	}
 }
 
-window.customElements.define(componentName, VicowaIcon);
+window.customElements.define("vicowa-icon", VicowaIcon);

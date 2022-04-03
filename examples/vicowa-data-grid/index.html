@@ -38,7 +38,7 @@
 		rowData.push(`${columnIndex}-rstuvwxyz`);
 	}
 	for (let index = 0; index < 1000; index++) {
-		data.push([index].concat(rowData));
+		data.push([index].concat(rowData.map((dat) => `${index}${dat}`)));
 	}
 	dataGrid1.onAttached = () => {
 		dataGrid1.data = data;

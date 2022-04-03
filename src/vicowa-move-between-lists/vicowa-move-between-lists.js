@@ -1,35 +1,7 @@
-import { webComponentBaseClass } from "../third_party/web-component-base-class/src/webComponentBaseClass.js";
+import { WebComponentBaseClass } from "/third_party/web-component-base-class/src/web-component-base-class.js";
 import "../vicowa-input/vicowa-input.js";
 
-function updateFirst(p_Control) {
-	const regExp = (p_Control.$.firstFilter.value.trim()) ? new RegExp(p_Control.$.firstFilter.value.trim()) : null;
-	p_Control.$.firstList.innerHTML = "";
-	p_Control.first.filter((p_Item) => !regExp || regExp.test(p_Item.displayName)).sort().forEach((p_Item) => {
-		const option = document.createElement("option");
-		option.item = p_Item;
-		option.textContent = p_Item.displayName;
-		p_Control.$.firstList.appendChild(option);
-	});
-}
-function updateSecond(p_Control) {
-	const regExp = (p_Control.$.secondFilter.value.trim()) ? new RegExp(p_Control.$.secondFilter.value.trim()) : null;
-	p_Control.$.secondList.innerHTML = "";
-	p_Control.second.filter((p_Item) => !regExp || regExp.test(p_Item.displayName)).sort().forEach((p_Item) => {
-		const option = document.createElement("option");
-		option.item = p_Item;
-		option.textContent = p_Item.displayName;
-		p_Control.$.secondList.appendChild(option);
-	});
-}
-
-function titleUpdated(p_Control) {
-	p_Control.$.firstTitle.string = p_Control.firstTitle;
-	p_Control.$.secondTitle.string = p_Control.secondTitle;
-}
-
-const customElementName = "vicowa-move-between-lists";
-class VicowaMoveBetweenLists extends webComponentBaseClass {
-	static get is() { return customElementName; }
+class VicowaMoveBetweenLists extends WebComponentBaseClass {
 	constructor() { super(); }
 	static get properties() {
 		return {
@@ -37,30 +9,30 @@ class VicowaMoveBetweenLists extends webComponentBaseClass {
 				type: String,
 				value: "",
 				reflectToAttribute: true,
-				observer: titleUpdated,
+				observer: (control) => control.#titleUpdated(),
 			},
 			secondTitle: {
 				type: String,
 				value: "",
 				reflectToAttribute: true,
-				observer: titleUpdated,
+				observer: (control) => control.#titleUpdated(),
 			},
 			first: {
 				type: Array,
 				value: [],
-				observer: updateFirst,
+				observer: (control) => control.#updateFirst(),
 			},
 			second: {
 				type: Array,
 				value: [],
-				observer: updateSecond,
+				observer: (control) => control.#updateSecond(),
 			},
 		};
 	}
 
 	attached() {
-		this.$.firstFilter.onChange = () => { updateFirst(this); };
-		this.$.secondFilter.onChange = () => { updateSecond(this); };
+		this.$.firstFilter.onChange = () => { this.#updateFirst(); };
+		this.$.secondFilter.onChange = () => { this.#updateSecond(); };
 
 		const updateStates = () => {
 			this.$.secondToFirst.classList.toggle("disabled", !this.$.secondList.selectedOptions.length);
@@ -74,8 +46,8 @@ class VicowaMoveBetweenLists extends webComponentBaseClass {
 
 		this.addAutoEventListener(this.$.firstToSecond, "click", () => {
 			const selected = Array.from(this.$.firstList.selectedOptions);
-			this.second = this.second.concat(selected.map((p_Option) => p_Option.item));
-			this.first = this.first.filter((p_Item) => !selected.find((p_Option) => p_Option.item === p_Item));
+			this.second = this.second.concat(selected.map((option) => option.item));
+			this.first = this.first.filter((item) => !selected.find((option) => option.item === item));
 
 			updateStates();
 			if (this.onChange) {
@@ -84,14 +56,40 @@ class VicowaMoveBetweenLists extends webComponentBaseClass {
 		});
 		this.addAutoEventListener(this.$.secondToFirst, "click", () => {
 			const selected = Array.from(this.$.secondList.selectedOptions);
-			this.first = this.first.concat(selected.map((p_Option) => p_Option.item));
-			this.second = this.second.filter((p_Item) => !selected.find((p_Option) => p_Option.item === p_Item));
+			this.first = this.first.concat(selected.map((option) => option.item));
+			this.second = this.second.filter((item) => !selected.find((option) => option.item === item));
 
 			updateStates();
 			if (this.onChange) {
 				this.onChange();
 			}
 		});
+	}
+
+	#updateFirst() {
+		const regExp = (this.$.firstFilter.value.trim()) ? new RegExp(this.$.firstFilter.value.trim()) : null;
+		this.$.firstList.innerHTML = "";
+		this.first.filter((item) => !regExp || regExp.test(item.displayName)).sort().forEach((item) => {
+			const option = document.createElement("option");
+			option.item = item;
+			option.textContent = item.displayName;
+			this.$.firstList.appendChild(option);
+		});
+	}
+	#updateSecond() {
+		const regExp = (this.$.secondFilter.value.trim()) ? new RegExp(this.$.secondFilter.value.trim()) : null;
+		this.$.secondList.innerHTML = "";
+		this.second.filter((item) => !regExp || regExp.test(item.displayName)).sort().forEach((item) => {
+			const option = document.createElement("option");
+			option.item = item;
+			option.textContent = item.displayName;
+			this.$.secondList.appendChild(option);
+		});
+	}
+
+	#titleUpdated() {
+		this.$.firstTitle.string = this.firstTitle;
+		this.$.secondTitle.string = this.secondTitle;
 	}
 
 	static get template() {
@@ -160,4 +158,4 @@ class VicowaMoveBetweenLists extends webComponentBaseClass {
 	}
 }
 
-window.customElements.define(customElementName, VicowaMoveBetweenLists);
+window.customElements.define("vicowa-move-between-lists", VicowaMoveBetweenLists);

@@ -1,18 +1,15 @@
-import { webComponentBaseClass } from "../third_party/web-component-base-class/src/webComponentBaseClass.js";
+import { WebComponentBaseClass } from "/third_party/web-component-base-class/src/web-component-base-class.js";
 
 // all icon sets will go here, there should be only one instance in the current web page
 const iconSets = {};
 const callbacks = {};
 
-const componentName = "vicowa-icon-set";
-
 /**
  * Class that represents the vicowa-icon-set custom element
- * @extends webComponentBaseClass
+ * @extends WebComponentBaseClass
  * @property {string} name The name of this icon set
  */
-class VicowaIconSet extends webComponentBaseClass {
-	static get is() { return componentName; }
+class VicowaIconSet extends WebComponentBaseClass {
 	constructor() {
 		super();
 	}
@@ -30,17 +27,17 @@ class VicowaIconSet extends webComponentBaseClass {
 	attached() {
 		const activeSet = iconSets[this.name] = iconSets[this.name] || {};
 		const childNodes = Array.from(this.$.icons.assignedNodes());
-		Array.from(childNodes).forEach((p_ChildNode) => {
-			Array.from(p_ChildNode.querySelectorAll("defs > g[id]")).forEach((p_SVGElement) => {
-				activeSet[p_SVGElement.id] = p_SVGElement;
+		Array.from(childNodes).forEach((childNode) => {
+			Array.from(childNode.querySelectorAll("defs > g[id]")).forEach((svgElement) => {
+				activeSet[svgElement.id] = svgElement;
 			});
 		});
 		const activeSetCallbacks = callbacks[this.name];
 		if (activeSetCallbacks) {
-			Object.keys(activeSetCallbacks).forEach((p_Key) => {
-				if (activeSet[p_Key] && activeSetCallbacks[p_Key]) {
-					activeSetCallbacks[p_Key].forEach((p_CallbackInfo) => {
-						p_CallbackInfo.callback(activeSet[p_Key]);
+			Object.keys(activeSetCallbacks).forEach((key) => {
+				if (activeSet[key] && activeSetCallbacks[key]) {
+					activeSetCallbacks[key].forEach((callbackInfo) => {
+						callbackInfo.callback(activeSet[key]);
 					});
 				}
 			});
@@ -49,33 +46,33 @@ class VicowaIconSet extends webComponentBaseClass {
 
 	/**
 	 * Retrieve an icon from the given icon set
-	 * @param {object} p_CallbackOwner The owner of the callback
-	 * @param {string} p_Name Name of the icon, should be in the format namespace:iconName
-	 * @param {function} p_Callback Function that will be called when the icon is found or changes
+	 * @param {object} callbackOwner The owner of the callback
+	 * @param {string} name Name of the icon, should be in the format namespace:iconName
+	 * @param {function} callback Function that will be called when the icon is found or changes
 	 */
-	static getIcon(p_CallbackOwner, p_Name, p_Callback) {
-		const parts = p_Name ? p_Name.trim().split(":") : [];
+	static getIcon(callbackOwner, name, callback) {
+		const parts = name ? name.trim().split(":") : [];
 
 		if (parts.length > 1) {
 			const iconInfo = { group: parts[0], name: parts[1] };
 			callbacks[iconInfo.group] = callbacks[iconInfo.group] || {};
 			const callbacksByName = callbacks[iconInfo.group][iconInfo.name] = callbacks[iconInfo.group][iconInfo.name] || [];
-			if (!callbacksByName.find((p_CallbackInfo) => p_CallbackInfo.owner === p_CallbackOwner && p_CallbackInfo.callback === p_Callback)) {
-				callbacksByName.push({ owner: p_CallbackOwner, callback: p_Callback });
+			if (!callbacksByName.find((callbackInfo) => callbackInfo.owner === callbackOwner && callbackInfo.callback === callback)) {
+				callbacksByName.push({ owner: callbackOwner, callback });
 			}
 			if ((iconSets[iconInfo.group])) {
-				p_Callback(iconSets[iconInfo.group][iconInfo.name]);
+				callback(iconSets[iconInfo.group][iconInfo.name]);
 			}
-		} else if (p_Name) {
+		} else if (name) {
 			throw new Error("icon names should have the format group:name");
 		}
 	}
 
-	static removeCallback(p_CallbackOwner) {
-		Object.keys(callbacks).forEach((p_GroupKey) => {
-			const group = callbacks[p_GroupKey];
-			Object.keys(group).forEach((p_NameKey) => {
-				group[p_NameKey] = group[p_NameKey].filter((p_CallbackInfo) => p_CallbackInfo.owner === p_CallbackOwner);
+	static removeCallback(callbackOwner) {
+		Object.keys(callbacks).forEach((groupKey) => {
+			const group = callbacks[groupKey];
+			Object.keys(group).forEach((nameKey) => {
+				group[nameKey] = group[nameKey].filter((callbackInfo) => callbackInfo.owner === callbackOwner);
 			});
 		});
 	}
@@ -92,4 +89,4 @@ class VicowaIconSet extends webComponentBaseClass {
 	}
 }
 
-window.customElements.define(componentName, VicowaIconSet);
+window.customElements.define("vicowa-icon-set", VicowaIconSet);

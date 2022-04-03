@@ -1,4 +1,4 @@
-import { createQuickAccess } from "../../src/third_party/web-component-base-class/src/tools.js";
+import { createQuickAccess } from "/third_party/web-component-base-class/src/tools.js";
 import { CAMERA_TYPES } from "../../src/vicowa-webgl/vicowa-webgl-definitions.js";
 import { default as VicowaWebGLManipulationExtension, MANIPULATOR_TYPES } from "../../src/vicowa-webgl/manipulation-extension.js";
 
