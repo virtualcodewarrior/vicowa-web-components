@@ -1,22 +1,12 @@
 /* eslint-disable */
 // disable eslint while this code is not done
+import { WebComponentBaseClass } from "/third_party/web-component-base-class/src/web-component-base-class.js";
 
-import { webComponentBaseClass } from "../third_party/web-component-base-class/src/webComponentBaseClass.js";
-import translator from "../utilities/translate.js";
-
-const privateData = Symbol("privateData");
-
-const componentName = "vicowa-p2pfiletransfer";
-
-function handleSignalingChange(p_Control) {
-
-}
-
-class VicowaP2pfiletransfer extends webComponentBaseClass {
-	static get is() { return componentName; }
+class VicowaP2pfiletransfer extends WebComponentBaseClass {
+	#privateData;
 	constructor() {
 		super();
-		this[privateData] = {
+		this.#privateData = {
 		};
 	}
 
@@ -26,7 +16,7 @@ class VicowaP2pfiletransfer extends webComponentBaseClass {
 				type: String,
 				value: "",
 				reflectToAttribute: true,
-				observer: handleSignalingChange,
+				observer: (control) => control.#handleSignalingChange(),
 			},
 		};
 	}
@@ -35,6 +25,10 @@ class VicowaP2pfiletransfer extends webComponentBaseClass {
 	}
 
 	attached() {
+	}
+
+	#handleSignalingChange() {
+
 	}
 
 	static get template() {
@@ -46,4 +40,4 @@ class VicowaP2pfiletransfer extends webComponentBaseClass {
 	}
 }
 
-window.customElements.define(componentName, VicowaP2pfiletransfer);
+window.customElements.define("vicowa-p2pfiletransfer", VicowaP2pfiletransfer);

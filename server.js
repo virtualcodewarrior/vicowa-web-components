@@ -26,7 +26,7 @@ const port = process.env.PORT || 8989;
 	app.use(express.json());
 
 	app.get("/third_party/*", (req, res) => {
-		res.sendFile(path.resolve(`${__dirname}/../node_modules/${req.params[0]}`));
+		res.sendFile(path.resolve(`${__dirname}/node_modules/${req.params[0]}`));
 	});
 
 	// if the requested file actually exists, return it but if it does not exist, hand it over to the next route

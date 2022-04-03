@@ -1,9 +1,6 @@
-import { webComponentBaseClass } from "../third_party/web-component-base-class/src/webComponentBaseClass.js";
+import { WebComponentBaseClass } from "/third_party/web-component-base-class/src/web-component-base-class.js";
 
-const componentName = "vicowa-web-components-icons";
-
-class VicowaWebComponentsIcons extends webComponentBaseClass {
-	static get is() { return componentName; }
+class VicowaWebComponentsIcons extends WebComponentBaseClass {
 	constructor() { super(); }
 
 	static get template() {
@@ -19,4 +16,4 @@ class VicowaWebComponentsIcons extends webComponentBaseClass {
 	}
 }
 
-window.customElements.define(componentName, VicowaWebComponentsIcons);
+window.customElements.define("vicowa-web-components-icons", VicowaWebComponentsIcons);

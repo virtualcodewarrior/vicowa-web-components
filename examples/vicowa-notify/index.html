@@ -107,7 +107,7 @@
 	<script type="module">
 		import translator from '../../src/utilities/translate.js';
 		import { DEFAULT_LOCATIONS } from "../../src/vicowa-notify/vicowa-notify.js";
-		import { createQuickAccess } from '../../src/third_party/web-component-base-class/src/tools.js';
+		import { createQuickAccess } from '/third_party/web-component-base-class/src/tools.js';
 
 		const elements = createQuickAccess(document, 'id');
 		const { notify, english, dutch, info, warning, error, someControl, xLocation, yLocation, absolutePositioned, durationNumber, duration } = elements;
@@ -167,6 +167,7 @@
 		absolutePositioned.addEventListener('click', () => {
 			notify.locationX = xLocation.value;
 			notify.locationY = yLocation.value;
+			notify.alignControl = undefined;
 			notify.info(`now positioned at ${xLocation.value}, ${yLocation.value}`);
 		});
 

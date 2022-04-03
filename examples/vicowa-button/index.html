@@ -158,15 +158,15 @@
 	</div>
 	<script type="module">
 		import translator from '../../src/utilities/translate.js';
-		import { webComponentBaseClass  } from '../../src/third_party/web-component-base-class/src/webComponentBaseClass.js';
-		import { createQuickAccess } from '../../src/third_party/web-component-base-class/src/tools.js';
+		import { WebComponentBaseClass  } from '/third_party/web-component-base-class/src/web-component-base-class.js';
+		import { createQuickAccess } from '/third_party/web-component-base-class/src/tools.js';
 
 		const elements = createQuickAccess(document, 'id');
 
 		// create a web component on the fly to show nested button theming
 		const componentName = 'test-container';
 		const template = document.querySelector(`#${componentName}`);
-		window.customElements.define(componentName, class extends webComponentBaseClass {
+		window.customElements.define(componentName, class extends WebComponentBaseClass {
 			static get is() { return componentName; }
 			constructor() { super(); }
 			attached() {

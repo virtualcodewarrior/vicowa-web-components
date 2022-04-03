@@ -1,96 +1,18 @@
-import { webComponentBaseClass } from "../third_party/web-component-base-class/src/webComponentBaseClass.js";
+import { WebComponentBaseClass } from "/third_party/web-component-base-class/src/web-component-base-class.js";
 import "../vicowa-string/vicowa-string.js";
 import "../vicowa-icon/vicowa-icon.js";
 import "../vicowa-resize-detector/vicowa-resize-detector.js";
 
-const componentName = "vicowa-hierarchical-palette";
-
-const privateData = Symbol("privateData");
 const itemData = Symbol("itemData");
 
-function updateScrollButtons(p_Control) {
-	const controlData = p_Control[privateData];
-	const size = (p_Control.horizontal) ? p_Control.$.container.offsetWidth : p_Control.$.container.offsetHeight;
-	controlData.pageSize = Math.floor(size / p_Control.itemSize);
-	p_Control.$.moveToStart.classList.toggle("disabled", (p_Control.horizontal) ? p_Control.$.itemsContainer.scrollLeft === 0 : p_Control.$.itemsContainer.scrollTop === 0);
-	p_Control.$.moveToEnd.classList.toggle("disabled", (p_Control.horizontal) ? p_Control.$.itemsContainer.scrollLeft >= p_Control.$.itemsContainer.scrollWidth - p_Control.$.itemsContainer.offsetWidth : p_Control.$.itemsContainer.scrollTop >= p_Control.$.itemsContainer.scrollHeight - p_Control.$.itemsContainer.offsetHeight);
-	p_Control.$.back.classList.toggle("disabled", controlData.path.length === 0);
-}
-
-async function fillPaletteItems(p_Control, p_Target) {
-	p_Target = p_Target || p_Control.$.itemsContainer;
-	if (p_Control.getData) {
-		if (p_Control.horizontal) {
-			p_Control.style.height = `${p_Control.paletteSize}px`;
-			p_Control.$.containersContainer.style.height = `${p_Control.paletteSize * 3}px`;
-			p_Control.$.containersContainer.style.top = `${-p_Control.paletteSize}px`;
-		} else {
-			p_Control.style.width = `${p_Control.paletteSize}px`;
-			p_Control.$.containersContainer.style.width = `${p_Control.paletteSize * 3}px`;
-			p_Control.$.containersContainer.style.left = `${-p_Control.paletteSize}px`;
-		}
-		const size = (p_Control.horizontal) ? p_Control.$.container.offsetWidth : p_Control.$.container.offsetHeight;
-		const controlData = p_Control[privateData];
-		controlData.fillSequenceIndex++;
-		p_Control.itemSize = Math.max(p_Control.itemSize, 10); // minimal size = 10px
-		controlData.pageSize = Math.ceil(size / p_Control.itemSize) + 6; // 3 additional on each side
-		controlData.items = await p_Control.getData((controlData.activePaletteRoot !== "root") ? controlData.activePaletteRoot : null, 0, 100);
-		while (controlData.items.items.length < controlData.items.totalItemCount) {
-			const additionalItems = await p_Control.getData((controlData.activePaletteRoot !== "root") ? controlData.activePaletteRoot : null, controlData.items.items.length, 100);
-			controlData.items.items = controlData.items.items.concat(additionalItems.items);
-		}
-
-		p_Target.innerHTML = "";
-		Array.from(p_Control.querySelectorAll(`[slot^="item-slot-${controlData.fillSequenceIndex}-"]`)).forEach((p_Item) => p_Control.removeChild(p_Item));
-		controlData.items.items.forEach((p_Item, p_Index) => {
-			const itemContainer = document.importNode(p_Control.$.itemTemplate.content, true).querySelector('div[name="item-container"]');
-			itemContainer[itemData] = p_Item;
-			itemContainer.style.width = (p_Control.horizontal) ? `${p_Control.itemSize}px` : "";
-			itemContainer.style.height = (p_Control.horizontal) ? "" : `${p_Control.itemSize}px`;
-			if (p_Item.subLevel) {
-				itemContainer.classList.add("sub-level");
-			}
-			const itemContent = p_Control.factory(p_Item);
-			const slot = itemContainer.querySelector("slot");
-			slot.name = `item-slot-${controlData.fillSequenceIndex}-${p_Index}`;
-			itemContent.slot = slot.name;
-			p_Control.appendChild(itemContent);
-			// itemContainer.appendChild(itemContent);
-			p_Target.appendChild(itemContainer);
-			itemContainer.addEventListener("click", async() => {
-				if (p_Item.subLevel) {
-					p_Control.$.back.setAttribute("target", controlData.activePaletteRoot || "root");
-					controlData.path.push({
-						target: controlData.activePaletteRoot || "root",
-						scrollOffset: (p_Control.horizontal) ? p_Control.$.itemsContainer.scrollLeft : p_Control.$.itemsContainer.scrollTop,
-					});
-					controlData.activePaletteRoot = p_Item.path;
-					await fillPaletteItems(p_Control, p_Control.$.nextItemsContainer);
-					p_Control.$.containersContainer.classList.add("animate");
-					p_Control.$.nextItemsContainer.scrollLeft = p_Control.$.nextItemsContainer.scrollTop = 0;
-
-					if (p_Control.horizontal) {
-						p_Control.$.containersContainer.style.top = `${-p_Control.paletteSize * 2}px`;
-					} else {
-						p_Control.$.containersContainer.style.left = `${-p_Control.paletteSize * 2}px`;
-					}
-				} else if (p_Control.onClick) {
-					p_Control.onClick(p_Item);
-				}
-			});
-		});
-	}
-	updateScrollButtons(p_Control);
-}
-
-class VicowaHierarchicalPalette extends webComponentBaseClass {
-	static get is() { return componentName; }
+class VicowaHierarchicalPalette extends WebComponentBaseClass {
+	#privateData;
 
 	constructor() {
 		super();
 		this.getData = null;
 		this.factory = null;
-		this[privateData] = {
+		this.#privateData = {
 			activePaletteRoot: null,
 			pageSize: 10,
 			items: { items: [], totalItemCount: 0 },
@@ -105,27 +27,27 @@ class VicowaHierarchicalPalette extends webComponentBaseClass {
 				type: Number,
 				value: 50,
 				reflectToAttribute: true,
-				observer: fillPaletteItems,
+				observer: (control) => control.#fillPaletteItems(),
 			},
 			itemSize: {
 				type: Number,
 				value: 50,
 				reflectToAttribute: true,
-				observer: fillPaletteItems,
+				observer: (control) => control.#fillPaletteItems(),
 			},
 			horizontal: {
 				type: Boolean,
 				value: false,
 				reflectToAttribute: true,
-				observer: fillPaletteItems,
+				observer: (control) => control.#fillPaletteItems(),
 			},
 		};
 	}
 
 	attached() {
-		const controlData = this[privateData];
+		const controlData = this.#privateData;
 		this.$.resizeDetector.addObserver(() => {
-			updateScrollButtons(this);
+			this.#updateScrollButtons();
 		}, this);
 
 		const handleMoveToStart = () => {
@@ -140,7 +62,7 @@ class VicowaHierarchicalPalette extends webComponentBaseClass {
 				} else {
 					this.$.itemsContainer.scrollTop -= 10;
 				}
-				updateScrollButtons(this);
+				this.#updateScrollButtons();
 			}, 100);
 			const handleMouseUp = () => {
 				window.removeEventListener("mouseup", handleMouseUp);
@@ -161,7 +83,7 @@ class VicowaHierarchicalPalette extends webComponentBaseClass {
 				} else {
 					this.$.itemsContainer.scrollTop += 10;
 				}
-				updateScrollButtons(this);
+				this.#updateScrollButtons();
 			}, 100);
 			const handleMouseUp = () => {
 				window.removeEventListener("mouseup", handleMouseUp);
@@ -173,19 +95,19 @@ class VicowaHierarchicalPalette extends webComponentBaseClass {
 		this.addAutoEventListener(this.$.moveToStart, "mousedown", handleMoveToStart);
 		this.addAutoEventListener(this.$.moveToEnd, "mousedown", handleMoveToEnd);
 
-		this.addAutoEventListener(this.$.itemsContainer, "wheel", (p_Event) => {
+		this.addAutoEventListener(this.$.itemsContainer, "wheel", (event) => {
 			if (this.horizontal) {
-				this.$.itemsContainer.scrollLeft += p_Event.deltaY;
+				this.$.itemsContainer.scrollLeft += event.deltaY;
 			} else {
-				this.$.itemsContainer.scrollTop += p_Event.deltaY;
+				this.$.itemsContainer.scrollTop += event.deltaY;
 			}
-			updateScrollButtons(this);
+			this.#updateScrollButtons();
 		});
 
 		this.addAutoEventListener(this.$.back, "click", async() => {
 			controlData.activePaletteRoot = this.$.back.getAttribute("target");
 			const targetContainer = this.$.prevItemsContainer;
-			await fillPaletteItems(this, targetContainer);
+			await this.#fillPaletteItems(targetContainer);
 			this.$.containersContainer.classList.add("animate");
 			const pathItem = controlData.path.pop();
 			if (this.horizontal) {
@@ -204,16 +126,16 @@ class VicowaHierarchicalPalette extends webComponentBaseClass {
 			if (this.horizontal) {
 				const sourceContainer = (this.$.containersContainer.style.top === "0px") ? this.$.prevItemsContainer : this.$.nextItemsContainer;
 				const scrollOffset = sourceContainer.scrollLeft;
-				Array.from(sourceContainer.children).forEach((p_Item) => {
-					this.$.itemsContainer.appendChild(p_Item);
+				Array.from(sourceContainer.children).forEach((item) => {
+					this.$.itemsContainer.appendChild(item);
 				});
 				this.$.containersContainer.style.top = `${-this.paletteSize}px`;
 				this.$.itemsContainer.scrollLeft = scrollOffset;
 			} else {
 				const sourceContainer = (this.$.containersContainer.style.left === "0px") ? this.$.prevItemsContainer : this.$.nextItemsContainer;
 				const scrollOffset = sourceContainer.scrollTop;
-				Array.from(sourceContainer.children).forEach((p_Item) => {
-					this.$.itemsContainer.appendChild(p_Item);
+				Array.from(sourceContainer.children).forEach((item) => {
+					this.$.itemsContainer.appendChild(item);
 				});
 				this.$.containersContainer.style.left = `${-this.paletteSize}px`;
 				this.$.itemsContainer.scrollTop = scrollOffset;
@@ -221,15 +143,90 @@ class VicowaHierarchicalPalette extends webComponentBaseClass {
 			this.$.prevItemsContainer.innerHTML = "";
 			this.$.nextItemsContainer.innerHTML = "";
 			const tester = new RegExp(`^item-slot-${controlData.fillSequenceIndex}`);
-			Array.from(this.querySelectorAll('[slot^="item-slot-"]')).filter((p_Item) => !tester.test(p_Item.slot)).forEach((p_Item) => this.removeChild(p_Item));
-			updateScrollButtons(this);
+			Array.from(this.querySelectorAll('[slot^="item-slot-"]')).filter((item) => !tester.test(item.slot)).forEach((item) => this.removeChild(item));
+			this.#updateScrollButtons();
 		});
 	}
 
-	initialize(p_Settings) {
-		this[privateData].settings = Object.assign({ topLevel: null }, p_Settings);
-		this[privateData].activePaletteRoot = this[privateData].settings.topLevel;
-		fillPaletteItems(this);
+	initialize(settings) {
+		this.#privateData.settings = Object.assign({ topLevel: null }, settings);
+		this.#privateData.activePaletteRoot = this.#privateData.settings.topLevel;
+		this.#fillPaletteItems();
+	}
+
+	#updateScrollButtons() {
+		const controlData = this.#privateData;
+		const size = (this.horizontal) ? this.$.container.offsetWidth : this.$.container.offsetHeight;
+		controlData.pageSize = Math.floor(size / this.itemSize);
+		this.$.moveToStart.classList.toggle("disabled", (this.horizontal) ? this.$.itemsContainer.scrollLeft === 0 : this.$.itemsContainer.scrollTop === 0);
+		this.$.moveToEnd.classList.toggle("disabled", (this.horizontal) ? this.$.itemsContainer.scrollLeft >= this.$.itemsContainer.scrollWidth - this.$.itemsContainer.offsetWidth : this.$.itemsContainer.scrollTop >= this.$.itemsContainer.scrollHeight - this.$.itemsContainer.offsetHeight);
+		this.$.back.classList.toggle("disabled", controlData.path.length === 0);
+	}
+
+	async #fillPaletteItems(target) {
+		target = target || this.$.itemsContainer;
+		if (this.getData) {
+			if (this.horizontal) {
+				this.style.height = `${this.paletteSize}px`;
+				this.$.containersContainer.style.height = `${this.paletteSize * 3}px`;
+				this.$.containersContainer.style.top = `${-this.paletteSize}px`;
+			} else {
+				this.style.width = `${this.paletteSize}px`;
+				this.$.containersContainer.style.width = `${this.paletteSize * 3}px`;
+				this.$.containersContainer.style.left = `${-this.paletteSize}px`;
+			}
+			const size = (this.horizontal) ? this.$.container.offsetWidth : this.$.container.offsetHeight;
+			const controlData = this.#privateData;
+			controlData.fillSequenceIndex++;
+			this.itemSize = Math.max(this.itemSize, 10); // minimal size = 10px
+			controlData.pageSize = Math.ceil(size / this.itemSize) + 6; // 3 additional on each side
+			controlData.items = await this.getData((controlData.activePaletteRoot !== "root") ? controlData.activePaletteRoot : null, 0, 100);
+			while (controlData.items.items.length < controlData.items.totalItemCount) {
+				const additionalItems = await this.getData((controlData.activePaletteRoot !== "root") ? controlData.activePaletteRoot : null, controlData.items.items.length, 100);
+				controlData.items.items = controlData.items.items.concat(additionalItems.items);
+			}
+
+			target.innerHTML = "";
+			Array.from(this.querySelectorAll(`[slot^="item-slot-${controlData.fillSequenceIndex}-"]`)).forEach((item) => this.removeChild(item));
+			controlData.items.items.forEach((item, index) => {
+				const itemContainer = document.importNode(this.$.itemTemplate.content, true).querySelector('div[name="item-container"]');
+				itemContainer[itemData] = item;
+				itemContainer.style.width = (this.horizontal) ? `${this.itemSize}px` : "";
+				itemContainer.style.height = (this.horizontal) ? "" : `${this.itemSize}px`;
+				if (item.subLevel) {
+					itemContainer.classList.add("sub-level");
+				}
+				const itemContent = this.factory(item);
+				const slot = itemContainer.querySelector("slot");
+				slot.name = `item-slot-${controlData.fillSequenceIndex}-${index}`;
+				itemContent.slot = slot.name;
+				this.appendChild(itemContent);
+				// itemContainer.appendChild(itemContent);
+				target.appendChild(itemContainer);
+				itemContainer.addEventListener("click", async() => {
+					if (item.subLevel) {
+						this.$.back.setAttribute("target", controlData.activePaletteRoot || "root");
+						controlData.path.push({
+							target: controlData.activePaletteRoot || "root",
+							scrollOffset: (this.horizontal) ? this.$.itemsContainer.scrollLeft : this.$.itemsContainer.scrollTop,
+						});
+						controlData.activePaletteRoot = item.path;
+						await this.#fillPaletteItems(this.$.nextItemsContainer);
+						this.$.containersContainer.classList.add("animate");
+						this.$.nextItemsContainer.scrollLeft = this.$.nextItemsContainer.scrollTop = 0;
+
+						if (this.horizontal) {
+							this.$.containersContainer.style.top = `${-this.paletteSize * 2}px`;
+						} else {
+							this.$.containersContainer.style.left = `${-this.paletteSize * 2}px`;
+						}
+					} else if (this.onClick) {
+						this.onClick(item);
+					}
+				});
+			});
+		}
+		this.#updateScrollButtons();
 	}
 
 	static get template() {
@@ -375,4 +372,4 @@ class VicowaHierarchicalPalette extends webComponentBaseClass {
 	}
 }
 
-window.customElements.define(componentName, VicowaHierarchicalPalette);
+window.customElements.define("vicowa-hierarchical-palette", VicowaHierarchicalPalette);

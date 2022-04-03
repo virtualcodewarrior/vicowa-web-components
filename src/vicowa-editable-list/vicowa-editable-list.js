@@ -1,206 +1,22 @@
 // vicowa-editable-list.js
 // ////////////////////////////////////////////////////////////
 // this web component will show a list of editable items
-import { webComponentBaseClass } from "../third_party/web-component-base-class/src/webComponentBaseClass.js";
+import { WebComponentBaseClass } from "/third_party/web-component-base-class/src/web-component-base-class.js";
 import "../vicowa-string/vicowa-string.js";
 import "../vicowa-input/vicowa-input.js";
-import "../third_party/lodash/lodash.js";
+import "/third_party/lodash/lodash.js";
 import debug from "../utilities/debug.js";
 
-const privateData = Symbol("privateData");
 const originalItem = Symbol("originalItem");
 
-function createItem(p_Control, p_Done) {
-	if (p_Control.factory) {
-		const listData = p_Control[privateData];
-		const itemClone = document.importNode(p_Control.$.item.content, true);
-		const item = p_Control.factory();
-		const editArea = itemClone.querySelector(".edit-area");
-		editArea.item = item;
-		const save = itemClone.querySelector("[name=\"save\"]");
-		const listUpdate = () => {
-			// create new work list for items
-			const newWorkList = Array.from(p_Control.$.items.querySelectorAll(".edit-area")).map((p_Item) => p_Control.itemInterface.getItemData(p_Item.item));
-			// compare work list with real list
-			if (!window._.isEqual(newWorkList, listData.workList)) {
-				const oldItems = listData.retrievedData.items;
-				listData.retrievedData.items = window._.cloneDeepWith(newWorkList);
-				listData.workList = window._.cloneDeepWith(listData.retrievedData.items);
-				if (p_Control.onChange) {
-					const newOrModifiedItems = window._.differenceWith(newWorkList, oldItems, window._.isEqual);
-					const newItems = newOrModifiedItems.filter((p_Item) => p_Item[originalItem] === undefined);
-					const modifiedItems = newOrModifiedItems.filter((p_Item) => p_Item[originalItem] !== undefined);
-					const removedItems = window._.differenceWith(oldItems, newWorkList, window._.isEqual).filter((p_Item) => !modifiedItems.find((p_TestItem) => p_TestItem[originalItem] === p_Item[originalItem]));
-					p_Control.onChange(listData.retrievedData.items, oldItems, { newItems, modifiedItems, removedItems });
-				}
-			}
-		};
-		const applyActions = {
-			startEditing() {
-				editArea.classList.add("editing");
-			},
-			update() { listUpdate(); },
-			stopEditing() {
-				editArea.classList.remove("editing");
-			},
-			removeEditArea() { editArea.parentElement.removeChild(editArea); },
-		};
-
-		itemClone.querySelector("[name=\"editable-item\"]").appendChild(item);
-		item.applyActions = applyActions;
-		p_Control.addAutoEventListener(itemClone.querySelector("[name=\"edit\"]"), "click", () => {
-			p_Control.itemInterface.startEdit(item);
-			applyActions.startEditing();
-		});
-		p_Control.addAutoEventListener(save, "click", () => {
-			if (p_Control.itemInterface.doSave(item)) {
-				p_Control.itemInterface.stopEdit(item);
-				applyActions.stopEditing();
-				applyActions.update();
-			}
-		});
-		p_Control.addAutoEventListener(itemClone.querySelector("[name=\"cancel\"]"), "click", () => {
-			p_Control.itemInterface.doCancel(item);
-			p_Control.itemInterface.stopEdit(item);
-			applyActions.stopEditing();
-			if (!p_Control.itemInterface.hasData(item)) {
-				applyActions.removeEditArea();
-			}
-		});
-		p_Control.addAutoEventListener(itemClone.querySelector("[name=\"delete\"]"), "click", async() => {
-			const continueDelete = await p_Control.continueDelete(editArea.item);
-			if (continueDelete) {
-				applyActions.removeEditArea();
-				applyActions.update();
-			}
-		});
-		p_Control.itemInterface.setReadyHandler(item, () => { p_Done(item, editArea); });
-		p_Control.itemInterface.setChangeHandler(item, () => { save.disabled = !p_Control.itemInterface.isValid(item); });
-
-		p_Control.$.items.appendChild(itemClone);
-	} else {
-		throw new Error("a factory function should be specified");
-	}
-}
-
-function updateJumpButton(p_Control) {
-	const listData = p_Control[privateData];
-	const value = parseInt(p_Control.$.jumpTo.value, 10);
-	p_Control.$.jump.disabled = isNaN(value) || value < 1 || value > Math.ceil(listData.retrievedData.totalItemCount / p_Control.maxPageItems);
-}
-
-async function fillList(p_Control, p_Start, p_Count, p_Filter) {
-	const listData = p_Control[privateData];
-	listData.startItem = p_Start;
-	listData.retrievedData = await p_Control.getData(p_Start, p_Count, p_Filter);
-	listData.retrievedData.items = listData.retrievedData.items.map((p_Item, p_Index) => {
-		p_Item[originalItem] = p_Index;
-		return p_Item;
-	});
-	p_Control.classList.toggle("pages", listData.retrievedData.totalItemCount > p_Control.maxPageItems);
-	const pageContainer = p_Control.$.pageLinks;
-	pageContainer.innerHTML = "";
-
-	if (listData.retrievedData.totalItemCount > p_Control.maxPageItems) {
-		const currentPage = Math.ceil(p_Start / p_Control.maxPageItems);
-		const pages = Math.ceil(listData.retrievedData.totalItemCount / p_Control.maxPageItems);
-
-		updateJumpButton(p_Control);
-
-		if (pages > 10) {
-			if (currentPage > 4) {
-				const firstButton = document.createElement("button");
-				firstButton.addEventListener("click", () => {
-					fillList(p_Control, 0, p_Control.maxPageItems, p_Filter);
-				});
-				firstButton.textContent = "1";
-				pageContainer.appendChild(firstButton);
-				if (currentPage > 5) {
-					const spacerBefore = document.createElement("span");
-					spacerBefore.textContent = "...";
-					pageContainer.appendChild(spacerBefore);
-				}
-			}
-			const startIndex = Math.min(pages - 8, Math.max(currentPage - 4, 0));
-			const end = Math.min(startIndex + 8, pages);
-			for (let index = startIndex; index < end; index++) {
-				const button = document.createElement("button");
-				button.addEventListener("click", () => {
-					fillList(p_Control, index * p_Control.maxPageItems, p_Control.maxPageItems, p_Filter);
-				});
-				button.textContent = index + 1;
-				if (index === currentPage) {
-					button.disabled = true;
-					button.classList.add("active");
-				}
-				pageContainer.appendChild(button);
-			}
-			if (pages - currentPage > 4) {
-				if (pages - currentPage > 5) {
-					const spacerAfter = document.createElement("span");
-					spacerAfter.textContent = "...";
-					pageContainer.appendChild(spacerAfter);
-				}
-				const lastButton = document.createElement("button");
-				lastButton.addEventListener("click", () => {
-					fillList(p_Control, (pages - 1) * p_Control.maxPageItems, p_Control.maxPageItems, p_Filter);
-				});
-				lastButton.textContent = pages;
-				pageContainer.appendChild(lastButton);
-			}
-		} else {
-			for (let index = 0; index < pages; index++) {
-				const button = document.createElement("button");
-				button.addEventListener("click", () => {
-					fillList(p_Control, index * p_Control.maxPageItems, p_Control.maxPageItems, p_Filter);
-				});
-				button.textContent = index + 1;
-				if (index === currentPage) {
-					button.disabled = true;
-					button.classList.add("active");
-				}
-				pageContainer.appendChild(button);
-			}
-		}
-	}
-
-	if (listData.retrievedData.items) {
-		listData.workList = window._.cloneDeepWith(listData.retrievedData.items);
-		const editAreas = Array.from(p_Control.$.items.children);
-		for (let index = listData.retrievedData.items.length; index < editAreas.length; index++) {
-			p_Control.$.items.removeChild(editAreas[index]);
-		}
-		listData.workList.forEach((p_ItemData, p_Index) => {
-			if (p_Index < editAreas.length) {
-				p_Control.itemInterface.setItemData(editAreas[p_Index].item, window._.cloneDeep(p_ItemData));
-			} else {
-				createItem(p_Control, (p_Item) => {
-					if (p_ItemData) {
-						p_Control.itemInterface.setItemData(p_Item, window._.cloneDeep(p_ItemData));
-					}
-				});
-			}
-		});
-	} else {
-		p_Control.$.items.innerHTML = "";
-	}
-}
-
-const componentName = "vicowa-editable-list";
-
-class VicowaEditableList extends webComponentBaseClass {
-	/**
-	 * return this web components name
-	 * @returns {String} The name of this element
-	 */
-	static get is() { return componentName; }
-
+class VicowaEditableList extends WebComponentBaseClass {
+	#privateData;
 	/**
 	 * constructor
 	 */
 	constructor() {
 		super();
-		this[privateData] = {
+		this.#privateData = {
 			startItem: 0,
 			workList: [],
 			retrievedData: {
@@ -212,20 +28,20 @@ class VicowaEditableList extends webComponentBaseClass {
 		this.getData = null;
 		this.continueDelete = async() => true;
 		this.itemInterface = {
-			setItemData(p_Item, p_Data) { p_Item.data = p_Data; },
-			getItemData(p_Item) { return p_Item.data; },
-			startEdit(p_Item) { p_Item.startEdit(); },
-			stopEdit(p_Item) { p_Item.stopEdit(); },
-			doSave(p_Item) { return p_Item.doSave(); },
-			doCancel(p_Item) { p_Item.doCancel(); },
-			hasData(p_Item) { return p_Item.hasData; },
-			setReadyHandler(p_Item, p_Callback) { p_Item.onReady = p_Callback; },
-			setChangeHandler(p_Item, p_Callback) { p_Item.onChange = p_Callback; },
-			isValid(p_Item) { return p_Item.valid; },
+			setItemData(item, data) { item.data = data; },
+			getItemData(item) { return item.data; },
+			startEdit(item) { item.startEdit(); },
+			stopEdit(item) { item.stopEdit(); },
+			doSave(item) { return item.doSave(); },
+			doCancel(item) { item.doCancel(); },
+			hasData(item) { return item.hasData; },
+			setReadyHandler(item, callback) { item.onReady = callback; },
+			setChangeHandler(item, callback) { item.onChange = callback; },
+			isValid(item) { return item.valid; },
 		};
 	}
 
-	get valid() { return this[privateData].valid; }
+	get valid() { return this.#privateData.valid; }
 
 	/**
 	 * The properties for this component
@@ -293,28 +109,28 @@ class VicowaEditableList extends webComponentBaseClass {
 
 	attached() {
 		this.addAutoEventListener(this.$.add, "click", () => {
-			createItem(this, (p_Item, p_EditArea) => {
-				this.itemInterface.startEdit(p_Item);
-				p_EditArea.classList.add("editing");
+			this.#createItem((item, editArea) => {
+				this.itemInterface.startEdit(item);
+				editArea.classList.add("editing");
 			});
 		});
 
 		this.$.jumpTo.onChange = () => {
-			updateJumpButton(this);
+			this.#updateJumpButton();
 		};
 
 		this.addAutoEventListener(this.$.jump, "click", () => {
 			const value = parseInt(this.$.jumpTo.value, 10);
-			fillList(this, (value - 1) * this.maxPageItems, this.maxPageItems, this.$.filter.value);
+			this.#fillList((value - 1) * this.maxPageItems, this.maxPageItems, this.$.filter.value);
 		});
 
-		this.addAutoEventListener(this.$.items, "click", (p_Event) => {
+		this.addAutoEventListener(this.$.items, "click", (event) => {
 			if (this.select) {
-				const item = p_Event.target.closest(".edit-area");
+				const item = event.target.closest(".edit-area");
 				if (item) {
 					if (this.single) {
-						this.$$$("#items .edit-area").forEach((p_Item) => {
-							p_Item.classList.remove("selected");
+						this.$$$("#items .edit-area").forEach((element) => {
+							element.classList.remove("selected");
 						});
 						item.classList.add("selected");
 					} else if (this.multi) {
@@ -322,12 +138,12 @@ class VicowaEditableList extends webComponentBaseClass {
 					}
 				}
 				if (this.onSelect) {
-					this.onSelect(this.$$$("#items .edit-area").filter((p_Item) => p_Item.classList.contains("selected")).map((p_Item) => this.itemInterface.getItemData(p_Item.item)));
+					this.onSelect(this.$$$("#items .edit-area").filter((element) => element.classList.contains("selected")).map((element) => this.itemInterface.getItemData(element.item)));
 				}
 			}
 		});
 
-		updateJumpButton(this);
+		this.#updateJumpButton();
 	}
 
 	/**
@@ -346,7 +162,7 @@ class VicowaEditableList extends webComponentBaseClass {
 	 */
 	/**
 	 *
-	 * @param {[itemInterface]} p_ItemInterface Optional interface for the items, if this is not specified, the items themselves should provide this functionality on their own interface
+	 * @param {[itemInterface]} itemInterface Optional interface for the items, if this is not specified, the items themselves should provide this functionality on their own interface
 	 * If the itemInterface parameter is not given the following interface is assumed to be on each item :
 	 * set data // setter to set the data
 	 * get data // getter to get the data
@@ -359,18 +175,194 @@ class VicowaEditableList extends webComponentBaseClass {
 	 * variable onChange // item member that should receive a callback function and will be called by the item when it is changed
 	 * get valid // getter to see if the data is valid
 	 */
-	initialize(p_ItemInterface) {
+	initialize(itemInterface) {
 		const required = ["setItemData", "getItemData", "startEdit", "stopEdit", "doSave", "doCancel", "hasData", "setReadyHandler", "setChangeHandler", "isValid"];
-		debug.assert(!p_ItemInterface || required.every((p_Key) => typeof p_ItemInterface[p_Key] === "function"), "setItemData, startEdit, stopEdit, doSave, doCancel, hasData, setReadyHandler, setChangeHandler and isValid should be functions");
+		debug.assert(!itemInterface || required.every((key) => typeof itemInterface[key] === "function"), "setItemData, startEdit, stopEdit, doSave, doCancel, hasData, setReadyHandler, setChangeHandler and isValid should be functions");
 
-		this.$.filter.onChange = window._.debounce(() => { fillList(this, 0, this.maxPageItems, this.$.filter.value); }, 250);
-		this.itemInterface = p_ItemInterface || this.itemInterface;
+		this.$.filter.onChange = window._.debounce(() => { this.#fillList(0, this.maxPageItems, this.$.filter.value); }, 250);
+		this.itemInterface = itemInterface || this.itemInterface;
 		this.reloadData();
 	}
 
 	reloadData() {
-		const listData = this[privateData];
-		fillList(this, listData.startItem, this.maxPageItems, this.$.filter.value || "");
+		const listData = this.#privateData;
+		this.#fillList(listData.startItem, this.maxPageItems, this.$.filter.value || "");
+	}
+
+	#createItem(done) {
+		if (this.factory) {
+			const listData = this.#privateData;
+			const itemClone = document.importNode(this.$.item.content, true);
+			const item = this.factory();
+			const editArea = itemClone.querySelector(".edit-area");
+			editArea.item = item;
+			const save = itemClone.querySelector("[name=\"save\"]");
+			const listUpdate = () => {
+				// create new work list for items
+				const newWorkList = Array.from(this.$.items.querySelectorAll(".edit-area")).map((element) => this.itemInterface.getItemData(element.item));
+				// compare work list with real list
+				if (!window._.isEqual(newWorkList, listData.workList)) {
+					const oldItems = listData.retrievedData.items;
+					listData.retrievedData.items = window._.cloneDeepWith(newWorkList);
+					listData.workList = window._.cloneDeepWith(listData.retrievedData.items);
+					if (this.onChange) {
+						const newOrModifiedItems = window._.differenceWith(newWorkList, oldItems, window._.isEqual);
+						const newItems = newOrModifiedItems.filter((modItem) => modItem[originalItem] === undefined);
+						const modifiedItems = newOrModifiedItems.filter((modItem) => modItem[originalItem] !== undefined);
+						const removedItems = window._.differenceWith(oldItems, newWorkList, window._.isEqual).filter((difItem) => !modifiedItems.find((testItem) => testItem[originalItem] === difItem[originalItem]));
+						this.onChange(listData.retrievedData.items, oldItems, { newItems, modifiedItems, removedItems });
+					}
+				}
+			};
+			const applyActions = {
+				startEditing() {
+					editArea.classList.add("editing");
+				},
+				update() { listUpdate(); },
+				stopEditing() {
+					editArea.classList.remove("editing");
+				},
+				removeEditArea() { editArea.parentElement.removeChild(editArea); },
+			};
+
+			itemClone.querySelector("[name=\"editable-item\"]").appendChild(item);
+			item.applyActions = applyActions;
+			this.addAutoEventListener(itemClone.querySelector("[name=\"edit\"]"), "click", () => {
+				this.itemInterface.startEdit(item);
+				applyActions.startEditing();
+			});
+			this.addAutoEventListener(save, "click", () => {
+				if (this.itemInterface.doSave(item)) {
+					this.itemInterface.stopEdit(item);
+					applyActions.stopEditing();
+					applyActions.update();
+				}
+			});
+			this.addAutoEventListener(itemClone.querySelector("[name=\"cancel\"]"), "click", () => {
+				this.itemInterface.doCancel(item);
+				this.itemInterface.stopEdit(item);
+				applyActions.stopEditing();
+				if (!this.itemInterface.hasData(item)) {
+					applyActions.removeEditArea();
+				}
+			});
+			this.addAutoEventListener(itemClone.querySelector("[name=\"delete\"]"), "click", async() => {
+				const continueDelete = await this.continueDelete(editArea.item);
+				if (continueDelete) {
+					applyActions.removeEditArea();
+					applyActions.update();
+				}
+			});
+			this.itemInterface.setReadyHandler(item, () => { done(item, editArea); });
+			this.itemInterface.setChangeHandler(item, () => { save.disabled = !this.itemInterface.isValid(item); });
+
+			this.$.items.appendChild(itemClone);
+		} else {
+			throw new Error("a factory function should be specified");
+		}
+	}
+
+	#updateJumpButton() {
+		const listData = this.#privateData;
+		const value = parseInt(this.$.jumpTo.value, 10);
+		this.$.jump.disabled = isNaN(value) || value < 1 || value > Math.ceil(listData.retrievedData.totalItemCount / this.maxPageItems);
+	}
+
+	async #fillList(start, count, filter) {
+		const listData = this.#privateData;
+		listData.startItem = start;
+		listData.retrievedData = await this.getData(start, count, filter);
+		listData.retrievedData.items = listData.retrievedData.items.map((item, index) => {
+			item[originalItem] = index;
+			return item;
+		});
+		this.classList.toggle("pages", listData.retrievedData.totalItemCount > this.maxPageItems);
+		const pageContainer = this.$.pageLinks;
+		pageContainer.innerHTML = "";
+
+		if (listData.retrievedData.totalItemCount > this.maxPageItems) {
+			const currentPage = Math.ceil(start / this.maxPageItems);
+			const pages = Math.ceil(listData.retrievedData.totalItemCount / this.maxPageItems);
+
+			this.#updateJumpButton();
+
+			if (pages > 10) {
+				if (currentPage > 4) {
+					const firstButton = document.createElement("button");
+					firstButton.addEventListener("click", () => {
+						this.#fillList(0, this.maxPageItems, filter);
+					});
+					firstButton.textContent = "1";
+					pageContainer.appendChild(firstButton);
+					if (currentPage > 5) {
+						const spacerBefore = document.createElement("span");
+						spacerBefore.textContent = "...";
+						pageContainer.appendChild(spacerBefore);
+					}
+				}
+				const startIndex = Math.min(pages - 8, Math.max(currentPage - 4, 0));
+				const end = Math.min(startIndex + 8, pages);
+				for (let index = startIndex; index < end; index++) {
+					const button = document.createElement("button");
+					button.addEventListener("click", () => {
+						this.#fillList(index * this.maxPageItems, this.maxPageItems, filter);
+					});
+					button.textContent = index + 1;
+					if (index === currentPage) {
+						button.disabled = true;
+						button.classList.add("active");
+					}
+					pageContainer.appendChild(button);
+				}
+				if (pages - currentPage > 4) {
+					if (pages - currentPage > 5) {
+						const spacerAfter = document.createElement("span");
+						spacerAfter.textContent = "...";
+						pageContainer.appendChild(spacerAfter);
+					}
+					const lastButton = document.createElement("button");
+					lastButton.addEventListener("click", () => {
+						this.#fillList((pages - 1) * this.maxPageItems, this.maxPageItems, filter);
+					});
+					lastButton.textContent = pages;
+					pageContainer.appendChild(lastButton);
+				}
+			} else {
+				for (let index = 0; index < pages; index++) {
+					const button = document.createElement("button");
+					button.addEventListener("click", () => {
+						this.#fillList(index * this.maxPageItems, this.maxPageItems, filter);
+					});
+					button.textContent = index + 1;
+					if (index === currentPage) {
+						button.disabled = true;
+						button.classList.add("active");
+					}
+					pageContainer.appendChild(button);
+				}
+			}
+		}
+
+		if (listData.retrievedData.items) {
+			listData.workList = window._.cloneDeepWith(listData.retrievedData.items);
+			const editAreas = Array.from(this.$.items.children);
+			for (let index = listData.retrievedData.items.length; index < editAreas.length; index++) {
+				this.$.items.removeChild(editAreas[index]);
+			}
+			listData.workList.forEach((itemData, index) => {
+				if (index < editAreas.length) {
+					this.itemInterface.setItemData(editAreas[index].item, window._.cloneDeep(itemData));
+				} else {
+					this.#createItem((item) => {
+						if (itemData) {
+							this.itemInterface.setItemData(item, window._.cloneDeep(itemData));
+						}
+					});
+				}
+			});
+		} else {
+			this.$.items.innerHTML = "";
+		}
 	}
 
 	static get template() {
@@ -505,4 +497,4 @@ class VicowaEditableList extends webComponentBaseClass {
 	}
 }
 
-window.customElements.define(componentName, VicowaEditableList);
+window.customElements.define("vicowa-editable-list", VicowaEditableList);

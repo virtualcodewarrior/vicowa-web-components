@@ -1,20 +1,21 @@
-import { webComponentBaseClass } from "../third_party/web-component-base-class/src/webComponentBaseClass.js";
+import { WebComponentBaseClass } from "/third_party/web-component-base-class/src/web-component-base-class.js";
 import observerFactory from "../utilities/observerFactory.js";
 
-const componentName = "vicowa-resize-detector";
 let resizeHandlerCounter = 1;
 
 /**
  * Class to represent the vicowa-resize-detector custom element
- * @extends webComponentBaseClass
+ * @extends WebComponentBaseClass
  */
-class VicowaResizeDetector extends webComponentBaseClass {
-	static get is() { return componentName; }
+class VicowaResizeDetector extends WebComponentBaseClass {
+	#handlers;
+	#id;
+	#rect;
 	constructor() {
 		super();
-		this._handlers = observerFactory();
-		this._id = resizeHandlerCounter;
-		this._rect = {};
+		this.#handlers = observerFactory();
+		this.#id = resizeHandlerCounter;
+		this.#rect = {};
 		resizeHandlerCounter++;
 	}
 
@@ -28,7 +29,7 @@ class VicowaResizeDetector extends webComponentBaseClass {
 			"	<body>\n" +
 			"	<script>\n" +
 			"	function ready(fn){ if (document.readyState !== 'loading'){ fn(); } else { document.addEventListener('DOMContentLoaded', fn); } }\n" +
-			`	const handleResize = function(){ window.parent.postMessage({ message: 'resize', target: ${this._id} },'*'); }\n` +
+			`	const handleResize = function(){ window.parent.postMessage({ message: 'resize', target: ${this.#id} },'*'); }\n` +
 			"	window.addEventListener('resize', handleResize);\n" +
 			"	ready(handleResize);\n" +
 			"	window.oncontextmenu = function() { return false; };\n" +
@@ -42,27 +43,27 @@ class VicowaResizeDetector extends webComponentBaseClass {
 		}
 		this.$.detector.src = `data:text/html;charset=utf-8,${escape(resizeDetect)}`;
 
-		this.addAutoEventListener(window, "message", (p_Message) => {
-			if (p_Message.data && p_Message.data.message && p_Message.data.message === "resize" && p_Message.data.target === this._id) {
+		this.addAutoEventListener(window, "message", (message) => {
+			if (message.data && message.data.message && message.data.message === "resize" && message.data.target === this.#id) {
 				const newRect = this.getBoundingClientRect();
-				this._handlers.notify("resize", { oldRect: this._rect, newRect });
-				this._rect = newRect;
+				this.#handlers.notify("resize", { oldRect: this.#rect, newRect });
+				this.#rect = newRect;
 			}
 		});
 
-		this._rect = this.getBoundingClientRect();
+		this.#rect = this.getBoundingClientRect();
 	}
 
-	addObserver(p_Handler, p_Owner) {
-		this._handlers.addObserver("resize", p_Handler, p_Owner);
+	addObserver(handler, owner) {
+		this.#handlers.addObserver("resize", handler, owner);
 	}
 
-	removeObserver(p_Handler) {
-		this._handlers.removeObserver("resize", p_Handler);
+	removeObserver(handler) {
+		this.#handlers.removeObserver("resize", handler);
 	}
 
-	removeOwner(p_Owner) {
-		this._handlers.removeOwner(p_Owner);
+	removeOwner(owner) {
+		this.#handlers.removeOwner(owner);
 	}
 
 	static get template() {
@@ -89,4 +90,4 @@ class VicowaResizeDetector extends webComponentBaseClass {
 	}
 }
 
-window.customElements.define(componentName, VicowaResizeDetector);
+window.customElements.define("vicowa-resize-detector", VicowaResizeDetector);

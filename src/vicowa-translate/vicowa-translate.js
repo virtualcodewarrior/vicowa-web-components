@@ -1,18 +1,16 @@
-import { webComponentBaseClass } from "../third_party/web-component-base-class/src/webComponentBaseClass.js";
+import { WebComponentBaseClass } from "/third_party/web-component-base-class/src/web-component-base-class.js";
 import translator from "../utilities/translate.js";
 
-const componentName = "vicowa-translate";
 /**
  * Class to represent the vicowa-translate custom element
  * This custom element adds a convenient way of adding locations for translation files, just add the element with
  * the proper location set in the translationLocation attribute. Note that this location should be a directory containing all
  * your translation files and not a path to a specific translation file
  * e.g. <vicowa-translate translationLocation="./resources/i18n/">
- * @extends webComponentBaseClass
+ * @extends WebComponentBaseClass
  * @property {string} translationLocation The location where translations can be found
  */
-class VicowaTranslate extends webComponentBaseClass {
-	static get is() { return componentName; }
+class VicowaTranslate extends WebComponentBaseClass {
 	constructor() {
 		super();
 	}
@@ -39,4 +37,4 @@ class VicowaTranslate extends webComponentBaseClass {
 	}
 }
 
-window.customElements.define(componentName, VicowaTranslate);
+window.customElements.define("vicowa-translate", VicowaTranslate);

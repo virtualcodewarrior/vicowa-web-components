@@ -1,79 +1,22 @@
-import { webComponentBaseClass } from "../third_party/web-component-base-class/src/webComponentBaseClass.js";
+import { WebComponentBaseClass } from "/third_party/web-component-base-class/src/web-component-base-class.js";
 import "../vicowa-image-container/vicowa-image-container.js";
 import "../vicowa-button/vicowa-button.js";
 
-function updateControls(p_ImageControl) {
-	p_ImageControl.classList.toggle("start", p_ImageControl._activeImage === 0);
-	p_ImageControl.classList.toggle("end", p_ImageControl._activeImage === p_ImageControl.images.length - 1);
-}
-
-function updateActiveImages(p_ImageControl) {
-	updateControls(p_ImageControl);
-	if (p_ImageControl._activeImage < p_ImageControl.images.length) {
-		const active = p_ImageControl.images[p_ImageControl._activeImage];
-		if (active) {
-			p_ImageControl.$.currentImage.alternates = active.alternates;
-			p_ImageControl.$.currentImage.description = active.description || "";
-			p_ImageControl.$.currentImage.alt = (active.alt || active.description || active.tooltip || "").trim();
-			p_ImageControl.$.currentImage.tooltip = active.tooltip || "";
-		}
-		const previous = (p_ImageControl._activeImage > 0) ? p_ImageControl.images[p_ImageControl._activeImage - 1] : p_ImageControl.images[p_ImageControl.images.length - 1];
-		if (previous) {
-			p_ImageControl.$.previousImage.alternates = previous.alternates;
-			p_ImageControl.$.previousImage.description = previous.description || "";
-			p_ImageControl.$.previousImage.alt = (previous.alt || previous.description || previous.tooltip || "").trim();
-			p_ImageControl.$.previousImage.tooltip = previous.tooltip || "";
-		}
-
-		const next = (p_ImageControl._activeImage < p_ImageControl.images.length - 1) ? p_ImageControl.images[p_ImageControl._activeImage + 1] : p_ImageControl.images[0];
-		if (next) {
-			p_ImageControl.$.nextImage.alternates = next.alternates;
-			p_ImageControl.$.nextImage.description = next.description || "";
-			p_ImageControl.$.nextImage.alt = (next.alt || next.description || next.tooltip || "").trim();
-			p_ImageControl.$.nextImage.tooltip = next.tooltip || "";
-		}
-	}
-}
-
-/**
- * Handler to be called when the pictures change
- * @param {VicowaImageCarousel} p_ImageControl The control for which this handler is called
- */
-function imagesChanged(p_ImageControl) {
-	p_ImageControl._activeImage = 0;
-	updateActiveImages(p_ImageControl);
-}
-
-function startIndexChanged(p_ImageControl) {
-	p_ImageControl.goToIndex(p_ImageControl.startIndex);
-}
-
-function autoChanged(p_ImageControl) {
-	p_ImageControl.auto = Math.max(0, p_ImageControl.auto || 0);
-	if (!p_ImageControl._autoTimer && p_ImageControl.auto) {
-		p_ImageControl.loop = true; // always loop when auto
-		p_ImageControl._autoTimer = setTimeout(() => { p_ImageControl.goToNext(); }, 1000);
-	} else if (p_ImageControl._autoTimer && !p_ImageControl.auto) {
-		clearTimeout(p_ImageControl._autoTimer);
-		p_ImageControl._autoTimer = 0;
-	}
-}
-
-const componentName = "vicowa-image-carousel";
-
 /**
  * Class that represents the vicowa-input custom element
- * @extends webComponentBaseClass
+ * @extends WebComponentBaseClass
  * @property {array} images The list of images for this carousel, should be an array of { alternates: [string], description: string }
  * @property {boolean} loop Indicates if we loop back to the first picture when we reach the end
  * @property {number} auto If this value is not 0, it indicates the time in seconds to go to the next image automatically. If <= 0 automatic is off
  */
-class VicowaImageCarousel extends webComponentBaseClass {
-	static get is() { return componentName; }
+class VicowaImageCarousel extends WebComponentBaseClass {
+	#activeImage;
+	#autoTimer;
+
 	constructor() {
 		super();
-		this._activeImage = 0;
-		this._autoTimer = 0;
+		this.#activeImage = 0;
+		this.#autoTimer = 0;
 	}
 
 	static get properties() {
@@ -81,13 +24,13 @@ class VicowaImageCarousel extends webComponentBaseClass {
 			images: {
 				type: Array,
 				value: [],
-				observer: imagesChanged,
+				observer: (control) => control.#imagesChanged(),
 			},
 			startIndex: {
 				type: Number,
 				value: 0,
 				reflectToAttribute: true,
-				observer: startIndexChanged,
+				observer: (control) => control.#startIndexChanged(),
 			},
 			loop: {
 				type: Boolean,
@@ -98,7 +41,7 @@ class VicowaImageCarousel extends webComponentBaseClass {
 				type: Number,
 				value: 0,
 				reflectToAttribute: true,
-				observer: autoChanged,
+				observer: (control) => control.#autoChanged(),
 			},
 		});
 	}
@@ -115,15 +58,15 @@ class VicowaImageCarousel extends webComponentBaseClass {
 	goToNext() {
 		this.classList.toggle("transitioning", true);
 		this.classList.toggle("next", true);
-		this._autoTimer = 0;
+		this.#autoTimer = 0;
 		const handleNextEnd = () => {
-			this._activeImage = (this._activeImage < this.images.length - 1) ? this._activeImage + 1 : 0;
+			this.#activeImage = (this.#activeImage < this.images.length - 1) ? this.#activeImage + 1 : 0;
 			this.classList.toggle("transitioning", false);
 			this.classList.toggle("next", false);
-			updateActiveImages(this);
+			this.#updateActiveImages();
 			this.removeAutoEventListener(this.$.pictures, "transitionend", handleNextEnd);
 			if (this.auto) {
-				this._autoTimer = setTimeout(() => { this.goToNext(); }, this.auto);
+				this.#autoTimer = setTimeout(() => { this.goToNext(); }, this.auto);
 			}
 		};
 		this.addAutoEventListener(this.$.pictures, "transitionend", handleNextEnd);
@@ -133,19 +76,72 @@ class VicowaImageCarousel extends webComponentBaseClass {
 		this.classList.toggle("transitioning", true);
 		this.classList.toggle("previous", true);
 		const handlePreviousEnd = () => {
-			this._activeImage = (this._activeImage > 0) ? this._activeImage - 1 : this.images.length - 1;
+			this.#activeImage = (this.#activeImage > 0) ? this.#activeImage - 1 : this.images.length - 1;
 			this.classList.toggle("transitioning", false);
 			this.classList.toggle("previous", false);
-			updateActiveImages(this);
+			this.#updateActiveImages();
 			this.removeAutoEventListener(this.$.pictures, "transitionend", handlePreviousEnd);
 		};
 		this.addAutoEventListener(this.$.pictures, "transitionend", handlePreviousEnd);
 	}
 
-	goToIndex(p_Index) {
-		this.startIndex = Math.min(Math.max(0, p_Index), this.images.length - 1);
-		this._activeImage = this.startIndex;
-		updateActiveImages(this);
+	goToIndex(index) {
+		this.startIndex = Math.min(Math.max(0, index), this.images.length - 1);
+		this.#activeImage = this.startIndex;
+		this.#updateActiveImages();
+	}
+
+	#updateControls() {
+		this.classList.toggle("start", this.#activeImage === 0);
+		this.classList.toggle("end", this.#activeImage === this.images.length - 1);
+	}
+
+	#updateActiveImages() {
+		this.#updateControls();
+		if (this.#activeImage < this.images.length) {
+			const active = this.images[this.#activeImage];
+			if (active) {
+				this.$.currentImage.alternates = active.alternates;
+				this.$.currentImage.description = active.description || "";
+				this.$.currentImage.alt = (active.alt || active.description || active.tooltip || "").trim();
+				this.$.currentImage.tooltip = active.tooltip || "";
+			}
+			const previous = (this.#activeImage > 0) ? this.images[this.#activeImage - 1] : this.images[this.images.length - 1];
+			if (previous) {
+				this.$.previousImage.alternates = previous.alternates;
+				this.$.previousImage.description = previous.description || "";
+				this.$.previousImage.alt = (previous.alt || previous.description || previous.tooltip || "").trim();
+				this.$.previousImage.tooltip = previous.tooltip || "";
+			}
+
+			const next = (this.#activeImage < this.images.length - 1) ? this.images[this.#activeImage + 1] : this.images[0];
+			if (next) {
+				this.$.nextImage.alternates = next.alternates;
+				this.$.nextImage.description = next.description || "";
+				this.$.nextImage.alt = (next.alt || next.description || next.tooltip || "").trim();
+				this.$.nextImage.tooltip = next.tooltip || "";
+			}
+		}
+	}
+
+	#imagesChanged() {
+		this.#activeImage = 0;
+		this.#updateActiveImages();
+	}
+
+	#startIndexChanged() {
+		this.goToIndex(this.startIndex);
+	}
+
+	#autoChanged() {
+		this.auto = Math.max(0, this.auto || 0);
+		if (!this.#autoTimer && this.auto) {
+			this.loop = true; // always loop when auto
+			this.#autoTimer = setTimeout(() => { this.goToNext(); }, 1000);
+		} else if (this.#autoTimer && !this.auto) {
+			clearTimeout(this.#autoTimer);
+			this.#autoTimer = 0;
+		}
 	}
 
 	static get template() {
@@ -279,4 +275,4 @@ class VicowaImageCarousel extends webComponentBaseClass {
 	}
 }
 
-window.customElements.define(componentName, VicowaImageCarousel);
+window.customElements.define("vicowa-image-carousel", VicowaImageCarousel);

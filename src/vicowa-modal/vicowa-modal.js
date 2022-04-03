@@ -1,17 +1,15 @@
-import { webComponentBaseClass } from "../third_party/web-component-base-class/src/webComponentBaseClass.js";
-
-const componentName = "vicowa-modal";
+import { WebComponentBaseClass } from "/third_party/web-component-base-class/src/web-component-base-class.js";
 
 /**
  * Class to represent the vicowa-icon custom element
- * @extends webComponentBaseClass
+ * @extends WebComponentBaseClass
  * @property {boolean} open Set to true to open the modal or false the close it
  */
-class VicowaModal extends webComponentBaseClass {
-	static get is() { return componentName; }
+class VicowaModal extends WebComponentBaseClass {
+	#activeTranslator;
 	constructor() {
 		super();
-		this._activeTranslator = null;
+		this.#activeTranslator = null;
 	}
 
 	static get properties() {
@@ -86,4 +84,4 @@ class VicowaModal extends webComponentBaseClass {
 	}
 }
 
-window.customElements.define(componentName, VicowaModal);
+window.customElements.define("vicowa-modal", VicowaModal);

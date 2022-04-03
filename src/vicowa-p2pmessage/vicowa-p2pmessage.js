@@ -1,22 +1,13 @@
 /* eslint-disable */
 // disable eslint while this code is not done
-
-import { webComponentBaseClass } from "../third_party/web-component-base-class/src/webComponentBaseClass.js";
+import { WebComponentBaseClass } from "/third_party/web-component-base-class/src/web-component-base-class.js";
 import { WebRTCHandler } from "../utilities/webrtc.js";
 
-const privateData = Symbol("privateData");
-
-const componentName = "vicowa-p2pmessage";
-
-function handleSignalingChange(p_Control) {
-
-}
-
-class VicowaP2PMessage extends webComponentBaseClass {
-	static get is() { return componentName; }
+class VicowaP2PMessage extends WebComponentBaseClass {
+	#privateData;
 	constructor() {
 		super();
-		this[privateData] = {
+		this.#privateData = {
 			webRTC: null,
 		};
 	}
@@ -27,19 +18,23 @@ class VicowaP2PMessage extends webComponentBaseClass {
 				type: String,
 				value: "",
 				reflectToAttribute: true,
-				observer: handleSignalingChange,
+				observer: (control) => control.#handleSignalingChange(),
 			},
 		};
 	}
 
-	set setSignalingHandler(p_Handler) {
-		this[privateData].webRTC = new WebRTCHandler(p_Handler);
+	set setSignalingHandler(handler) {
+		this.#privateData.webRTC = new WebRTCHandler(handler);
 	}
 
 	detached() {
 	}
 
 	attached() {
+	}
+
+	#handleSignalingChange() {
+
 	}
 
 	static get template() {
@@ -54,4 +49,4 @@ class VicowaP2PMessage extends webComponentBaseClass {
 	}
 }
 
-window.customElements.define(componentName, VicowaP2PMessage);
+window.customElements.define("vicowa-p2pmessage", VicowaP2PMessage);

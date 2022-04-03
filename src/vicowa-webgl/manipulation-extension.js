@@ -25,49 +25,49 @@ const privateData = Symbol("privateData");
 const manipulation = Symbol("manipulation");
 const manipulatorRenderingGroup = 1;
 
-function createMoveObject(p_Name, p_ExtensionData) {
-	const moveObject = p_ExtensionData.webglIF.createGroup(p_Name);
-	moveObject.addChild(p_ExtensionData.webglIF.createSphere({ diameter: 0.2, rotation: { x: 90, y: 0, z: 0 }, material: "move-manipulator-unselected", renderingGroupId: manipulatorRenderingGroup }));
-	moveObject.addChild(p_ExtensionData.webglIF.createCylinder({ diameter: 0.05, height: 0.15, position: { y: -0.2 }, renderingGroupId: manipulatorRenderingGroup }));
-	moveObject.addChild(p_ExtensionData.webglIF.createCylinder({ diameterTop: 0, diameterBottom: 0.1, height: 0.1, position: { y: -0.3 }, rotation: { x: 0, y: 0, z: 180 }, renderingGroupId: manipulatorRenderingGroup }));
-	moveObject.addChild(p_ExtensionData.webglIF.createCylinder({ diameter: 0.05, height: 0.15, position: { y: 0.2 }, renderingGroupId: manipulatorRenderingGroup }));
-	moveObject.addChild(p_ExtensionData.webglIF.createCylinder({ diameterTop: 0, diameterBottom: 0.1, height: 0.1, position: { y: 0.3 }, renderingGroupId: manipulatorRenderingGroup }));
+function createMoveObject(name, extensionData) {
+	const moveObject = extensionData.webglIF.createGroup(name);
+	moveObject.addChild(extensionData.webglIF.createSphere({ diameter: 0.2, rotation: { x: 90, y: 0, z: 0 }, material: "move-manipulator-unselected", renderingGroupId: manipulatorRenderingGroup }));
+	moveObject.addChild(extensionData.webglIF.createCylinder({ diameter: 0.05, height: 0.15, position: { y: -0.2 }, renderingGroupId: manipulatorRenderingGroup }));
+	moveObject.addChild(extensionData.webglIF.createCylinder({ diameterTop: 0, diameterBottom: 0.1, height: 0.1, position: { y: -0.3 }, rotation: { x: 0, y: 0, z: 180 }, renderingGroupId: manipulatorRenderingGroup }));
+	moveObject.addChild(extensionData.webglIF.createCylinder({ diameter: 0.05, height: 0.15, position: { y: 0.2 }, renderingGroupId: manipulatorRenderingGroup }));
+	moveObject.addChild(extensionData.webglIF.createCylinder({ diameterTop: 0, diameterBottom: 0.1, height: 0.1, position: { y: 0.3 }, renderingGroupId: manipulatorRenderingGroup }));
 	moveObject.visible = false;
 
 	return moveObject;
 }
 
-function createPlaneMoveObject(p_Name, p_ExtensionData) {
-	const moveObject = p_ExtensionData.webglIF.createGroup(p_Name);
-	moveObject.addChild(p_ExtensionData.webglIF.createSphere({ diameter: 0.2, rotation: { x: 90, y: 0, z: 0 }, material: "move-manipulator-unselected", renderingGroupId: manipulatorRenderingGroup }));
-	moveObject.addChild(p_ExtensionData.webglIF.createCylinder({ diameter: 0.05, height: 0.15, position: { y: -0.2 }, renderingGroupId: manipulatorRenderingGroup }));
-	moveObject.addChild(p_ExtensionData.webglIF.createCylinder({ diameterTop: 0, diameterBottom: 0.1, height: 0.1, position: { y: -0.3 }, rotation: { z: 180 }, renderingGroupId: manipulatorRenderingGroup }));
-	moveObject.addChild(p_ExtensionData.webglIF.createCylinder({ diameter: 0.05, height: 0.15, position: { y: 0.2 }, renderingGroupId: manipulatorRenderingGroup }));
-	moveObject.addChild(p_ExtensionData.webglIF.createCylinder({ diameterTop: 0, diameterBottom: 0.1, height: 0.1, position: { y: 0.3 }, renderingGroupId: manipulatorRenderingGroup }));
+function createPlaneMoveObject(name, extensionData) {
+	const moveObject = extensionData.webglIF.createGroup(name);
+	moveObject.addChild(extensionData.webglIF.createSphere({ diameter: 0.2, rotation: { x: 90, y: 0, z: 0 }, material: "move-manipulator-unselected", renderingGroupId: manipulatorRenderingGroup }));
+	moveObject.addChild(extensionData.webglIF.createCylinder({ diameter: 0.05, height: 0.15, position: { y: -0.2 }, renderingGroupId: manipulatorRenderingGroup }));
+	moveObject.addChild(extensionData.webglIF.createCylinder({ diameterTop: 0, diameterBottom: 0.1, height: 0.1, position: { y: -0.3 }, rotation: { z: 180 }, renderingGroupId: manipulatorRenderingGroup }));
+	moveObject.addChild(extensionData.webglIF.createCylinder({ diameter: 0.05, height: 0.15, position: { y: 0.2 }, renderingGroupId: manipulatorRenderingGroup }));
+	moveObject.addChild(extensionData.webglIF.createCylinder({ diameterTop: 0, diameterBottom: 0.1, height: 0.1, position: { y: 0.3 }, renderingGroupId: manipulatorRenderingGroup }));
 
-	moveObject.addChild(p_ExtensionData.webglIF.createCylinder({ diameter: 0.05, height: 0.15, position: { z: -0.2 }, rotation: { x: 90 }, renderingGroupId: manipulatorRenderingGroup }));
-	moveObject.addChild(p_ExtensionData.webglIF.createCylinder({ diameterTop: 0, diameterBottom: 0.1, height: 0.1, position: { z: -0.3 }, rotation: { x: 90, z: 180 }, renderingGroupId: manipulatorRenderingGroup }));
-	moveObject.addChild(p_ExtensionData.webglIF.createCylinder({ diameter: 0.05, height: 0.15, position: { z: 0.2 }, rotation: { x: -90 }, renderingGroupId: manipulatorRenderingGroup }));
-	moveObject.addChild(p_ExtensionData.webglIF.createCylinder({ diameterTop: 0, diameterBottom: 0.1, height: 0.1, position: { z: 0.3 }, rotation: { x: -90, z: 180 }, renderingGroupId: manipulatorRenderingGroup }));
+	moveObject.addChild(extensionData.webglIF.createCylinder({ diameter: 0.05, height: 0.15, position: { z: -0.2 }, rotation: { x: 90 }, renderingGroupId: manipulatorRenderingGroup }));
+	moveObject.addChild(extensionData.webglIF.createCylinder({ diameterTop: 0, diameterBottom: 0.1, height: 0.1, position: { z: -0.3 }, rotation: { x: 90, z: 180 }, renderingGroupId: manipulatorRenderingGroup }));
+	moveObject.addChild(extensionData.webglIF.createCylinder({ diameter: 0.05, height: 0.15, position: { z: 0.2 }, rotation: { x: -90 }, renderingGroupId: manipulatorRenderingGroup }));
+	moveObject.addChild(extensionData.webglIF.createCylinder({ diameterTop: 0, diameterBottom: 0.1, height: 0.1, position: { z: 0.3 }, rotation: { x: -90, z: 180 }, renderingGroupId: manipulatorRenderingGroup }));
 	moveObject.visible = false;
 
 	return moveObject;
 }
 
-function createScaleObject(p_Name, p_ExtensionData) {
-	const scaleObject = p_ExtensionData.webglIF.createGroup(p_Name);
-	scaleObject.addChild(p_ExtensionData.webglIF.createSphere({ diameter: 0.15, diameterZ: 0.3, rotation: { x: 90, y: 0, z: 0 }, material: "scale-manipulator-unselected", renderingGroupId: manipulatorRenderingGroup }));
-	scaleObject.addChild(p_ExtensionData.webglIF.createCylinder({ diameterTop: 0, diameterBottom: 0.1, height: 0.1, position: { y: -0.3 }, rotation: { x: 0, y: 0, z: 180 }, renderingGroupId: manipulatorRenderingGroup }));
-	scaleObject.addChild(p_ExtensionData.webglIF.createCylinder({ diameter: 0.05, height: 0.6, renderingGroupId: manipulatorRenderingGroup }));
-	scaleObject.addChild(p_ExtensionData.webglIF.createCylinder({ diameterTop: 0, diameterBottom: 0.1, height: 0.1, position: { y: 0.3 }, renderingGroupId: manipulatorRenderingGroup }));
+function createScaleObject(name, extensionData) {
+	const scaleObject = extensionData.webglIF.createGroup(name);
+	scaleObject.addChild(extensionData.webglIF.createSphere({ diameter: 0.15, diameterZ: 0.3, rotation: { x: 90, y: 0, z: 0 }, material: "scale-manipulator-unselected", renderingGroupId: manipulatorRenderingGroup }));
+	scaleObject.addChild(extensionData.webglIF.createCylinder({ diameterTop: 0, diameterBottom: 0.1, height: 0.1, position: { y: -0.3 }, rotation: { x: 0, y: 0, z: 180 }, renderingGroupId: manipulatorRenderingGroup }));
+	scaleObject.addChild(extensionData.webglIF.createCylinder({ diameter: 0.05, height: 0.6, renderingGroupId: manipulatorRenderingGroup }));
+	scaleObject.addChild(extensionData.webglIF.createCylinder({ diameterTop: 0, diameterBottom: 0.1, height: 0.1, position: { y: 0.3 }, renderingGroupId: manipulatorRenderingGroup }));
 	scaleObject.visible = false;
 
 	return scaleObject;
 }
 
-function createRotateObject(p_Name, p_ExtensionData) {
-	const rotateObject = p_ExtensionData.webglIF.createGroup(p_Name);
-	rotateObject.addChild(p_ExtensionData.webglIF.createSphere({ diameter: 0.2, rotation: { x: 90, y: 0, z: 0 }, material: "rotate-manipulator-unselected", renderingGroupId: manipulatorRenderingGroup }));
+function createRotateObject(name, extensionData) {
+	const rotateObject = extensionData.webglIF.createGroup(name);
+	rotateObject.addChild(extensionData.webglIF.createSphere({ diameter: 0.2, rotation: { x: 90, y: 0, z: 0 }, material: "rotate-manipulator-unselected", renderingGroupId: manipulatorRenderingGroup }));
 	const path = [];
 	const arc = toRadians(270);
 	const startAngle = toRadians(0);
@@ -76,86 +76,86 @@ function createRotateObject(p_Name, p_ExtensionData) {
 	for (let rad = startAngle; rad < startAngle + arc; rad += stepSize) {
 		path.push([Math.sin(rad) * dist, Math.cos(rad) * dist, 0]);
 	}
-	rotateObject.addChild(p_ExtensionData.webglIF.createTube({ radius: 0.025, cap: CAP_TYPES.CAP_ALL, path, renderingGroupId: manipulatorRenderingGroup }));
-	rotateObject.addChild(p_ExtensionData.webglIF.createCylinder({ diameterTop: 0, diameterBottom: 0.1, height: 0.1, position: { x: -0.2 }, rotation: { x: 0, y: 0, z: 0 }, renderingGroupId: manipulatorRenderingGroup }));
+	rotateObject.addChild(extensionData.webglIF.createTube({ radius: 0.025, cap: CAP_TYPES.CAP_ALL, path, renderingGroupId: manipulatorRenderingGroup }));
+	rotateObject.addChild(extensionData.webglIF.createCylinder({ diameterTop: 0, diameterBottom: 0.1, height: 0.1, position: { x: -0.2 }, rotation: { x: 0, y: 0, z: 0 }, renderingGroupId: manipulatorRenderingGroup }));
 	rotateObject.visible = false;
 
 	return rotateObject;
 }
 
-function createManipulatorTemplates(p_Extension) {
-	const extensionData = p_Extension[privateData];
+function createManipulatorTemplates(extension) {
+	const extensionData = extension[privateData];
 	extensionData.manipulators[MANIPULATOR_TYPES.MOVE_X] = extensionData.manipulators[MANIPULATOR_TYPES.MOVE_Y] = extensionData.manipulators[MANIPULATOR_TYPES.MOVE_Z] = createMoveObject("move-manipulator", extensionData);
 	extensionData.manipulators[MANIPULATOR_TYPES.MOVE_PLANE] = createPlaneMoveObject("move-manipulator", extensionData);
 	extensionData.manipulators[MANIPULATOR_TYPES.SCALE_X] = extensionData.manipulators[MANIPULATOR_TYPES.SCALE_Y] = extensionData.manipulators[MANIPULATOR_TYPES.SCALE_Z] = extensionData.manipulators[MANIPULATOR_TYPES.SCALE] = createScaleObject("scale-manipulator", extensionData);
 	extensionData.manipulators[MANIPULATOR_TYPES.ROTATE_X] = extensionData.manipulators[MANIPULATOR_TYPES.ROTATE_Y] = extensionData.manipulators[MANIPULATOR_TYPES.ROTATE_Z] = createRotateObject("rotate-manipulator", extensionData);
 }
 
-function createAndAttachManipulatorInstance(p_ManipulatorName, p_Extension, p_Object, p_Settings) {
-	const extensionData = p_Extension[privateData];
-	const name = `${p_ManipulatorName}-${p_Object.name}`;
-	p_Object.getChildren((p_ChildObject) => p_ChildObject.name === name).forEach((p_ChildObject) => p_Object.removeChild(p_ChildObject));
-	const clonedObject = extensionData.manipulators[p_ManipulatorName].clone(name);
-	extensionData.webglIF.applySettings(Object.assign({ collisions: true, visible: true }, p_Settings), clonedObject);
-	clonedObject.manipulatorType = p_ManipulatorName;
-	p_Object.addChild(clonedObject);
+function createAndAttachManipulatorInstance(manipulatorName, extension, obj, settings) {
+	const extensionData = extension[privateData];
+	const name = `${manipulatorName}-${obj.name}`;
+	obj.getChildren((childObject) => childObject.name === name).forEach((childObject) => obj.removeChild(childObject));
+	const clonedObject = extensionData.manipulators[manipulatorName].clone(name);
+	extensionData.webglIF.applySettings(Object.assign({ collisions: true, visible: true }, settings), clonedObject);
+	clonedObject.manipulatorType = manipulatorName;
+	obj.addChild(clonedObject);
 }
 
-function attachMoveXManipulator(p_Extension, p_Object, p_Settings) {
-	createAndAttachManipulatorInstance(MANIPULATOR_TYPES.MOVE_X, p_Extension, p_Object, p_Settings);
+function attachMoveXManipulator(extension, object, settings) {
+	createAndAttachManipulatorInstance(MANIPULATOR_TYPES.MOVE_X, extension, object, settings);
 }
-function attachMoveYManipulator(p_Extension, p_Object, p_Settings) {
-	createAndAttachManipulatorInstance(MANIPULATOR_TYPES.MOVE_Y, p_Extension, p_Object, p_Settings);
+function attachMoveYManipulator(extension, object, settings) {
+	createAndAttachManipulatorInstance(MANIPULATOR_TYPES.MOVE_Y, extension, object, settings);
 }
-function attachMoveZManipulator(p_Extension, p_Object, p_Settings) {
-	createAndAttachManipulatorInstance(MANIPULATOR_TYPES.MOVE_Z, p_Extension, p_Object, p_Settings);
+function attachMoveZManipulator(extension, object, settings) {
+	createAndAttachManipulatorInstance(MANIPULATOR_TYPES.MOVE_Z, extension, object, settings);
 }
-function attachMovePlaneManipulator(p_Extension, p_Object, p_Settings) {
-	createAndAttachManipulatorInstance(MANIPULATOR_TYPES.MOVE_PLANE, p_Extension, p_Object, p_Settings);
+function attachMovePlaneManipulator(extension, object, settings) {
+	createAndAttachManipulatorInstance(MANIPULATOR_TYPES.MOVE_PLANE, extension, object, settings);
 }
-function attachScaleXManipulator(p_Extension, p_Object, p_Settings) {
-	createAndAttachManipulatorInstance(MANIPULATOR_TYPES.SCALE_X, p_Extension, p_Object, p_Settings);
+function attachScaleXManipulator(extension, object, settings) {
+	createAndAttachManipulatorInstance(MANIPULATOR_TYPES.SCALE_X, extension, object, settings);
 }
-function attachScaleYManipulator(p_Extension, p_Object, p_Settings) {
-	createAndAttachManipulatorInstance(MANIPULATOR_TYPES.SCALE_Y, p_Extension, p_Object, p_Settings);
+function attachScaleYManipulator(extension, object, settings) {
+	createAndAttachManipulatorInstance(MANIPULATOR_TYPES.SCALE_Y, extension, object, settings);
 }
-function attachScaleZManipulator(p_Extension, p_Object, p_Settings) {
-	createAndAttachManipulatorInstance(MANIPULATOR_TYPES.SCALE_Z, p_Extension, p_Object, p_Settings);
+function attachScaleZManipulator(extension, object, settings) {
+	createAndAttachManipulatorInstance(MANIPULATOR_TYPES.SCALE_Z, extension, object, settings);
 }
-function attachScaleManipulator(p_Extension, p_Object, p_Settings) {
-	createAndAttachManipulatorInstance(MANIPULATOR_TYPES.SCALE, p_Extension, p_Object, p_Settings);
+function attachScaleManipulator(extension, object, settings) {
+	createAndAttachManipulatorInstance(MANIPULATOR_TYPES.SCALE, extension, object, settings);
 }
-function attachRotateAroundXManipulator(p_Extension, p_Object, p_Settings) {
-	createAndAttachManipulatorInstance(MANIPULATOR_TYPES.ROTATE_X, p_Extension, p_Object, p_Settings);
+function attachRotateAroundXManipulator(extension, object, settings) {
+	createAndAttachManipulatorInstance(MANIPULATOR_TYPES.ROTATE_X, extension, object, settings);
 }
-function attachRotateAroundYManipulator(p_Extension, p_Object, p_Settings) {
-	createAndAttachManipulatorInstance(MANIPULATOR_TYPES.ROTATE_Y, p_Extension, p_Object, p_Settings);
+function attachRotateAroundYManipulator(extension, object, settings) {
+	createAndAttachManipulatorInstance(MANIPULATOR_TYPES.ROTATE_Y, extension, object, settings);
 }
-function attachRotateAroundZManipulator(p_Extension, p_Object, p_Settings) {
-	createAndAttachManipulatorInstance(MANIPULATOR_TYPES.ROTATE_Z, p_Extension, p_Object, p_Settings);
+function attachRotateAroundZManipulator(extension, object, settings) {
+	createAndAttachManipulatorInstance(MANIPULATOR_TYPES.ROTATE_Z, extension, object, settings);
 }
 
-function attachManipulators(p_Extension, p_Object, p_ClickPoint) {
-	const extensionData = p_Extension[privateData];
-	const allowed = p_Object[manipulation].allowed;
-	const activeGroup = p_Object[manipulation].activeGroup;
-	const manipulatorPlane = p_Object[manipulation].manipulatorPlane;
-	p_Extension.removeManipulators(p_Object.name);
+function attachManipulators(extension, object, clickPoint) {
+	const extensionData = extension[privateData];
+	const allowed = object[manipulation].allowed;
+	const activeGroup = object[manipulation].activeGroup;
+	const manipulatorPlane = object[manipulation].manipulatorPlane;
+	extension.removeManipulators(object.name);
 
-	if (allowed && Object.keys(allowed).find((p_Key) => MANIPULATOR_TYPES[p_Key] && allowed[p_Key])) {
-		const center = p_Object.center;
-		const boundingVectors = p_Object.boundingVectors;
+	if (allowed && Object.keys(allowed).find((key) => MANIPULATOR_TYPES[key] && allowed[key])) {
+		const center = object.center;
+		const boundingVectors = object.boundingVectors;
 
-		const manipulatorObject = extensionData.webglIF.createGroup(`manipulator-for-${p_Object.name}`);
+		const manipulatorObject = extensionData.webglIF.createGroup(`manipulator-for-${object.name}`);
 		extensionData.activeManipulationObjects[manipulatorObject.name] = manipulatorObject;
-		manipulatorObject.manipulatedObject = p_Object;
-		manipulatorObject.manipulatedObject.onRemove = (p_RemovingObject) => {
-			p_Extension.removeManipulators(p_RemovingObject.name);
+		manipulatorObject.manipulatedObject = object;
+		manipulatorObject.manipulatedObject.onRemove = (removingObject) => {
+			extension.removeManipulators(removingObject.name);
 		};
 
-		const getPosition = (p_TargetOffsetX, p_TargetOffsetY) => {
-			const screenPoint = extensionData.webglIF.pointToScreenPoint(p_ClickPoint || center);
-			const planePointPair = extensionData.webglIF.screenPointToBoundingProjection(screenPoint, p_Object);
+		const getPosition = (targetOffsetX, targetOffsetY) => {
+			const screenPoint = extensionData.webglIF.pointToScreenPoint(clickPoint || center);
+			const planePointPair = extensionData.webglIF.screenPointToBoundingProjection(screenPoint, object);
 			const distance = vectorLength(vectorSubtract(planePointPair.intersection, planePointPair.start));
 			const factor = 1 / distance;
 			const position = {
@@ -178,7 +178,7 @@ function attachManipulators(p_Extension, p_Object, p_ClickPoint) {
 				visible: true,
 			});
 			tempPlane.updateCoordinates();
-			const planePos = extensionData.webglIF.screenToObjectPoint({ x: screenPoint.x + p_TargetOffsetX, y: screenPoint.y + p_TargetOffsetY }, tempPlane);
+			const planePos = extensionData.webglIF.screenToObjectPoint({ x: screenPoint.x + targetOffsetX, y: screenPoint.y + targetOffsetY }, tempPlane);
 			tempPlane.remove();
 
 			return {
@@ -195,93 +195,93 @@ function attachManipulators(p_Extension, p_Object, p_ClickPoint) {
 			if (allowed[MANIPULATOR_TYPES.MOVE_PLANE]) {
 				if (manipulatorPlane) {
 					const pos = getPosition(0, 0);
-					attachMovePlaneManipulator(p_Extension, manipulatorObject, { position: pos.position, scale: pos.scale, rotation: { x: 0, y: manipulatorPlane.rotation.y + 90, z: manipulatorPlane.rotation.x } });
+					attachMovePlaneManipulator(extension, manipulatorObject, { position: pos.position, scale: pos.scale, rotation: { x: 0, y: manipulatorPlane.rotation.y + 90, z: manipulatorPlane.rotation.x } });
 					manipulatorObject.getChildren()[0].manipulatorPlane = manipulatorPlane;
 				}
 			} else {
 				if (allowed[MANIPULATOR_TYPES.MOVE_X]) {
 					const pos = getPosition(60, 60);
-					attachMoveXManipulator(p_Extension, manipulatorObject, { position: pos.position, scale: pos.scale, rotation: { x: 0, y: 0, z: 90 } });
+					attachMoveXManipulator(extension, manipulatorObject, { position: pos.position, scale: pos.scale, rotation: { x: 0, y: 0, z: 90 } });
 				}
 				if (allowed[MANIPULATOR_TYPES.MOVE_Y]) {
 					const pos = getPosition(-60, -60);
-					attachMoveYManipulator(p_Extension, manipulatorObject, { position: pos.position, scale: pos.scale, rotation: { x: 0, y: 0, z: 0 } });
+					attachMoveYManipulator(extension, manipulatorObject, { position: pos.position, scale: pos.scale, rotation: { x: 0, y: 0, z: 0 } });
 				}
 				if (allowed[MANIPULATOR_TYPES.MOVE_Z]) {
 					const pos = getPosition(-60, 60);
-					attachMoveZManipulator(p_Extension, manipulatorObject, { position: pos.position, scale: pos.scale, rotation: { x: 90, y: 0, z: 0 } });
+					attachMoveZManipulator(extension, manipulatorObject, { position: pos.position, scale: pos.scale, rotation: { x: 90, y: 0, z: 0 } });
 				}
 			}
 		} else if (activeGroup === MANIPULATOR_GROUP_TYPES.SCALE) {
 			if (allowed[MANIPULATOR_TYPES.SCALE]) {
 				const pos = getPosition(60, -60);
-				attachScaleManipulator(p_Extension, manipulatorObject, { position: pos.position, scale: pos.scale, rotation: { x: -45, y: -45, z: 0 } });
+				attachScaleManipulator(extension, manipulatorObject, { position: pos.position, scale: pos.scale, rotation: { x: -45, y: -45, z: 0 } });
 			} else {
 				if (allowed[MANIPULATOR_TYPES.SCALE_X]) {
 					const pos = getPosition(60, 60);
-					attachScaleXManipulator(p_Extension, manipulatorObject, { position: boundingVectors[0], scale: pos.scale, rotation: { x: 0, y: 0, z: 90 } });
+					attachScaleXManipulator(extension, manipulatorObject, { position: boundingVectors[0], scale: pos.scale, rotation: { x: 0, y: 0, z: 90 } });
 				}
 				if (allowed[MANIPULATOR_TYPES.SCALE_Y]) {
 					const pos = getPosition(-60, -60);
-					attachScaleYManipulator(p_Extension, manipulatorObject, { position: boundingVectors[1], scale: pos.scale, rotation: { x: 0, y: 0, z: 0 } });
+					attachScaleYManipulator(extension, manipulatorObject, { position: boundingVectors[1], scale: pos.scale, rotation: { x: 0, y: 0, z: 0 } });
 				}
 				if (allowed[MANIPULATOR_TYPES.SCALE_Z]) {
 					const pos = getPosition(-60, 60);
-					attachScaleZManipulator(p_Extension, manipulatorObject, { position: boundingVectors[2], scale: pos.scale, rotation: { x: 90, y: 0, z: 0 } });
+					attachScaleZManipulator(extension, manipulatorObject, { position: boundingVectors[2], scale: pos.scale, rotation: { x: 90, y: 0, z: 0 } });
 				}
 			}
 		} else if (activeGroup === MANIPULATOR_GROUP_TYPES.ROTATE) {
 			if (allowed[MANIPULATOR_TYPES.ROTATE_X]) {
 				const pos = getPosition(60, 60);
-				attachRotateAroundXManipulator(p_Extension, manipulatorObject, { position: boundingVectors[0], scale: pos.scale, rotation: { x: 180, y: 270, z: -90 } });
+				attachRotateAroundXManipulator(extension, manipulatorObject, { position: boundingVectors[0], scale: pos.scale, rotation: { x: 180, y: 270, z: -90 } });
 			}
 			if (allowed[MANIPULATOR_TYPES.ROTATE_Y]) {
 				const pos = getPosition(-60, -60);
-				attachRotateAroundYManipulator(p_Extension, manipulatorObject, { position: boundingVectors[1], scale: pos.scale, rotation: { x: 90, y: 270, z: 0 } });
+				attachRotateAroundYManipulator(extension, manipulatorObject, { position: boundingVectors[1], scale: pos.scale, rotation: { x: 90, y: 270, z: 0 } });
 			}
 			if (allowed[MANIPULATOR_TYPES.ROTATE_Z]) {
 				const pos = getPosition(-60, 60);
-				attachRotateAroundZManipulator(p_Extension, manipulatorObject, { position: boundingVectors[2], scale: pos.scale, rotation: { x: 0, y: 0, z: 90 } });
+				attachRotateAroundZManipulator(extension, manipulatorObject, { position: boundingVectors[2], scale: pos.scale, rotation: { x: 0, y: 0, z: 90 } });
 			}
 		}
 	}
 }
 
-function setNextGroup(p_Extension, p_Object) {
-	if (p_Object[manipulation].activeGroup) {
-		if (p_Object[manipulation].activeGroup === MANIPULATOR_GROUP_TYPES.ROTATE) {
-			if (p_Object[manipulation].allowed[MANIPULATOR_TYPES.MOVE_X] || p_Object[manipulation].allowed[MANIPULATOR_TYPES.MOVE_Y] || p_Object[manipulation].allowed[MANIPULATOR_TYPES.MOVE_Z] || p_Object[manipulation].allowed[MANIPULATOR_TYPES.MOVE_PLANE]) {
-				p_Object[manipulation].activeGroup = MANIPULATOR_GROUP_TYPES.MOVE;
-			} else if (p_Object[manipulation].allowed[MANIPULATOR_TYPES.SCALE_X] || p_Object[manipulation].allowed[MANIPULATOR_TYPES.SCALE_Y] || p_Object[manipulation].allowed[MANIPULATOR_TYPES.SCALE_Z] || p_Object[manipulation].allowed[MANIPULATOR_TYPES.SCALE]) {
-				p_Object[manipulation].activeGroup = MANIPULATOR_GROUP_TYPES.SCALE;
+function setNextGroup(extension, obj) {
+	if (obj[manipulation].activeGroup) {
+		if (obj[manipulation].activeGroup === MANIPULATOR_GROUP_TYPES.ROTATE) {
+			if (obj[manipulation].allowed[MANIPULATOR_TYPES.MOVE_X] || obj[manipulation].allowed[MANIPULATOR_TYPES.MOVE_Y] || obj[manipulation].allowed[MANIPULATOR_TYPES.MOVE_Z] || obj[manipulation].allowed[MANIPULATOR_TYPES.MOVE_PLANE]) {
+				obj[manipulation].activeGroup = MANIPULATOR_GROUP_TYPES.MOVE;
+			} else if (obj[manipulation].allowed[MANIPULATOR_TYPES.SCALE_X] || obj[manipulation].allowed[MANIPULATOR_TYPES.SCALE_Y] || obj[manipulation].allowed[MANIPULATOR_TYPES.SCALE_Z] || obj[manipulation].allowed[MANIPULATOR_TYPES.SCALE]) {
+				obj[manipulation].activeGroup = MANIPULATOR_GROUP_TYPES.SCALE;
 			}
-		} else if (p_Object[manipulation].activeGroup === MANIPULATOR_GROUP_TYPES.MOVE) {
-			if (p_Object[manipulation].allowed[MANIPULATOR_TYPES.SCALE_X] || p_Object[manipulation].allowed[MANIPULATOR_TYPES.SCALE_Y] || p_Object[manipulation].allowed[MANIPULATOR_TYPES.SCALE_Z] || p_Object[manipulation].allowed[MANIPULATOR_TYPES.SCALE]) {
-				p_Object[manipulation].activeGroup = MANIPULATOR_GROUP_TYPES.SCALE;
-			} else if (p_Object[manipulation].allowed[MANIPULATOR_TYPES.ROTATE_X] || p_Object[manipulation].allowed[MANIPULATOR_TYPES.ROTATE_Y] || p_Object[manipulation].allowed[MANIPULATOR_TYPES.ROTATE_Z]) {
-				p_Object[manipulation].activeGroup = MANIPULATOR_GROUP_TYPES.ROTATE;
+		} else if (obj[manipulation].activeGroup === MANIPULATOR_GROUP_TYPES.MOVE) {
+			if (obj[manipulation].allowed[MANIPULATOR_TYPES.SCALE_X] || obj[manipulation].allowed[MANIPULATOR_TYPES.SCALE_Y] || obj[manipulation].allowed[MANIPULATOR_TYPES.SCALE_Z] || obj[manipulation].allowed[MANIPULATOR_TYPES.SCALE]) {
+				obj[manipulation].activeGroup = MANIPULATOR_GROUP_TYPES.SCALE;
+			} else if (obj[manipulation].allowed[MANIPULATOR_TYPES.ROTATE_X] || obj[manipulation].allowed[MANIPULATOR_TYPES.ROTATE_Y] || obj[manipulation].allowed[MANIPULATOR_TYPES.ROTATE_Z]) {
+				obj[manipulation].activeGroup = MANIPULATOR_GROUP_TYPES.ROTATE;
 			}
-		} else if (p_Object[manipulation].activeGroup === MANIPULATOR_GROUP_TYPES.SCALE) {
-			if (p_Object[manipulation].allowed[MANIPULATOR_TYPES.ROTATE_X] || p_Object[manipulation].allowed[MANIPULATOR_TYPES.ROTATE_Y] || p_Object[manipulation].allowed[MANIPULATOR_TYPES.ROTATE_Z]) {
-				p_Object[manipulation].activeGroup = MANIPULATOR_GROUP_TYPES.ROTATE;
-			} else if (p_Object[manipulation].allowed[MANIPULATOR_TYPES.MOVE_X] || p_Object[manipulation].allowed[MANIPULATOR_TYPES.MOVE_Y] || p_Object[manipulation].allowed[MANIPULATOR_TYPES.MOVE_Z] || p_Object[manipulation].allowed[MANIPULATOR_TYPES.MOVE_PLANE]) {
-				p_Object[manipulation].activeGroup = MANIPULATOR_GROUP_TYPES.MOVE;
+		} else if (obj[manipulation].activeGroup === MANIPULATOR_GROUP_TYPES.SCALE) {
+			if (obj[manipulation].allowed[MANIPULATOR_TYPES.ROTATE_X] || obj[manipulation].allowed[MANIPULATOR_TYPES.ROTATE_Y] || obj[manipulation].allowed[MANIPULATOR_TYPES.ROTATE_Z]) {
+				obj[manipulation].activeGroup = MANIPULATOR_GROUP_TYPES.ROTATE;
+			} else if (obj[manipulation].allowed[MANIPULATOR_TYPES.MOVE_X] || obj[manipulation].allowed[MANIPULATOR_TYPES.MOVE_Y] || obj[manipulation].allowed[MANIPULATOR_TYPES.MOVE_Z] || obj[manipulation].allowed[MANIPULATOR_TYPES.MOVE_PLANE]) {
+				obj[manipulation].activeGroup = MANIPULATOR_GROUP_TYPES.MOVE;
 			}
 		}
 	} else {
-		if (p_Object[manipulation].allowed[MANIPULATOR_TYPES.MOVE_X] || p_Object[manipulation].allowed[MANIPULATOR_TYPES.MOVE_Y] || p_Object[manipulation].allowed[MANIPULATOR_TYPES.MOVE_Z] || p_Object[manipulation].allowed[MANIPULATOR_TYPES.MOVE_PLANE]) {
-			p_Object[manipulation].activeGroup = MANIPULATOR_GROUP_TYPES.MOVE;
-		} else if (p_Object[manipulation].allowed[MANIPULATOR_TYPES.SCALE_X] || p_Object[manipulation].allowed[MANIPULATOR_TYPES.SCALE_Y] || p_Object[manipulation].allowed[MANIPULATOR_TYPES.SCALE_Z] || p_Object[manipulation].allowed[MANIPULATOR_TYPES.SCALE]) {
-			p_Object[manipulation].activeGroup = MANIPULATOR_GROUP_TYPES.SCALE;
-		} else if (p_Object[manipulation].allowed[MANIPULATOR_TYPES.ROTATE_X] || p_Object[manipulation].allowed[MANIPULATOR_TYPES.ROTATE_Y] || p_Object[manipulation].allowed[MANIPULATOR_TYPES.ROTATE_Z]) {
-			p_Object[manipulation].activeGroup = MANIPULATOR_GROUP_TYPES.ROTATE;
+		if (obj[manipulation].allowed[MANIPULATOR_TYPES.MOVE_X] || obj[manipulation].allowed[MANIPULATOR_TYPES.MOVE_Y] || obj[manipulation].allowed[MANIPULATOR_TYPES.MOVE_Z] || obj[manipulation].allowed[MANIPULATOR_TYPES.MOVE_PLANE]) {
+			obj[manipulation].activeGroup = MANIPULATOR_GROUP_TYPES.MOVE;
+		} else if (obj[manipulation].allowed[MANIPULATOR_TYPES.SCALE_X] || obj[manipulation].allowed[MANIPULATOR_TYPES.SCALE_Y] || obj[manipulation].allowed[MANIPULATOR_TYPES.SCALE_Z] || obj[manipulation].allowed[MANIPULATOR_TYPES.SCALE]) {
+			obj[manipulation].activeGroup = MANIPULATOR_GROUP_TYPES.SCALE;
+		} else if (obj[manipulation].allowed[MANIPULATOR_TYPES.ROTATE_X] || obj[manipulation].allowed[MANIPULATOR_TYPES.ROTATE_Y] || obj[manipulation].allowed[MANIPULATOR_TYPES.ROTATE_Z]) {
+			obj[manipulation].activeGroup = MANIPULATOR_GROUP_TYPES.ROTATE;
 		}
 	}
 }
 
 export default class VicowaWebGLManipulationExtension {
 	static getAllManipulatorsAllowed() {
-		return Object.keys(MANIPULATOR_TYPES).reduce((p_Previous, p_Option) => { p_Previous[p_Option] = true; return p_Previous; }, {});
+		return Object.keys(MANIPULATOR_TYPES).reduce((previous, option) => { previous[option] = true; return previous; }, {});
 	}
 
 	constructor() {
@@ -294,11 +294,11 @@ export default class VicowaWebGLManipulationExtension {
 		};
 	}
 
-	attach(p_WebGL, p_WebglInterface) {
+	attach(webGL, webglInterface) {
 		const extensionData = this[privateData];
 
-		extensionData.webgl = p_WebGL;
-		extensionData.webglIF = p_WebglInterface;
+		extensionData.webgl = webGL;
+		extensionData.webglIF = webglInterface;
 
 		extensionData.webgl.addMaterial("move-manipulator-unselected", { diffuse: { r: 0.6, g: 0.6, b: 1 } });
 		extensionData.webgl.addMaterial("move-manipulator-selected", { diffuse: { r: 0, g: 0, b: 1 } });
@@ -309,8 +309,8 @@ export default class VicowaWebGLManipulationExtension {
 
 		const getPlanePosition = () => ((extensionData.draggingManipulator && extensionData.draggingManipulator.manipulatorPlane) ? extensionData.webglIF.screenToObjectPoint(extensionData.webglIF.pointerPos, extensionData.draggingManipulator.manipulatorPlane) : null);
 
-		extensionData.webglIF.addPointerClickListener((p_Event) => {
-			let hitObject = p_Event.hitObject;
+		extensionData.webglIF.addPointerClickListener((event) => {
+			let hitObject = event.hitObject;
 			while (hitObject && !MANIPULATOR_TYPES[hitObject.manipulatorType]) {
 				hitObject = hitObject.parent;
 			}
@@ -326,8 +326,8 @@ export default class VicowaWebGLManipulationExtension {
 			}
 		});
 
-		extensionData.webglIF.addPointerDownListener((p_Event) => {
-			let hitObject = p_Event.hitObject;
+		extensionData.webglIF.addPointerDownListener((event) => {
+			let hitObject = event.hitObject;
 			while (hitObject && !MANIPULATOR_TYPES[hitObject.manipulatorType]) {
 				hitObject = hitObject.parent;
 			}
@@ -552,23 +552,23 @@ export default class VicowaWebGLManipulationExtension {
 		createManipulatorTemplates(this);
 	}
 
-	setAllowedManipulators(p_Object, p_Settings) {
+	setAllowedManipulators(obj, settings) {
 		const extensionData = this[privateData];
-		const targetObject = extensionData.webglIF.getObject(p_Object);
+		const targetObject = extensionData.webglIF.getObject(obj);
 		targetObject[manipulation] = targetObject[manipulation] || { allowed: {}, manipulatorPlane: null };
-		Object.keys(p_Settings).forEach((p_Key) => {
-			if (MANIPULATOR_TYPES[p_Key]) {
-				targetObject[manipulation].allowed[p_Key] = p_Settings[p_Key];
-				if (p_Key === MANIPULATOR_TYPES.MOVE_PLANE) {
-					targetObject[manipulation].manipulatorPlane = p_Settings.movePlane;
+		Object.keys(settings).forEach((key) => {
+			if (MANIPULATOR_TYPES[key]) {
+				targetObject[manipulation].allowed[key] = settings[key];
+				if (key === MANIPULATOR_TYPES.MOVE_PLANE) {
+					targetObject[manipulation].manipulatorPlane = settings.movePlane;
 				}
 			}
 		});
 	}
 
-	removeManipulators(p_Object) {
+	removeManipulators(obj) {
 		const extensionData = this[privateData];
-		const targetObject = extensionData.webglIF.getObject(p_Object);
+		const targetObject = extensionData.webglIF.getObject(obj);
 		const manipulatorName = `manipulator-for-${targetObject.name}`;
 		if (extensionData.activeManipulationObjects[manipulatorName]) {
 			extensionData.activeManipulationObjects[manipulatorName].remove();
@@ -576,14 +576,14 @@ export default class VicowaWebGLManipulationExtension {
 		}
 	}
 
-	attachManipulators(p_Object, p_ClickPoint) {
+	attachManipulators(obj, clickPoint) {
 		const extensionData = this[privateData];
-		const targetObject = extensionData.webglIF.getObject(p_Object);
+		const targetObject = extensionData.webglIF.getObject(obj);
 		if (targetObject && targetObject[manipulation]) {
 			if (!targetObject[manipulation].activeGroup) {
 				setNextGroup(this, targetObject);
 			}
-			attachManipulators(this, targetObject, p_ClickPoint);
+			attachManipulators(this, targetObject, clickPoint);
 		}
 	}
 }

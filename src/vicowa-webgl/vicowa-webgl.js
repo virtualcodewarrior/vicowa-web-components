@@ -1,87 +1,78 @@
 /* eslint new-cap: ["off"] */
 /* switching this off for this file because babylon uses almost all uppercase starting function names */
-import "../third_party/earcut/dist/earcut.dev.js";
-import "../third_party/babylonjs/babylon.max.js";
-import "../third_party/babylonjs-loaders/babylonjs.loaders.js";
-import { webComponentBaseClass } from "../third_party/web-component-base-class/src/webComponentBaseClass.js";
+import "/third_party/earcut/dist/earcut.dev.js";
+import "/third_party/babylonjs/babylon.max.js";
+import "/third_party/babylonjs-loaders/babylonjs.loaders.js";
+import { WebComponentBaseClass } from "/third_party/web-component-base-class/src/web-component-base-class.js";
 import "../vicowa-resize-detector/vicowa-resize-detector.js";
 import { CAMERA_TYPES, CAP_TYPES } from "./vicowa-webgl-definitions.js";
 import { intersectRayAndTriangle, toDegrees, toRadians, vectorLength } from "../utilities/mathHelpers.js";
 import debug from "../utilities/debug.js";
 
-const privateData = Symbol["privateData"];
 const meshContainer = Symbol("meshContainer");
 const wrapReference = Symbol("wrapReference");
 const originalDispose = Symbol("originalDispose");
 
-function unWrap(p_Wrapped) { return p_Wrapped[meshContainer]; }
+function unWrap(wrapped) { return wrapped[meshContainer]; }
 
 const babylon = window.BABYLON;
-const componentName = "vicowa-webgl";
 
 let nameID = 0;
 // validate the name or create a name when none is specified
-function ensureName(p_Name) {
-	debug.assert(!p_Name || !/--/.test(p_Name), "names containing a double dash '--' are reserved for internal use only");
-	return (!p_Name) ? `objectID--${++nameID}` : p_Name;
+function ensureName(name) {
+	debug.assert(!name || !/--/.test(name), "names containing a double dash '--' are reserved for internal use only");
+	return (!name) ? `objectID--${++nameID}` : name;
 }
 
-function handleLoadingScreenChange(p_WebGLControl) {
-	const controlData = p_WebGLControl[privateData];
-	if (controlData.assetsManager) {
-		controlData.assetsManager.useDefaultLoadingScreen = p_WebGLControl.loadingScreen;
-	}
+function multiplyObject(obj, multiplier, keysToMultiply) {
+	Object.keys(obj).filter((key) => keysToMultiply.includes(key)).forEach((key) => { obj[key] = (obj[key] || 0) * multiplier; });
+	return obj;
 }
 
-function multiplyObject(p_Object, p_Multiplier, p_KeysToMultiply) {
-	Object.keys(p_Object).filter((p_Key) => p_KeysToMultiply.includes(p_Key)).forEach((p_Key) => { p_Object[p_Key] = (p_Object[p_Key] || 0) * p_Multiplier; });
-	return p_Object;
-}
+function multiplyVector(vector, multiplier) { return multiplyObject(vector, multiplier, ["x", "y", "z"]); }
+function convertToVectorObject(vector) { return (Array.isArray(vector)) ? { x: vector[0], y: vector[1], z: vector[2] } : vector; }
+function convertToVector3(vector) { return new babylon.Vector3(vector.x, vector.y, vector.z); }
+function flattenMeshes(mesh) { return [mesh].concat(mesh.getChildMeshes(false)); }
 
-function multiplyVector(p_Vector, p_Multiplier) { return multiplyObject(p_Vector, p_Multiplier, ["x", "y", "z"]); }
-function convertToVectorObject(p_Vector) { return (Array.isArray(p_Vector)) ? { x: p_Vector[0], y: p_Vector[1], z: p_Vector[2] } : p_Vector; }
-function convertToVector3(p_Vector) { return new babylon.Vector3(p_Vector.x, p_Vector.y, p_Vector.z); }
-function flattenMeshes(p_Mesh) { return [p_Mesh].concat(p_Mesh.getChildMeshes(false)); }
-
-function getMeshObject(p_ControlData, p_MeshNamePathOrObject) {
+function getMeshObject(controlData, meshNamePathOrObject) {
 	let mesh = null;
-	if (Array.isArray(p_MeshNamePathOrObject)) {
+	if (Array.isArray(meshNamePathOrObject)) {
 		// this is a path to the mesh, maybe because we clicked a child mesh
-		mesh = p_ControlData.meshes[p_MeshNamePathOrObject[0]] || p_ControlData.instances[p_MeshNamePathOrObject[0]];
-		p_MeshNamePathOrObject.slice(1).forEach((p_Name) => {
+		mesh = controlData.meshes[meshNamePathOrObject[0]] || controlData.instances[meshNamePathOrObject[0]];
+		meshNamePathOrObject.slice(1).forEach((name) => {
 			if (mesh) {
-				mesh = mesh.getChildMeshes(true, (p_ChildMesh) => p_ChildMesh.name === p_Name)[0];
+				mesh = mesh.getChildMeshes(true, (childMesh) => childMesh.name === name)[0];
 			}
 		});
-	} else if (typeof p_MeshNamePathOrObject === "string") {
-		mesh = p_ControlData.meshes[p_MeshNamePathOrObject] || p_ControlData.instances[p_MeshNamePathOrObject];
+	} else if (typeof meshNamePathOrObject === "string") {
+		mesh = controlData.meshes[meshNamePathOrObject] || controlData.instances[meshNamePathOrObject];
 	} else {
-		mesh = unWrap(p_MeshNamePathOrObject);
+		mesh = unWrap(meshNamePathOrObject);
 	}
 	return mesh;
 }
 
-function getTopLevelMeshObject(p_ControlData, p_MeshNamePathOrObject) {
-	let mesh = getMeshObject(p_ControlData, p_MeshNamePathOrObject);
-	while (mesh && p_ControlData.meshes[mesh.name] !== mesh) {
+function getTopLevelMeshObject(controlData, meshNamePathOrObject) {
+	let mesh = getMeshObject(controlData, meshNamePathOrObject);
+	while (mesh && controlData.meshes[mesh.name] !== mesh) {
 		mesh = mesh.parent;
 	}
 	return mesh;
 }
 
-function applyRecursive(p_Mesh, p_PropertyName, p_PropertyValue) {
-	p_Mesh[p_PropertyName] = p_PropertyValue;
-	p_Mesh.getChildMeshes(false).forEach((p_Child) => { p_Child[p_PropertyName] = p_PropertyValue; });
+function applyRecursive(mesh, propertyName, propertyValue) {
+	mesh[propertyName] = propertyValue;
+	mesh.getChildMeshes(false).forEach((child) => { child[propertyName] = propertyValue; });
 }
 
-function createShadowGenerator(p_Light) {
-	const shadowGenerator = new babylon.ShadowGenerator(1024, p_Light);
+function createShadowGenerator(light) {
+	const shadowGenerator = new babylon.ShadowGenerator(1024, light);
 	shadowGenerator.getShadowMap().refreshRate = babylon.RenderTargetTexture.REFRESHRATE_RENDER_ONCE;
 	shadowGenerator.bias = 0.0001;
 	shadowGenerator.forceBackFacesOnly = true;
 	shadowGenerator.normalBias = 0.02;
-	p_Light.shadowMaxZ = 1000;
-	p_Light.shadowMinZ = -1000;
+	light.shadowMaxZ = 1000;
+	light.shadowMinZ = -1000;
 	shadowGenerator.useContactHardeningShadow = true;
 	shadowGenerator.contactHardeningLightSizeUVRatio = 0.05;
 	shadowGenerator.setDarkness(0.2);
@@ -89,232 +80,173 @@ function createShadowGenerator(p_Light) {
 	return shadowGenerator;
 }
 
-function addShadowCaster(p_ControlData, p_MeshObject) {
-	Object.keys(p_ControlData.lights).forEach((p_Light) => {
-		const light = p_ControlData.lights[p_Light];
+function addShadowCaster(controlData, meshObject) {
+	Object.keys(controlData.lights).forEach((lightKey) => {
+		const light = controlData.lights[lightKey];
 		if (light.shadowGenerator) {
-			light.shadowGenerator.addShadowCaster(p_MeshObject);
+			light.shadowGenerator.addShadowCaster(meshObject);
 		}
 	});
 }
 
-function applyAllMeshes(p_Meshes, p_ExcludedNames, p_PropertyName, p_PropertyValue) {
-	Object.keys(p_Meshes).forEach((p_Key) => { if (!p_ExcludedNames.includes(p_Key)) { applyRecursive(p_Meshes[p_Key], p_PropertyName, p_PropertyValue); } });
+function applyAllMeshes(meshes, excludedNames, propertyName, propertyValue) {
+	Object.keys(meshes).forEach((key) => { if (!excludedNames.includes(key)) { applyRecursive(meshes[key], propertyName, propertyValue); } });
 }
 
-function setPosition(p_Mesh, p_Position, p_UnitMultiplier) {
-	Object.assign(p_Mesh.position, multiplyVector(p_Position, p_UnitMultiplier));
+function setPosition(mesh, position, unitMultiplier) {
+	Object.assign(mesh.position, multiplyVector(position, unitMultiplier));
 }
 
-function setRotation(p_Mesh, p_Rotation) {
-	p_Mesh.rotation.x = (p_Rotation.x !== undefined) ? toRadians(p_Rotation.x) : p_Mesh.rotation.x;
-	p_Mesh.rotation.y = (p_Rotation.y !== undefined) ? toRadians(p_Rotation.y) : p_Mesh.rotation.y;
-	p_Mesh.rotation.z = (p_Rotation.z !== undefined) ? toRadians(p_Rotation.z) : p_Mesh.rotation.z;
+function setRotation(mesh, rotation) {
+	mesh.rotation.x = (rotation.x !== undefined) ? toRadians(rotation.x) : mesh.rotation.x;
+	mesh.rotation.y = (rotation.y !== undefined) ? toRadians(rotation.y) : mesh.rotation.y;
+	mesh.rotation.z = (rotation.z !== undefined) ? toRadians(rotation.z) : mesh.rotation.z;
 }
 
-function setScale(p_Mesh, p_Scale) {
-	Object.assign(p_Mesh.scaling, p_Scale);
+function setScale(mesh, scale) {
+	Object.assign(mesh.scaling, scale);
 }
 
-function addDefaultSettings(p_WebGLControl, p_Settings) {
-	const controlData = p_WebGLControl[privateData];
-	return Object.assign({
-		collisions: controlData.allObjectCollisions,
-		shadows: p_WebGLControl.defaultShadows,
-	}, p_Settings);
-}
-
-function addMaterial(p_ControlData, p_MaterialName, p_Settings) {
-	const material = p_ControlData.materials[p_MaterialName] || new babylon.StandardMaterial(p_MaterialName, p_ControlData.scene);
-	if (p_Settings.diffuse) {
-		Object.assign(material.diffuseColor, p_Settings.diffuse);
+function addMaterial(controlData, materialName, settings) {
+	const material = controlData.materials[materialName] || new babylon.StandardMaterial(materialName, controlData.scene);
+	if (settings.diffuse) {
+		Object.assign(material.diffuseColor, settings.diffuse);
 	}
-	if (p_Settings.specular) {
-		Object.assign(material.specularColor, p_Settings.specular);
+	if (settings.specular) {
+		Object.assign(material.specularColor, settings.specular);
 	}
-	if (p_Settings.emissive) {
-		Object.assign(material.emissiveColor, p_Settings.emissive);
+	if (settings.emissive) {
+		Object.assign(material.emissiveColor, settings.emissive);
 	}
-	if (p_Settings.ambient) {
-		Object.assign(material.ambientColor, p_Settings.ambient);
+	if (settings.ambient) {
+		Object.assign(material.ambientColor, settings.ambient);
 	}
 
-	if (p_Settings.alpha !== undefined) {
-		material.alpha = p_Settings.alpha;
+	if (settings.alpha !== undefined) {
+		material.alpha = settings.alpha;
 	}
-	if (p_Settings.texture && p_Settings.texture.src) {
-		material.invertNormalMapY = material.invertNormalMapX = p_Settings.texture.invertBump || false;
-		if (p_Settings.texture.src) {
-			material.diffuseTexture = new babylon.Texture(p_Settings.texture.src, p_ControlData.scene);
-			material.diffuseTexture.hasAlpha = p_Settings.texture.alpha || false;
+	if (settings.texture && settings.texture.src) {
+		material.invertNormalMapY = material.invertNormalMapX = settings.texture.invertBump || false;
+		if (settings.texture.src) {
+			material.diffuseTexture = new babylon.Texture(settings.texture.src, controlData.scene);
+			material.diffuseTexture.hasAlpha = settings.texture.alpha || false;
 		}
-		if (p_Settings.texture.bumpSrc) {
-			material.bumpTexture = new babylon.Texture(p_Settings.texture.bumpSrc, p_ControlData.scene);
+		if (settings.texture.bumpSrc) {
+			material.bumpTexture = new babylon.Texture(settings.texture.bumpSrc, controlData.scene);
 		}
-		if (p_Settings.texture.opacitySrc) {
-			material.opacityTexture = new babylon.Texture(p_Settings.texture.opacitySrc, p_ControlData.scene);
+		if (settings.texture.opacitySrc) {
+			material.opacityTexture = new babylon.Texture(settings.texture.opacitySrc, controlData.scene);
 		}
-		if (p_Settings.texture.xScale) {
+		if (settings.texture.xScale) {
 			if (material.diffuseTexture) {
-				material.diffuseTexture.uScale = p_Settings.texture.xScale;
+				material.diffuseTexture.uScale = settings.texture.xScale;
 			}
 			if (material.bumpTexture) {
-				material.bumpTexture.uScale = p_Settings.texture.xScale;
+				material.bumpTexture.uScale = settings.texture.xScale;
 			}
 			if (material.opacityTexture) {
-				material.opacityTexture.uScale = p_Settings.texture.xScale;
+				material.opacityTexture.uScale = settings.texture.xScale;
 			}
 		}
-		if (p_Settings.texture.yScale) {
+		if (settings.texture.yScale) {
 			if (material.diffuseTexture) {
-				material.diffuseTexture.vScale = p_Settings.texture.yScale;
+				material.diffuseTexture.vScale = settings.texture.yScale;
 			}
 			if (material.bumpTexture) {
-				material.bumpTexture.vScale = p_Settings.texture.yScale;
+				material.bumpTexture.vScale = settings.texture.yScale;
 			}
 			if (material.opacityTexture) {
-				material.opacityTexture.vScale = p_Settings.texture.yScale;
+				material.opacityTexture.vScale = settings.texture.yScale;
 			}
 		}
 	}
-	p_ControlData.materials[p_MaterialName] = material;
+	controlData.materials[materialName] = material;
 	return material;
 }
 
-function applySettings(p_ControlData, p_MeshObject, p_Settings) {
-	if (p_MeshObject && p_Settings) {
-		if (p_Settings.position) {
-			setPosition(p_MeshObject, p_Settings.position, p_ControlData.multiplier);
+function applySettings(controlData, meshObject, settings) {
+	if (meshObject && settings) {
+		if (settings.position) {
+			setPosition(meshObject, settings.position, controlData.multiplier);
 		}
-		if (p_Settings.rotation) {
-			setRotation(p_MeshObject, p_Settings.rotation);
+		if (settings.rotation) {
+			setRotation(meshObject, settings.rotation);
 		}
-		if (p_Settings.scale) {
-			setScale(p_MeshObject, p_Settings.scale);
+		if (settings.scale) {
+			setScale(meshObject, settings.scale);
 		}
-		if (p_Settings.visible !== undefined) {
-			applyRecursive(p_MeshObject, "isVisible", p_Settings.visible);
+		if (settings.visible !== undefined) {
+			applyRecursive(meshObject, "isVisible", settings.visible);
 		}
-		if (p_Settings.collisions !== undefined) {
-			applyRecursive(p_MeshObject, "checkCollisions", p_Settings.collisions);
+		if (settings.collisions !== undefined) {
+			applyRecursive(meshObject, "checkCollisions", settings.collisions);
 		}
-		if (p_Settings.material) {
-			if (typeof p_Settings.material === "string") {
-				const material = p_ControlData.materials[p_Settings.material];
+		if (settings.material) {
+			if (typeof settings.material === "string") {
+				const material = controlData.materials[settings.material];
 				if (material) {
-					p_MeshObject.material = material;
+					meshObject.material = material;
 				}
 			} else {
-				if (p_Settings.material.name) {
-					const material = addMaterial(p_ControlData, p_Settings.material.name, p_Settings.material);
+				if (settings.material.name) {
+					const material = addMaterial(controlData, settings.material.name, settings.material);
 					if (material) {
-						p_MeshObject.material = material;
+						meshObject.material = material;
 					}
 				}
 			}
 		}
-		p_MeshObject.renderingGroupId = (p_Settings.renderingGroupId === undefined) ? p_MeshObject.renderingGroupId || 1 : p_Settings.renderingGroupId;
-		p_MeshObject.outline = (p_Settings.outline === undefined) ? p_MeshObject.outline : p_Settings.outline;
+		meshObject.renderingGroupId = (settings.renderingGroupId === undefined) ? meshObject.renderingGroupId || 1 : settings.renderingGroupId;
+		meshObject.outline = (settings.outline === undefined) ? meshObject.outline : settings.outline;
 
 		// do shadows
-		if (p_Settings.shadows !== undefined) {
-			if (p_Settings.shadows) {
-				addShadowCaster(p_ControlData, p_MeshObject);
-				p_MeshObject.receiveShadows = true;
+		if (settings.shadows !== undefined) {
+			if (settings.shadows) {
+				addShadowCaster(controlData, meshObject);
+				meshObject.receiveShadows = true;
 			}
 		}
 	}
 
-	return p_MeshObject;
+	return meshObject;
 }
 
-function addMesh(p_WebGLControl, p_MeshObject) {
-	if (p_MeshObject) {
-		const controlData = p_WebGLControl[privateData];
-		controlData.meshes[p_MeshObject.name] = p_MeshObject;
-
-		Object.keys(controlData.lights).forEach((p_Key) => {
-			if (controlData.lights[p_Key].shadowGenerator) {
-				controlData.lights[p_Key].shadowGenerator.recreateShadowMap();
-			}
-		});
-	}
-	return p_MeshObject;
-}
-
-function addInstance(p_WebGLControl, p_Name, p_MeshObject, p_Settings) {
-	const controlData = p_WebGLControl[privateData];
-	p_Settings = p_Settings || {};
-	if (p_MeshObject) {
-		if (p_Settings.position) {
-			setPosition(p_MeshObject, p_Settings.position, p_WebGLControl.unitMultiplier);
-		}
-		if (p_Settings.rotation) {
-			setRotation(p_MeshObject, p_Settings.rotation);
-		}
-		if (p_Settings.scale) {
-			setScale(p_MeshObject, p_Settings.scale);
-		}
-		if (p_Settings.visible !== undefined) {
-			p_MeshObject.isVisible = p_Settings.visible;
-		}
-		// do shadows either if explicit shadows option is set to true in the settings or when defaultShadows is set to true and the shadows property is undefined
-		if (p_Settings.shadows || (p_WebGLControl.defaultShadows && p_Settings.shadows === undefined)) {
-			addShadowCaster(controlData, p_MeshObject);
-		}
-		applyRecursive(p_MeshObject, "checkCollisions", (p_Settings.collisions === undefined) ? controlData.allObjectCollisions : p_Settings.collisions);
-		controlData.instances[p_Name] = p_MeshObject;
-	}
-}
-
-function handleSelectionBoundingBoxChange(p_WebGLControl) {
-	const controlData = p_WebGLControl[privateData];
-	const updateBoundingBox = (p_Key) => {
-		const mesh = getMeshObject(controlData, p_Key);
-		if (mesh.selected) {
-			mesh.showBoundingBox = p_WebGLControl.selectionBoundingBox;
-		}
-	};
-	Object.keys(controlData.meshes).forEach(updateBoundingBox);
-	Object.keys(controlData.instances).forEach(updateBoundingBox);
-}
-
-function createMeshInstance(p_Mesh, p_Name) {
-	const instance = p_Mesh.createInstance(p_Name);
-	p_Mesh.getChildren().forEach((p_Child) => instance.addChild(createMeshInstance(p_Child, `${p_Name}-${p_Child.name}`)));
+function createMeshInstance(mesh, name) {
+	const instance = mesh.createInstance(name);
+	mesh.getChildren().forEach((child) => instance.addChild(createMeshInstance(child, `${name}-${child.name}`)));
 	return instance;
 }
 
-function createSphere(p_ControlData, p_Settings, p_Name) {
-	return applySettings(p_ControlData, babylon.MeshBuilder.CreateSphere(ensureName(p_Name), { segments: p_Settings.segments || 16, diameter: (p_Settings.diameter || 1) * p_ControlData.multiplier, diameterX: (p_Settings.diameterX || p_Settings.diameter || 1) * p_ControlData.multiplier, diameterY: (p_Settings.diameterY || p_Settings.diameter || 1) * p_ControlData.multiplier, diameterZ: (p_Settings.diameterZ || p_Settings.diameter || 1) * p_ControlData.multiplier, arc: p_Settings.arc || 1, slice: p_Settings.slice || 1, sideOrientation: p_Settings.sideOrientation }, p_ControlData.scene), p_Settings);
+function createSphere(controlData, settings, name) {
+	return applySettings(controlData, babylon.MeshBuilder.CreateSphere(ensureName(name), { segments: settings.segments || 16, diameter: (settings.diameter || 1) * controlData.multiplier, diameterX: (settings.diameterX || settings.diameter || 1) * controlData.multiplier, diameterY: (settings.diameterY || settings.diameter || 1) * controlData.multiplier, diameterZ: (settings.diameterZ || settings.diameter || 1) * controlData.multiplier, arc: settings.arc || 1, slice: settings.slice || 1, sideOrientation: settings.sideOrientation }, controlData.scene), settings);
 }
 
-function createBox(p_ControlData, p_Settings, p_Name) {
-	return applySettings(p_ControlData, babylon.MeshBuilder.CreateBox(ensureName(p_Name), { width: (p_Settings.width || 1) * p_ControlData.multiplier, height: (p_Settings.height || 1) * p_ControlData.multiplier, depth: (p_Settings.depth || 1) * p_ControlData.multiplier, sideOrientation: p_Settings.sideOrientation }, p_ControlData.scene), p_Settings);
+function createBox(controlData, settings, name) {
+	return applySettings(controlData, babylon.MeshBuilder.CreateBox(ensureName(name), { width: (settings.width || 1) * controlData.multiplier, height: (settings.height || 1) * controlData.multiplier, depth: (settings.depth || 1) * controlData.multiplier, sideOrientation: settings.sideOrientation }, controlData.scene), settings);
 }
 
-function createPlane(p_ControlData, p_Settings, p_Name) {
-	return applySettings(p_ControlData, babylon.MeshBuilder.CreatePlane(ensureName(p_Name), { width: (p_Settings.width || 1) * p_ControlData.multiplier, height: (p_Settings.height || 1) * p_ControlData.multiplier, sideOrientation: p_Settings.sideOrientation }, p_ControlData.scene), p_Settings);
+function createPlane(controlData, settings, name) {
+	return applySettings(controlData, babylon.MeshBuilder.CreatePlane(ensureName(name), { width: (settings.width || 1) * controlData.multiplier, height: (settings.height || 1) * controlData.multiplier, sideOrientation: settings.sideOrientation }, controlData.scene), settings);
 }
 
-function createPolyLine(p_ControlData, p_Settings, p_Name) {
-	const linePoints = p_Settings.points.map((p_Point) => new babylon.Vector3(p_Point.x * p_ControlData.multiplier, p_Point.y * p_ControlData.multiplier, p_Point.z * p_ControlData.multiplier));
-	const polyLine = (linePoints.length > 1) ? babylon.MeshBuilder.CreateLines(ensureName(p_Name), { points: linePoints }, p_ControlData.scene) : null;
-	return (polyLine) ? applySettings(p_ControlData, polyLine, p_Settings) : null;
+function createPolyLine(controlData, settings, name) {
+	const linePoints = settings.points.map((point) => new babylon.Vector3(point.x * controlData.multiplier, point.y * controlData.multiplier, point.z * controlData.multiplier));
+	const polyLine = (linePoints.length > 1) ? babylon.MeshBuilder.CreateLines(ensureName(name), { points: linePoints }, controlData.scene) : null;
+	return (polyLine) ? applySettings(controlData, polyLine, settings) : null;
 }
 
-function createExtrudedPolygon(p_ControlData, p_Settings, p_Name) {
-	const shape = (p_Settings.outline || []).map((p_Point) => convertToVector3(multiplyVector(convertToVectorObject(p_Point), p_ControlData.multiplier)));
-	const holes = (p_Settings.holes || []).map((p_Hole) => p_Hole.map((p_Point) => convertToVector3(multiplyVector(convertToVectorObject(p_Point), p_ControlData.multiplier))));
-	return (shape.length) ? applySettings(p_ControlData, babylon.MeshBuilder.ExtrudePolygon(ensureName(p_Name), {
+function createExtrudedPolygon(controlData, settings, name) {
+	const shape = (settings.outline || []).map((point) => convertToVector3(multiplyVector(convertToVectorObject(point), controlData.multiplier)));
+	const holes = (settings.holes || []).map((hole) => hole.map((point) => convertToVector3(multiplyVector(convertToVectorObject(point), controlData.multiplier))));
+	return (shape.length) ? applySettings(controlData, babylon.MeshBuilder.ExtrudePolygon(ensureName(name), {
 		shape,
-		depth: (p_Settings.depth || 0) * p_ControlData.multiplier,
+		depth: (settings.depth || 0) * controlData.multiplier,
 		holes,
-	}, p_ControlData.scene), p_Settings) : null;
+	}, controlData.scene), settings) : null;
 }
 
-function createCylinder(p_ControlData, p_Settings, p_Name) {
-	return applySettings(p_ControlData, babylon.MeshBuilder.CreateCylinder(ensureName(p_Name), { height: (p_Settings.height || 1) * p_ControlData.multiplier, diameter: (p_Settings.diameter === undefined) ? p_Settings.diameter : (p_Settings.diameter || 1) * p_ControlData.multiplier, diameterTop: ((p_Settings.diameterTop === undefined) ? (p_Settings.diameter || 1) : p_Settings.diameterTop) * p_ControlData.multiplier, diameterBottom: ((p_Settings.diameterBottom === undefined) ? (p_Settings.diameter || 1) : p_Settings.diameterBottom) * p_ControlData.multiplier, tessellation: p_Settings.segments || 16, arc: p_Settings.arc || 1, enclose: p_Settings.enclose || false }, p_ControlData.scene), p_Settings);
+function createCylinder(controlData, settings, name) {
+	return applySettings(controlData, babylon.MeshBuilder.CreateCylinder(ensureName(name), { height: (settings.height || 1) * controlData.multiplier, diameter: (settings.diameter === undefined) ? settings.diameter : (settings.diameter || 1) * controlData.multiplier, diameterTop: ((settings.diameterTop === undefined) ? (settings.diameter || 1) : settings.diameterTop) * controlData.multiplier, diameterBottom: ((settings.diameterBottom === undefined) ? (settings.diameter || 1) : settings.diameterBottom) * controlData.multiplier, tessellation: settings.segments || 16, arc: settings.arc || 1, enclose: settings.enclose || false }, controlData.scene), settings);
 }
 
 const capConvert = {};
@@ -323,60 +255,60 @@ capConvert[CAP_TYPES.CAP_START] = babylon.Mesh.CAP_START;
 capConvert[CAP_TYPES.CAP_END] = babylon.Mesh.CAP_END;
 capConvert[CAP_TYPES.CAP_ALL] = babylon.Mesh.CAP_ALL;
 
-function createTube(p_ControlData, p_Settings, p_Name) {
-	const path = (p_Settings.path || []).map((p_Point) => convertToVector3(multiplyVector(convertToVectorObject(p_Point), p_ControlData.multiplier)));
-	return (path.length) ? applySettings(p_ControlData, babylon.MeshBuilder.CreateTube(ensureName(p_Name), {
+function createTube(controlData, settings, name) {
+	const path = (settings.path || []).map((point) => convertToVector3(multiplyVector(convertToVectorObject(point), controlData.multiplier)));
+	return (path.length) ? applySettings(controlData, babylon.MeshBuilder.CreateTube(ensureName(name), {
 		path,
-		radius: (p_Settings.radius || 1) * p_ControlData.multiplier,
-		tessellation: p_Settings.segments || 16,
-		arc: p_Settings.arc || 1,
-		cap: capConvert[p_Settings.cap] || babylon.Mesh.NO_CAP,
-	}, p_ControlData.scene), p_Settings) : null;
+		radius: (settings.radius || 1) * controlData.multiplier,
+		tessellation: settings.segments || 16,
+		arc: settings.arc || 1,
+		cap: capConvert[settings.cap] || babylon.Mesh.NO_CAP,
+	}, controlData.scene), settings) : null;
 }
 
-function createGround(p_ControlData, p_Settings, p_Name) {
-	const settings = Object.assign({}, p_Settings, { shadows: false, collisions: false });
-	const ground = applySettings(p_ControlData, babylon.MeshBuilder.CreateGround(ensureName(p_Name), { width: (settings.width || 1) * p_ControlData.multiplier, height: (settings.height || 1) * p_ControlData.multiplier, subdivisions: settings.subdivisions || 1 }, p_ControlData.scene), settings);
-	p_ControlData.meshes[ground.name] = ground;
+function createGround(controlData, newSettings, name) {
+	const settings = Object.assign({}, newSettings, { shadows: false, collisions: false });
+	const ground = applySettings(controlData, babylon.MeshBuilder.CreateGround(ensureName(name), { width: (settings.width || 1) * controlData.multiplier, height: (settings.height || 1) * controlData.multiplier, subdivisions: settings.subdivisions || 1 }, controlData.scene), settings);
+	controlData.meshes[ground.name] = ground;
 	ground.receiveShadows = true;
-	ground.checkCollisions = p_ControlData.allObjectCollisions;
+	ground.checkCollisions = controlData.allObjectCollisions;
 }
 
-function wrap(p_ControlData, p_Mesh) {
-	let wrapped = p_Mesh ? p_Mesh[wrapReference] : null;
-	if (!wrapped && p_Mesh) {
+function wrap(controlData, mesh) {
+	let wrapped = mesh ? mesh[wrapReference] : null;
+	if (!wrapped && mesh) {
 		wrapped = {
 			get visible() { return this[meshContainer].isVisible; },
-			set visible(p_Visible) { applyRecursive(this[meshContainer], "isVisible", p_Visible); },
-			get parent() { return wrap(p_ControlData, this[meshContainer].parent); },
-			get center() { const bounding = this[meshContainer].getBoundingInfo(); const center = (bounding && bounding.boundingBox) ? bounding.boundingBox.centerWorld : null; return { x: center.x / p_ControlData.multiplier, y: center.y / p_ControlData.multiplier, z: center.z / p_ControlData.multiplier }; },
-			get maximum() { const bounding = this[meshContainer].getBoundingInfo(); const maximum = (bounding && bounding.boundingBox) ? bounding.boundingBox.maximumWorld : null; return { x: maximum.x / p_ControlData.multiplier, y: maximum.y / p_ControlData.multiplier, z: maximum.z / p_ControlData.multiplier }; },
-			get minimum() { const bounding = this[meshContainer].getBoundingInfo(); const minimum = (bounding && bounding.boundingBox) ? bounding.boundingBox.minimumWorld : null; return { x: minimum.x / p_ControlData.multiplier, y: minimum.y / p_ControlData.multiplier, z: minimum.z / p_ControlData.multiplier }; },
-			get boundingVectors() { const bounding = this[meshContainer].getBoundingInfo(); return (bounding && bounding.boundingBox) ? bounding.boundingBox.vectorsWorld.map((p_Vector) => ({ x: p_Vector.x / p_ControlData.multiplier, y: p_Vector.y / p_ControlData.multiplier, z: p_Vector.z / p_ControlData.multiplier })) : null; },
+			set visible(visible) { applyRecursive(this[meshContainer], "isVisible", visible); },
+			get parent() { return wrap(controlData, this[meshContainer].parent); },
+			get center() { const bounding = this[meshContainer].getBoundingInfo(); const center = (bounding && bounding.boundingBox) ? bounding.boundingBox.centerWorld : null; return { x: center.x / controlData.multiplier, y: center.y / controlData.multiplier, z: center.z / controlData.multiplier }; },
+			get maximum() { const bounding = this[meshContainer].getBoundingInfo(); const maximum = (bounding && bounding.boundingBox) ? bounding.boundingBox.maximumWorld : null; return { x: maximum.x / controlData.multiplier, y: maximum.y / controlData.multiplier, z: maximum.z / controlData.multiplier }; },
+			get minimum() { const bounding = this[meshContainer].getBoundingInfo(); const minimum = (bounding && bounding.boundingBox) ? bounding.boundingBox.minimumWorld : null; return { x: minimum.x / controlData.multiplier, y: minimum.y / controlData.multiplier, z: minimum.z / controlData.multiplier }; },
+			get boundingVectors() { const bounding = this[meshContainer].getBoundingInfo(); return (bounding && bounding.boundingBox) ? bounding.boundingBox.vectorsWorld.map((vector) => ({ x: vector.x / controlData.multiplier, y: vector.y / controlData.multiplier, z: vector.z / controlData.multiplier })) : null; },
 			get name() { return this[meshContainer].name; },
-			get position() { return { x: this[meshContainer].position.x / p_ControlData.multiplier, y: this[meshContainer].position.y / p_ControlData.multiplier, z: this[meshContainer].position.z / p_ControlData.multiplier }; },
-			set position(p_Position) { setPosition(this[meshContainer], p_Position, p_ControlData.multiplier); },
+			get position() { return { x: this[meshContainer].position.x / controlData.multiplier, y: this[meshContainer].position.y / controlData.multiplier, z: this[meshContainer].position.z / controlData.multiplier }; },
+			set position(position) { setPosition(this[meshContainer], position, controlData.multiplier); },
 			get scale() { return { x: this[meshContainer].scaling.x, y: this[meshContainer].scaling.y, z: this[meshContainer].scaling.z }; },
-			set scale(p_Scaling) { setScale(this[meshContainer], p_Scaling); },
+			set scale(scaling) { setScale(this[meshContainer], scaling); },
 			get rotation() { return { x: toDegrees(this[meshContainer].rotation.x), y: toDegrees(this[meshContainer].rotation.y), z: toDegrees(this[meshContainer].rotation.z) }; },
-			set rotation(p_Rotation) { setRotation(this[meshContainer], p_Rotation); },
-			clone(p_Name) { return wrap(p_ControlData, this[meshContainer].clone(ensureName(p_Name))); },
+			set rotation(rotation) { setRotation(this[meshContainer], rotation); },
+			clone(name) { return wrap(controlData, this[meshContainer].clone(ensureName(name))); },
 			updateCoordinates() { this[meshContainer].computeWorldMatrix(true); },
 			remove() { this[meshContainer].dispose(); },
-			applySettings(p_Settings) { applySettings(p_ControlData, this[meshContainer], p_Settings); },
-			offset(p_Offset) { this[meshContainer].position.addInPlace({ x: p_Offset.x * p_ControlData.multiplier, y: p_Offset.y * p_ControlData.multiplier, z: p_Offset.z * p_ControlData.multiplier }); },
+			applySettings(settings) { applySettings(controlData, this[meshContainer], settings); },
+			offset(offset) { this[meshContainer].position.addInPlace({ x: offset.x * controlData.multiplier, y: offset.y * controlData.multiplier, z: offset.z * controlData.multiplier }); },
 			isRemoved() { return this[meshContainer] === undefined; },
 		};
-		wrapped[meshContainer] = p_Mesh;
-		p_Mesh[wrapReference] = wrapped;
-		p_Mesh[originalDispose] = p_Mesh.dispose;
-		p_Mesh.dispose = function() {
+		wrapped[meshContainer] = mesh;
+		mesh[wrapReference] = wrapped;
+		mesh[originalDispose] = mesh.dispose;
+		mesh.dispose = function() {
 			if (this[wrapReference].onRemove) {
 				this[wrapReference].onRemove(this[wrapReference]);
 			}
 
-			delete p_ControlData.meshes[this.name];
-			delete p_ControlData.instances[this.name];
+			delete controlData.meshes[this.name];
+			delete controlData.instances[this.name];
 			delete this[wrapReference][meshContainer];
 			delete this[wrapReference];
 			this.dispose = this[originalDispose];
@@ -387,46 +319,46 @@ function wrap(p_ControlData, p_Mesh) {
 	return wrapped;
 }
 
-function wrapGroup(p_ControlData, p_Mesh) {
-	const wrapped = wrap(p_ControlData, p_Mesh);
-	wrapped.addChild = function(p_Child) { this[meshContainer].addChild(unWrap(p_Child)); };
-	wrapped.removeChild = function(p_Child) { this[meshContainer].removeChild(unWrap(p_Child)); };
-	wrapped.addChildren = function(p_Children) { const mesh = this[meshContainer]; p_Children.forEach((p_Child) => mesh.addChild(unWrap(p_Child))); };
-	wrapped.getChildren = function(p_Filter, p_Recursive) { return this[meshContainer].getChildMeshes(!p_Recursive, (p_ChildMesh) => !p_Filter || p_Filter(wrap(p_ControlData, p_ChildMesh))).map((p_Child) => wrap(p_ControlData, p_Child)); };
-	wrapped.clone = function(p_Name) { return wrapGroup(p_ControlData, this[meshContainer].clone(ensureName(p_Name))); };
+function wrapGroup(controlData, mesh) {
+	const wrapped = wrap(controlData, mesh);
+	wrapped.addChild = function(child) { this[meshContainer].addChild(unWrap(child)); };
+	wrapped.removeChild = function(child) { this[meshContainer].removeChild(unWrap(child)); };
+	wrapped.addChildren = function(children) { const tempMesh = this[meshContainer]; children.forEach((child) => tempMesh.addChild(unWrap(child))); };
+	wrapped.getChildren = function(filter, recursive) { return this[meshContainer].getChildMeshes(!recursive, (childMesh) => !filter || filter(wrap(controlData, childMesh))).map((child) => wrap(controlData, child)); };
+	wrapped.clone = function(name) { return wrapGroup(controlData, this[meshContainer].clone(ensureName(name))); };
 	return wrapped;
 }
 
-function wrapEvent(p_ControlData, p_Event) {
+function wrapEvent(controlData, event) {
 	return {
-		event: p_Event.event,
-		hitObject: (p_Event.pickInfo.hit) ? wrap(p_ControlData, p_Event.pickInfo.pickedMesh) : null,
+		event: event.event,
+		hitObject: (event.pickInfo.hit) ? wrap(controlData, event.pickInfo.pickedMesh) : null,
 	};
 }
 
-function addPointerDownListener(p_ControlData, p_Callback) { p_ControlData.scene.onPointerObservable.add((p_Event) => { p_Callback(wrapEvent(p_ControlData, p_Event)); }, babylon.PointerEventTypes.POINTERDOWN); }
-function addPointerUpListener(p_ControlData, p_Callback) { p_ControlData.scene.onPointerObservable.add((p_Event) => { p_Callback(wrapEvent(p_ControlData, p_Event)); }, babylon.PointerEventTypes.POINTERUP); }
-function addPointerMoveListener(p_ControlData, p_Callback) { p_ControlData.scene.onPointerObservable.add((p_Event) => { p_Callback(wrapEvent(p_ControlData, p_Event)); }, babylon.PointerEventTypes.POINTERMOVE); }
-function addPointerClickListener(p_ControlData, p_Callback) { p_ControlData.scene.onPointerObservable.add((p_Event) => { p_Callback(wrapEvent(p_ControlData, p_Event)); }, babylon.PointerEventTypes.POINTERPICK); }
+function addPointerDownListener(controlData, callback) { controlData.scene.onPointerObservable.add((event) => { callback(wrapEvent(controlData, event)); }, babylon.PointerEventTypes.POINTERDOWN); }
+function addPointerUpListener(controlData, callback) { controlData.scene.onPointerObservable.add((event) => { callback(wrapEvent(controlData, event)); }, babylon.PointerEventTypes.POINTERUP); }
+function addPointerMoveListener(controlData, callback) { controlData.scene.onPointerObservable.add((event) => { callback(wrapEvent(controlData, event)); }, babylon.PointerEventTypes.POINTERMOVE); }
+function addPointerClickListener(controlData, callback) { controlData.scene.onPointerObservable.add((event) => { callback(wrapEvent(controlData, event)); }, babylon.PointerEventTypes.POINTERPICK); }
 
-function screenToObjectPoint(p_ControlData, p_Position, p_Mesh, p_BoundingBoxCheck) {
-	const childMeshes = flattenMeshes(p_Mesh);
-	const pickInfo = p_ControlData.scene.pick(p_Position.x, p_Position.y, (p_TestMesh) => childMeshes.includes(p_TestMesh), p_BoundingBoxCheck || false);
-	return (pickInfo.hit) ? { x: pickInfo.pickedPoint.x / p_ControlData.multiplier, y: pickInfo.pickedPoint.y / p_ControlData.multiplier, z: pickInfo.pickedPoint.z / p_ControlData.multiplier } : null;
+function screenToObjectPoint(controlData, position, mesh, boundingBoxCheck) {
+	const childMeshes = flattenMeshes(mesh);
+	const pickInfo = controlData.scene.pick(position.x, position.y, (testMesh) => childMeshes.includes(testMesh), boundingBoxCheck || false);
+	return (pickInfo.hit) ? { x: pickInfo.pickedPoint.x / controlData.multiplier, y: pickInfo.pickedPoint.y / controlData.multiplier, z: pickInfo.pickedPoint.z / controlData.multiplier } : null;
 }
 
-function pointToScreenPoint(p_ControlData, p_Point) {
-	return babylon.Vector3.Project(new babylon.Vector3(p_Point.x * p_ControlData.multiplier, p_Point.y * p_ControlData.multiplier, p_Point.z * p_ControlData.multiplier), babylon.Matrix.Identity(), p_ControlData.scene.getTransformMatrix(), p_ControlData.camera.viewport.toGlobal(p_ControlData.engine));
+function pointToScreenPoint(controlData, point) {
+	return babylon.Vector3.Project(new babylon.Vector3(point.x * controlData.multiplier, point.y * controlData.multiplier, point.z * controlData.multiplier), babylon.Matrix.Identity(), controlData.scene.getTransformMatrix(), controlData.camera.viewport.toGlobal(controlData.engine));
 }
 
-function screenPointToBoundingProjection(p_ControlData, p_Point, p_Mesh) {
-	const ray = p_ControlData.scene.createPickingRay(p_Point.x, p_Point.y, babylon.Matrix.Identity(), p_ControlData.camera, false);
-	const boxVectors = p_Mesh.getBoundingInfo().boundingBox.vectorsWorld;
+function screenPointToBoundingProjection(controlData, point, mesh) {
+	const ray = controlData.scene.createPickingRay(point.x, point.y, babylon.Matrix.Identity(), controlData.camera, false);
+	const boxVectors = mesh.getBoundingInfo().boundingBox.vectorsWorld;
 	const triangleIndexes = [[0, 3, 5], [0, 5, 2], [0, 4, 6], [0, 6, 3], [0, 2, 7], [0, 7, 4], [1, 7, 2], [1, 2, 5], [1, 6, 3], [1, 3, 5], [1, 6, 4], [1, 4, 7]];
 	let distance = -1;
 	let intersection = null;
-	triangleIndexes.forEach((p_TriangleIndexSet) => {
-		const is = intersectRayAndTriangle(ray.origin, ray.direction, boxVectors[p_TriangleIndexSet[0]], boxVectors[p_TriangleIndexSet[1]], boxVectors[p_TriangleIndexSet[2]]);
+	triangleIndexes.forEach((triangleIndexSet) => {
+		const is = intersectRayAndTriangle(ray.origin, ray.direction, boxVectors[triangleIndexSet[0]], boxVectors[triangleIndexSet[1]], boxVectors[triangleIndexSet[2]]);
 		if (is) {
 			const dist = vectorLength(is, ray.origin);
 			if (distance < 0 || distance > dist) {
@@ -436,52 +368,20 @@ function screenPointToBoundingProjection(p_ControlData, p_Point, p_Mesh) {
 		}
 	});
 
-	return (intersection) ? { start: { x: ray.origin.x / p_ControlData.multiplier, y: ray.origin.y / p_ControlData.multiplier, z: ray.origin.z / p_ControlData.multiplier }, intersection: { x: intersection.x / p_ControlData.multiplier, y: intersection.y / p_ControlData.multiplier, z: intersection.z / p_ControlData.multiplier } } : null;
-}
-
-function attachExtension(p_WebGLControl, p_ExtensionObject) {
-	const controlData = p_WebGLControl[privateData];
-	p_ExtensionObject.attach(p_WebGLControl, {
-		// get a mesh object from the main store
-		getObject(p_ObjectNameOrPath) { return wrap(controlData, getTopLevelMeshObject(controlData, p_ObjectNameOrPath)); },
-		// object creation
-		createGroup(p_Name) { return wrapGroup(controlData, new babylon.Mesh(ensureName(p_Name), controlData.scene)); },
-		createSphere(p_Settings, p_Name) { return wrap(controlData, createSphere(controlData, p_Settings, p_Name)); },
-		createBox(p_Settings, p_Name) { return wrap(controlData, createBox(controlData, p_Settings, p_Name)); },
-		createPlane(p_Settings, p_Name) { return wrap(controlData, createPlane(controlData, p_Settings, p_Name)); },
-		createPolyLine(p_Settings, p_Name) { return wrap(controlData, createPolyLine(controlData, p_Settings, p_Name)); },
-		createExtrudedPolygon(p_Settings, p_Name) { return wrap(controlData, createExtrudedPolygon(controlData, p_Settings, p_Name)); },
-		createCylinder(p_Settings, p_Name) { return wrap(controlData, createCylinder(controlData, p_Settings, p_Name)); },
-		createTube(p_Settings, p_Name) { return wrap(controlData, createTube(controlData, p_Settings, p_Name)); },
-		// settings
-		applySettings(p_Settings, p_Object) { applySettings(controlData, unWrap(p_Object), p_Settings); },
-		// event handling
-		addPointerDownListener(p_Callback) { addPointerDownListener(controlData, p_Callback); },
-		addPointerUpListener(p_Callback) { addPointerUpListener(controlData, p_Callback); },
-		addPointerMoveListener(p_Callback) { addPointerMoveListener(controlData, p_Callback); },
-		addPointerClickListener(p_Callback) { addPointerClickListener(controlData, p_Callback); },
-		// utility
-		screenToObjectPoint(p_ScreenPoint, p_Wrapped) { return screenToObjectPoint(controlData, p_ScreenPoint, unWrap(p_Wrapped)); },
-		pointToScreenPoint(p_Point) { const point = pointToScreenPoint(controlData, p_Point); return { x: point.x, y: point.y }; },
-		screenPointToBoundingProjection(p_ScreenPoint, p_Wrapped) { return screenPointToBoundingProjection(controlData, p_ScreenPoint, unWrap(p_Wrapped)); },
-		get pointerPos() { return { x: controlData.scene.pointerX, y: controlData.scene.pointerY }; },
-		// camera
-		detachCameraControl() { controlData.camera.detachControl(p_WebGLControl.$.canvas); },
-		attachCameraControl() { controlData.camera.attachControl(p_WebGLControl.$.canvas, !(controlData.preventDefault || false)); },
-	});
+	return (intersection) ? { start: { x: ray.origin.x / controlData.multiplier, y: ray.origin.y / controlData.multiplier, z: ray.origin.z / controlData.multiplier }, intersection: { x: intersection.x / controlData.multiplier, y: intersection.y / controlData.multiplier, z: intersection.z / controlData.multiplier } } : null;
 }
 
 /**
  * Class to represent the vicowa-webgl custom element
- * @extends webComponentBaseClass
+ * @extends WebComponentBaseClass
  * @property {boolean} loadingScreen Set to true to show a loading screen or false for no loading screen
  * @property {boolean} selectionBoundingBox Set to true to show a bounding box when an object is selected or false to not show this box
  */
-export class VicowaWebgl extends webComponentBaseClass {
-	static get is() { return componentName; }
+export class VicowaWebgl extends WebComponentBaseClass {
+	#privateData;
 	constructor() {
 		super();
-		this[privateData] = {
+		this.#privateData = {
 			lights: {},
 			meshes: {},
 			instances: {},
@@ -502,69 +402,69 @@ export class VicowaWebgl extends webComponentBaseClass {
 				type: Boolean,
 				value: false,
 				reflectToAttribute: true,
-				observer: handleLoadingScreenChange,
+				observer: (control) => control.#handleLoadingScreenChange(),
 			},
 			selectionBoundingBox: {
 				type: Boolean,
 				value: false,
 				reflectToAttribute: true,
-				observer: handleSelectionBoundingBoxChange,
+				observer: (control) => control.#handleSelectionBoundingBoxChange(),
 			},
 		};
 	}
 
-	addExtension(p_ExtensionObject) {
-		const controlData = this[privateData];
-		if (controlData.extensions.indexOf(p_ExtensionObject) === -1) {
-			controlData.extensions.push(p_ExtensionObject);
+	addExtension(extensionObject) {
+		const controlData = this.#privateData;
+		if (controlData.extensions.indexOf(extensionObject) === -1) {
+			controlData.extensions.push(extensionObject);
 			// make sure the scene has been created before attaching this
 			if (controlData.scene) {
-				attachExtension(this, p_ExtensionObject);
+				this.#attachExtension(extensionObject);
 			}
 		}
 	}
 
-	async addObjectResource(p_Name, p_ObjectName, p_FileName, p_Settings) {
-		const controlData = this[privateData];
-		const meshTask = controlData.assetsManager.addMeshTask(p_Name, p_ObjectName, `${p_FileName.split("/").slice(0, -1).join("/")}/`, p_FileName.split("/").slice(-1)[0]);
+	async addObjectResource(name, objectName, fileName, settings) {
+		const controlData = this.#privateData;
+		const meshTask = controlData.assetsManager.addMeshTask(name, objectName, `${fileName.split("/").slice(0, -1).join("/")}/`, fileName.split("/").slice(-1)[0]);
 		return await new Promise((resolve, reject) => {
 			meshTask.onSuccess = (task) => {
 				let newMesh = null;
-				if (!p_Settings.position) {
-					p_Settings.position = { x: 0, y: 0, z: 0 };
+				if (!settings.position) {
+					settings.position = { x: 0, y: 0, z: 0 };
 				}
 				if (task.loadedMeshes.length === 1) {
-					newMesh = addMesh(this, applySettings(controlData, task.loadedMeshes[0], p_Settings));
+					newMesh = this.#addMesh(applySettings(controlData, task.loadedMeshes[0], settings));
 				} else {
-					const mesh = new babylon.Mesh(p_Name, controlData.scene);
-					task.loadedMeshes.forEach((p_Mesh) => {
-						p_Mesh.renderingGroupId = 1;
-						mesh.addChild(p_Mesh);
+					const mesh = new babylon.Mesh(name, controlData.scene);
+					task.loadedMeshes.forEach((loadedMesh) => {
+						loadedMesh.renderingGroupId = 1;
+						loadedMesh.addChild(loadedMesh);
 					});
-					newMesh = addMesh(this, applySettings(controlData, mesh, p_Settings));
+					newMesh = this.#addMesh(applySettings(controlData, mesh, settings));
 				}
 				resolve(wrap(controlData, newMesh));
 			};
-			meshTask.onError = (p_Task, p_Message, pException) => {
-				reject({ message: p_Message, exception: pException });
+			meshTask.onError = (task, message, pException) => {
+				reject({ message, exception: pException });
 			};
 			controlData.assetsManager.load();
 		});
 	}
 
-	set unitMultiplier(p_Multiplier) { this[privateData].multiplier = p_Multiplier; }
-	get unitMultiplier() { return this[privateData].multiplier; }
+	set unitMultiplier(multiplier) { this.#privateData.multiplier = multiplier; }
+	get unitMultiplier() { return this.#privateData.multiplier; }
 
-	setBackgroundColor(p_Red, p_Green, p_Blue) { this[privateData].scene.clearColor = new babylon.Color3(p_Red, p_Green, p_Blue); }
-	setAmbientColor(p_Red, p_Green, p_Blue) { this[privateData].scene.ambientColor = new babylon.Color3(p_Red, p_Green, p_Blue); }
+	setBackgroundColor(red, green, blue) { this.#privateData.scene.clearColor = new babylon.Color3(red, green, blue); }
+	setAmbientColor(red, green, blue) { this.#privateData.scene.ambientColor = new babylon.Color3(red, green, blue); }
 
-	createSkyBox(p_SkyBoxImageDirectory) {
-		const controlData = this[privateData];
+	createSkyBox(skyBoxImageDirectory) {
+		const controlData = this.#privateData;
 		// using the "old" way of creating a sky box, because the helper function makes it very very slow
 		const skyBox = babylon.MeshBuilder.CreateBox("skyBox", { size: 10000.0, sideOrientation: babylon.Mesh.BACKSIDE }, controlData.scene);
 		const skyBoxMaterial = new babylon.StandardMaterial("skyBox", controlData.scene);
 		skyBoxMaterial.backFaceCulling = true;
-		skyBoxMaterial.reflectionTexture = new babylon.CubeTexture(p_SkyBoxImageDirectory, controlData.scene);
+		skyBoxMaterial.reflectionTexture = new babylon.CubeTexture(skyBoxImageDirectory, controlData.scene);
 		skyBoxMaterial.reflectionTexture.coordinatesMode = babylon.Texture.SKYBOX_MODE;
 		skyBoxMaterial.diffuseColor = new babylon.Color3(0, 0, 0);
 		skyBoxMaterial.specularColor = new babylon.Color3(0, 0, 0);
@@ -575,141 +475,141 @@ export class VicowaWebgl extends webComponentBaseClass {
 	}
 
 	// basic objects
-	addSphere(p_Settings, p_Name) { return wrap(this[privateData], addMesh(this, createSphere(this[privateData], addDefaultSettings(this, p_Settings), p_Name))); }
-	addBox(p_Settings, p_Name) { return wrap(this[privateData], addMesh(this, createBox(this[privateData], addDefaultSettings(this, p_Settings), p_Name))); }
-	addPlane(p_Settings, p_Name) { return wrap(this[privateData], addMesh(this, createPlane(this[privateData], addDefaultSettings(this, p_Settings), p_Name))); }
-	addPolyLine(p_Settings, p_Name) { return wrap(this[privateData], addMesh(this, createPolyLine(this[privateData], addDefaultSettings(this, p_Settings), p_Name))); }
-	addExtrudedPolygon(p_Settings, p_Name) { return wrap(this[privateData], addMesh(this, createExtrudedPolygon(this[privateData], addDefaultSettings(this, p_Settings), p_Name))); }
-	addCylinder(p_Settings, p_Name) { return wrap(this[privateData], addMesh(this, createCylinder(this[privateData], addDefaultSettings(this, p_Settings), p_Name))); }
-	addTube(p_Settings, p_Name) { return wrap(this[privateData], addMesh(this, createTube(this[privateData], addDefaultSettings(this, p_Settings), p_Name))); }
+	addSphere(settings, name) { return wrap(this.#privateData, this.#addMesh(createSphere(this.#privateData, this.#addDefaultSettings(settings), name))); }
+	addBox(settings, name) { return wrap(this.#privateData, this.#addMesh(createBox(this.#privateData, this.#addDefaultSettings(settings), name))); }
+	addPlane(settings, name) { return wrap(this.#privateData, this.#addMesh(createPlane(this.#privateData, this.#addDefaultSettings(settings), name))); }
+	addPolyLine(settings, name) { return wrap(this.#privateData, this.#addMesh(createPolyLine(this.#privateData, this.#addDefaultSettings(settings), name))); }
+	addExtrudedPolygon(settings, name) { return wrap(this.#privateData, this.#addMesh(createExtrudedPolygon(this.#privateData, this.#addDefaultSettings(settings), name))); }
+	addCylinder(settings, name) { return wrap(this.#privateData, this.#addMesh(createCylinder(this.#privateData, this.#addDefaultSettings(settings), name))); }
+	addTube(settings, name) { return wrap(this.#privateData, this.#addMesh(createTube(this.#privateData, this.#addDefaultSettings(settings), name))); }
 	// special objects
-	addGround(p_Settings, p_Name) { return wrap(this[privateData], createGround(this[privateData], p_Settings, p_Name)); }
+	addGround(settings, name) { return wrap(this.#privateData, createGround(this.#privateData, settings, name)); }
 	// retrieval
-	getObjectByNameOrPath(p_ObjectNameOrPath) { return wrap(this[privateData], getMeshObject(this[privateData], p_ObjectNameOrPath)); }
+	getObjectByNameOrPath(objectNameOrPath) { return wrap(this.#privateData, getMeshObject(this.#privateData, objectNameOrPath)); }
 
-	createObjectInstance(p_ObjectNamePrefix, p_SourceName, p_Copies, p_Settings) {
-		const controlData = this[privateData];
-		const mesh = controlData.meshes[p_SourceName];
+	createObjectInstance(objectNamePrefix, sourceName, copies, settings) {
+		const controlData = this.#privateData;
+		const mesh = controlData.meshes[sourceName];
 		if (mesh) {
-			const copies = p_Copies || 1;
+			copies = copies || 1;
 			for (let index = 0; index < copies; index++) {
-				const cloneName = p_ObjectNamePrefix + index;
-				addInstance(this, cloneName, createMeshInstance(mesh.createInstance, cloneName), p_Settings);
+				const cloneName = objectNamePrefix + index;
+				this.#addInstance(cloneName, createMeshInstance(mesh.createInstance, cloneName), settings);
 			}
 		}
 		return (mesh) ? wrap(controlData, mesh) : null;
 	}
 
 	startRendering() {
-		const controlData = this[privateData];
+		const controlData = this.#privateData;
 		controlData.engine.runRenderLoop(() => { controlData.scene.render(); });
 	}
 
 	stopRendering() {
-		this[privateData].engine.stopRenderLoop();
+		this.#privateData.engine.stopRenderLoop();
 	}
 
-	addEnvironmentalLight(p_Settings, p_Name) {
-		const controlData = this[privateData];
-		const light = new babylon.HemisphericLight(ensureName(p_Name), new babylon.Vector3(p_Settings.x || 0, p_Settings.y || 0, p_Settings.z || 0), controlData.scene);
+	addEnvironmentalLight(settings, name) {
+		const controlData = this.#privateData;
+		const light = new babylon.HemisphericLight(ensureName(name), new babylon.Vector3(settings.x || 0, settings.y || 0, settings.z || 0), controlData.scene);
 		controlData.lights[light.name] = { light };
-		this.setEnvironmentalLightColor(p_Settings.color.ground, light.name);
-		this.setLightColors(p_Settings.color, light.name);
+		this.setEnvironmentalLightColor(settings.color.ground, light.name);
+		this.setLightColors(settings.color, light.name);
 	}
 
-	setEnvironmentalLightColor(p_Color, p_Name) {
-		const light = this[privateData].lights[p_Name];
+	setEnvironmentalLightColor(color, name) {
+		const light = this.#privateData.lights[name];
 		if (light && light instanceof babylon.HemisphericLight) {
-			Object.assign(light.light.groundColor, p_Color);
+			Object.assign(light.light.groundColor, color);
 		}
 	}
 
-	addDirectionalLight(p_Settings, p_Name) {
-		const controlData = this[privateData];
-		const light = new babylon.DirectionalLight(ensureName(p_Name), new babylon.Vector3(p_Settings.x || 0, p_Settings.y || 0, p_Settings.z || 0), controlData.scene);
+	addDirectionalLight(settings, name) {
+		const controlData = this.#privateData;
+		const light = new babylon.DirectionalLight(ensureName(name), new babylon.Vector3(settings.x || 0, settings.y || 0, settings.z || 0), controlData.scene);
 		controlData.lights[light.name] = { light };
-		this.setLightColors(p_Settings.color, light.name);
-		if (p_Settings.generateShadows) {
+		this.setLightColors(settings.color, light.name);
+		if (settings.generateShadows) {
 			controlData.lights[light.name].shadowGenerator = createShadowGenerator(light);
 		}
 	}
 
-	addPointLight(p_Settings, p_Name) {
-		const controlData = this[privateData];
-		const light = new babylon.PointLight(ensureName(p_Name), new babylon.Vector3(p_Settings.x * this.unitMultiplier || 0, p_Settings.y * this.unitMultiplier || 0, p_Settings.z * this.unitMultiplier || 0), controlData.scene);
+	addPointLight(settings, name) {
+		const controlData = this.#privateData;
+		const light = new babylon.PointLight(ensureName(name), new babylon.Vector3(settings.x * this.unitMultiplier || 0, settings.y * this.unitMultiplier || 0, settings.z * this.unitMultiplier || 0), controlData.scene);
 		controlData.lights[light.name] = { light };
-		this.setLightColors(p_Settings.color, light.name);
-		if (p_Settings.generateShadows) {
+		this.setLightColors(settings.color, light.name);
+		if (settings.generateShadows) {
 			controlData.lights[light.name].shadowGenerator = createShadowGenerator(light);
 		}
 	}
 
-	addSpotLight(p_Settings, p_Name) {
-		const controlData = this[privateData];
-		const light = new babylon.SpotLight(ensureName(p_Name), new babylon.Vector3(p_Settings.x * this.unitMultiplier || 0, p_Settings.y * this.unitMultiplier || 0, p_Settings.z * this.unitMultiplier || 0), new babylon.Vector3(p_Settings.direction.x || 0, p_Settings.direction.y || 0, p_Settings.direction.z || 0), p_Settings.angle || 0, (p_Settings.reach || 100) * this.unitMultiplier, controlData.scene);
+	addSpotLight(settings, name) {
+		const controlData = this.#privateData;
+		const light = new babylon.SpotLight(ensureName(name), new babylon.Vector3(settings.x * this.unitMultiplier || 0, settings.y * this.unitMultiplier || 0, settings.z * this.unitMultiplier || 0), new babylon.Vector3(settings.direction.x || 0, settings.direction.y || 0, settings.direction.z || 0), settings.angle || 0, (settings.reach || 100) * this.unitMultiplier, controlData.scene);
 		controlData.lights[light.name] = { light };
-		this.setLightColors(p_Settings.color, light.name);
-		if (p_Settings.generateShadows) {
+		this.setLightColors(settings.color, light.name);
+		if (settings.generateShadows) {
 			controlData.lights[light.name].shadowGenerator = createShadowGenerator(light);
 		}
 	}
 
-	removeLight(p_Name) {
-		const controlData = this[privateData];
-		controlData.lights[p_Name].light.dispose();
-		delete controlData.lights[p_Name];
+	removeLight(name) {
+		const controlData = this.#privateData;
+		controlData.lights[name].light.dispose();
+		delete controlData.lights[name];
 	}
 
-	setLightColors(p_Colors, p_Name) {
-		const light = this[privateData].lights[p_Name];
+	setLightColors(colors, name) {
+		const light = this.#privateData.lights[name];
 		if (light) {
-			if (p_Colors.diffuse) {
-				Object.assign(light.light.diffuse, p_Colors.diffuse);
+			if (colors.diffuse) {
+				Object.assign(light.light.diffuse, colors.diffuse);
 			}
-			if (p_Colors.specular) {
-				Object.assign(light.light.specular, p_Colors.specular);
+			if (colors.specular) {
+				Object.assign(light.light.specular, colors.specular);
 			}
 		}
 	}
 
-	setObjectPosition(p_Object, p_Position) {
-		const mesh = getMeshObject(this[privateData], p_Object);
+	setObjectPosition(object, position) {
+		const mesh = getMeshObject(this.#privateData, object);
 		if (mesh) {
-			setPosition(mesh, p_Position, this.unitMultiplier);
+			setPosition(mesh, position, this.unitMultiplier);
 		}
 	}
 
-	setObjectRotation(p_Object, p_Rotation) {
-		const mesh = getMeshObject(this[privateData], p_Object);
+	setObjectRotation(object, rotation) {
+		const mesh = getMeshObject(this.#privateData, object);
 		if (mesh) {
-			setRotation(mesh, p_Rotation);
+			setRotation(mesh, rotation);
 		}
 	}
 
-	setObjectScale(p_Object, p_Scale) {
-		const mesh = getMeshObject(this[privateData], p_Object);
+	setObjectScale(object, scale) {
+		const mesh = getMeshObject(this.#privateData, object);
 		if (mesh) {
-			setScale(mesh, p_Scale);
+			setScale(mesh, scale);
 		}
 	}
 
-	setCameraTarget(p_Object) {
-		const controlData = this[privateData];
-		const mesh = getMeshObject(controlData, p_Object);
+	setCameraTarget(object) {
+		const controlData = this.#privateData;
+		const mesh = getMeshObject(controlData, object);
 		if (mesh) {
 			controlData.camera.lockedTarget = mesh;
 		}
 	}
 
-	addMaterial(p_MaterialName, p_Settings) { return addMaterial(this[privateData], p_MaterialName, p_Settings); }
+	addMaterial(materialName, settings) { return addMaterial(this.#privateData, materialName, settings); }
 
-	setObjectMaterial(p_Objects, p_Material) {
-		const controlData = this[privateData];
-		if (typeof p_Material === "string") {
-			const meshNames = Array.isArray(p_Objects) ? p_Objects : [p_Objects];
-			meshNames.forEach((p_Mesh) => {
-				const mesh = getMeshObject(controlData, p_Mesh);
-				const material = controlData.materials[p_Material];
+	setObjectMaterial(objects, objMaterial) {
+		const controlData = this.#privateData;
+		if (typeof objMaterial === "string") {
+			const meshNames = Array.isArray(objects) ? objects : [objects];
+			meshNames.forEach((meshName) => {
+				const mesh = getMeshObject(controlData, meshName);
+				const material = controlData.materials[objMaterial];
 				if (mesh && material) {
 					mesh.material = material;
 				}
@@ -717,145 +617,145 @@ export class VicowaWebgl extends webComponentBaseClass {
 		}
 	}
 
-	setGravity(p_Settings) {
-		Object.assign(this[privateData].scene.gravity, p_Settings);
+	setGravity(settings) {
+		Object.assign(this.#privateData.scene.gravity, settings);
 	}
 
-	set defaultShadows(p_Shadows) { this[privateData].defaultShadows = p_Shadows; }
-	get defaultShadows() { return this[privateData].defaultShadows; }
+	set defaultShadows(shadows) { this.#privateData.defaultShadows = shadows; }
+	get defaultShadows() { return this.#privateData.defaultShadows; }
 
-	set cameraGravity(p_Gravity) { this[privateData].camera.applyGravity = p_Gravity; }
-	get cameraGravity() { return this[privateData].camera.applyGravity; }
+	set cameraGravity(gravity) { this.#privateData.camera.applyGravity = gravity; }
+	get cameraGravity() { return this.#privateData.camera.applyGravity; }
 
-	set cameraCollisions(p_Collisions) { this[privateData].camera.checkCollisions = p_Collisions; }
-	get cameraCollisions() { return this[privateData].camera.checkCollisions; }
+	set cameraCollisions(collisions) { this.#privateData.camera.checkCollisions = collisions; }
+	get cameraCollisions() { return this.#privateData.camera.checkCollisions; }
 
-	setObjectVisibility(p_Object, p_Visible) {
-		const mesh = getMeshObject(this[privateData], p_Object);
+	setObjectVisibility(object, visible) {
+		const mesh = getMeshObject(this.#privateData, object);
 		if (mesh) {
-			applyRecursive(mesh, "isVisible", p_Visible || false);
+			applyRecursive(mesh, "isVisible", visible || false);
 		}
 	}
 
-	isObjectVisible(p_Object) {
-		const controlData = this[privateData];
-		const mesh = getMeshObject(controlData, p_Object);
+	isObjectVisible(obj) {
+		const controlData = this.#privateData;
+		const mesh = getMeshObject(controlData, obj);
 		return (mesh) ? mesh.isVisible : undefined;
 	}
 
-	setVirtualBody(p_Settings) {
-		const controlData = this[privateData];
+	setVirtualBody(settings) {
+		const controlData = this.#privateData;
 		if (controlData.camera) {
 			if (controlData.camera instanceof babylon.ArcRotateCamera) {
-				Object.assign(controlData.camera.collisionRadius, multiplyVector(p_Settings.bodySize || {}, this.unitMultiplier));
+				Object.assign(controlData.camera.collisionRadius, multiplyVector(settings.bodySize || {}, this.unitMultiplier));
 			} else {
-				Object.assign(controlData.camera.ellipsoid, multiplyVector(p_Settings.bodySize || {}, this.unitMultiplier));
-				Object.assign(controlData.camera.ellipsoidOffset, multiplyVector(p_Settings.eyeOffset || {}, this.unitMultiplier));
+				Object.assign(controlData.camera.ellipsoid, multiplyVector(settings.bodySize || {}, this.unitMultiplier));
+				Object.assign(controlData.camera.ellipsoidOffset, multiplyVector(settings.eyeOffset || {}, this.unitMultiplier));
 			}
 		} else {
 			throw new Error("make sure to set a camera before calling this function");
 		}
 	}
 
-	enableAllObjectCollisions(p_Excluded) {
-		const controlData = this[privateData];
+	enableAllObjectCollisions(excluded) {
+		const controlData = this.#privateData;
 		controlData.allObjectCollisions = true;
-		applyAllMeshes(controlData.meshes, p_Excluded || [], "checkCollisions", true);
-		applyAllMeshes(controlData.instances, p_Excluded || [], "checkCollisions", true);
+		applyAllMeshes(controlData.meshes, excluded || [], "checkCollisions", true);
+		applyAllMeshes(controlData.instances, excluded || [], "checkCollisions", true);
 	}
 
-	disableAllObjectCollisions(p_Excluded) {
-		const controlData = this[privateData];
+	disableAllObjectCollisions(excluded) {
+		const controlData = this.#privateData;
 		controlData.allObjectCollisions = false;
-		applyAllMeshes(controlData.meshes, p_Excluded || [], "checkCollisions", false);
-		applyAllMeshes(controlData.instances, p_Excluded || [], "checkCollisions", false);
+		applyAllMeshes(controlData.meshes, excluded || [], "checkCollisions", false);
+		applyAllMeshes(controlData.instances, excluded || [], "checkCollisions", false);
 	}
 
-	setCheckCollisionForObject(p_Object, p_Enabled) {
-		const controlData = this[privateData];
-		const mesh = getMeshObject(controlData, p_Object);
+	setCheckCollisionForObject(obj, enabled) {
+		const controlData = this.#privateData;
+		const mesh = getMeshObject(controlData, obj);
 		if (mesh) {
-			applyRecursive(mesh, "checkCollisions", p_Enabled);
+			applyRecursive(mesh, "checkCollisions", enabled);
 		}
 	}
 
-	getCheckCollisionForObject(p_Object) {
-		const controlData = this[privateData];
-		const mesh = getMeshObject(controlData, p_Object);
+	getCheckCollisionForObject(object) {
+		const controlData = this.#privateData;
+		const mesh = getMeshObject(controlData, object);
 		return (mesh) ? mesh.checkCollisions : undefined;
 	}
 
-	setFog(p_Enabled, p_Settings) {
-		const controlData = this[privateData];
+	setFog(enabled, settings) {
+		const controlData = this.#privateData;
 		// fog
-		controlData.scene.fogEnabled = p_Enabled;
+		controlData.scene.fogEnabled = enabled;
 		controlData.scene.fogMode = babylon.Scene.FOGMODE_EXP;
-		if (p_Settings.density) {
-			controlData.scene.fogDensity = p_Settings.density;
+		if (settings.density) {
+			controlData.scene.fogDensity = settings.density;
 		}
-		if (p_Settings.color) {
-			controlData.scene.fogColor = new babylon.Color3(p_Settings.color.r, p_Settings.color.g, p_Settings.color.b);
+		if (settings.color) {
+			controlData.scene.fogColor = new babylon.Color3(settings.color.r, settings.color.g, settings.color.b);
 		}
 	}
 
 	/**
 	 * Set the camera to use
-	 * @param {CAMERA_TYPES} p_Type The type of camera to create
-	 * @param {object} p_Settings The settings for creating the camera
+	 * @param {CAMERA_TYPES} type The type of camera to create
+	 * @param {object} settings The settings for creating the camera
 	 */
-	setCamera(p_Type, p_Settings) {
-		const controlData = this[privateData];
-		controlData.preventDefault = p_Settings.preventDefault;
-		p_Settings = p_Settings || {};
+	setCamera(type, settings) {
+		const controlData = this.#privateData;
+		controlData.preventDefault = settings.preventDefault;
+		settings = settings || {};
 		if (controlData.camera) {
 			controlData.camera.dispose();
 		}
-		switch (p_Type) {
+		switch (type) {
 			case CAMERA_TYPES.ORBITAL: {
 				// if no positions are specified, the camera will be positioned at a distance of 10 a longitude of 0 and a latitude of 45 degrees and point at 0, 0, 0
-				const position = Object.assign({}, { longitude: 0, latitude: 45, distance: 10 }, p_Settings.position);
-				const target = Object.assign({}, { x: 0, y: 0, z: 0 }, p_Settings.target || {});
-				controlData.camera = new babylon[(p_Settings.vrEnabled) ? "VRDeviceOrientationArcRotateCamera" : "ArcRotateCamera"]("camera", toRadians(position.longitude), toRadians(position.latitude), position.distance * this.unitMultiplier, new babylon.Vector3(target.x * this.unitMultiplier, target.y * this.unitMultiplier, target.z * this.unitMultiplier), controlData.scene);
+				const position = Object.assign({}, { longitude: 0, latitude: 45, distance: 10 }, settings.position);
+				const target = Object.assign({}, { x: 0, y: 0, z: 0 }, settings.target || {});
+				controlData.camera = new babylon[(settings.vrEnabled) ? "VRDeviceOrientationArcRotateCamera" : "ArcRotateCamera"]("camera", toRadians(position.longitude), toRadians(position.latitude), position.distance * this.unitMultiplier, new babylon.Vector3(target.x * this.unitMultiplier, target.y * this.unitMultiplier, target.z * this.unitMultiplier), controlData.scene);
 				controlData.camera.attachControl(this.$.canvas, !(controlData.preventDefault || false));
-				if (p_Settings.minLongitude) {
-					controlData.camera.lowerAlphaLimit = toRadians(p_Settings.minLongitude);
+				if (settings.minLongitude) {
+					controlData.camera.lowerAlphaLimit = toRadians(settings.minLongitude);
 				}
-				if (p_Settings.maxLongitude) {
-					controlData.camera.upperAlphaLimit = toRadians(p_Settings.maxLongitude);
+				if (settings.maxLongitude) {
+					controlData.camera.upperAlphaLimit = toRadians(settings.maxLongitude);
 				}
-				if (p_Settings.minLatitude) {
-					controlData.camera.lowerBetaLimit = toRadians(p_Settings.minLatitude);
+				if (settings.minLatitude) {
+					controlData.camera.lowerBetaLimit = toRadians(settings.minLatitude);
 				}
-				if (p_Settings.maxLatitude) {
-					controlData.camera.upperBetaLimit = toRadians(p_Settings.maxLatitude);
+				if (settings.maxLatitude) {
+					controlData.camera.upperBetaLimit = toRadians(settings.maxLatitude);
 				}
-				if (p_Settings.minDistance) {
-					controlData.camera.lowerRadiusLimit = p_Settings.minDistance * this.unitMultiplier;
+				if (settings.minDistance) {
+					controlData.camera.lowerRadiusLimit = settings.minDistance * this.unitMultiplier;
 				}
-				if (p_Settings.maxDistance) {
-					controlData.camera.upperRadiusLimit = p_Settings.maxDistance * this.unitMultiplier;
+				if (settings.maxDistance) {
+					controlData.camera.upperRadiusLimit = settings.maxDistance * this.unitMultiplier;
 				}
-				if (p_Settings.targetMesh) {
-					controlData.camera.lockedTarget = p_Settings.targetMesh;
+				if (settings.targetMesh) {
+					controlData.camera.lockedTarget = settings.targetMesh;
 				}
 				break;
 			}
 			case CAMERA_TYPES.FREE: {
 				// if no positions are specified, the camera will be positioned at 0 0 -10 and will be pointing at 0, 0, 0
-				const position = Object.assign({}, { x: 0, y: 0, z: -10 }, p_Settings.position || {});
-				const target = Object.assign({}, { x: 0, y: 0, z: 0 }, p_Settings.target || {});
-				controlData.camera = new babylon[(p_Settings.vrEnabled) ? ((p_Settings.mobile) ? "VRDeviceOrientationFreeCamera" : "WebVRFreeCamera") : "UniversalCamera"]("camera", new babylon.Vector3(position.x * this.unitMultiplier, position.y * this.unitMultiplier, position.z * this.unitMultiplier), controlData.scene, false);
+				const position = Object.assign({}, { x: 0, y: 0, z: -10 }, settings.position || {});
+				const target = Object.assign({}, { x: 0, y: 0, z: 0 }, settings.target || {});
+				controlData.camera = new babylon[(settings.vrEnabled) ? ((settings.mobile) ? "VRDeviceOrientationFreeCamera" : "WebVRFreeCamera") : "UniversalCamera"]("camera", new babylon.Vector3(position.x * this.unitMultiplier, position.y * this.unitMultiplier, position.z * this.unitMultiplier), controlData.scene, false);
 				controlData.camera.attachControl(this.$.canvas, !(controlData.preventDefault || false));
 				controlData.camera.setTarget(new babylon.Vector3(target.x * this.unitMultiplier, target.y * this.unitMultiplier, target.z * this.unitMultiplier));
 				break;
 			}
 			case CAMERA_TYPES.FOLLOW: {
-				const position = Object.assign({}, { x: 0, y: 0, z: -10 }, p_Settings.position || {});
+				const position = Object.assign({}, { x: 0, y: 0, z: -10 }, settings.position || {});
 				// if no positions are specified, the camera will be positioned at 0 0 -10 and will be pointing at 0, 0, 0
 				controlData.camera = new babylon.FollowCamera("camera", new babylon.Vector3(position.x * this.unitMultiplier, position.y * this.unitMultiplier, position.z * this.unitMultiplier), controlData.scene);
 				controlData.camera.attachControl(this.$.canvas, !(controlData.preventDefault || false));
-				if (p_Settings.targetMesh) {
-					controlData.camera.lockedTarget = p_Settings.targetMesh;
+				if (settings.targetMesh) {
+					controlData.camera.lockedTarget = settings.targetMesh;
 				}
 				const follow = Object.assign({}, {
 					radius: controlData.camera.radius,
@@ -863,7 +763,7 @@ export class VicowaWebgl extends webComponentBaseClass {
 					rotation: controlData.camera.rotationOffset,
 					acceleration: controlData.camera.cameraAcceleration,
 					maxSpeed: controlData.camera.maxCameraSpeed,
-				}, multiplyObject(p_Settings.follow, this.unitMultiplier, ["radius", "heightAbove"]));
+				}, multiplyObject(settings.follow, this.unitMultiplier, ["radius", "heightAbove"]));
 				controlData.camera.radius = follow.radius;
 				controlData.camera.heightOffset = follow.heightAbove;
 				controlData.camera.rotationOffset = toRadians(follow.rotation);
@@ -872,36 +772,36 @@ export class VicowaWebgl extends webComponentBaseClass {
 				break;
 			}
 			default:
-				throw new Error(`Unknown camera type ${p_Type}`);
+				throw new Error(`Unknown camera type ${type}`);
 		}
 	}
 
-	removeObject(p_Object) {
-		const mesh = getMeshObject(this[privateData], p_Object);
+	removeObject(obj) {
+		const mesh = getMeshObject(this.#privateData, obj);
 		if (mesh) {
 			mesh.dispose();
 		}
 	}
 
-	unGroupObject(p_Object) {
-		const controlData = this[privateData];
-		const mesh = (typeof p_Object === "string") ? controlData.meshes[p_Object] : unWrap(p_Object);
+	unGroupObject(obj) {
+		const controlData = this.#privateData;
+		const mesh = (typeof obj === "string") ? controlData.meshes[obj] : unWrap(obj);
 		const newObjects = [];
 		const childMeshes = (mesh) ? mesh.getChildMeshes(true) : [];
-		childMeshes.forEach((p_Mesh) => {
-			mesh.removeChild(p_Mesh);
-			newObjects.push(p_Mesh.name);
-			controlData.meshes[p_Mesh.name] = p_Mesh;
+		childMeshes.forEach((childMesh) => {
+			mesh.removeChild(childMesh);
+			newObjects.push(childMesh.name);
+			controlData.meshes[childMesh.name] = childMesh;
 		});
 		return newObjects;
 	}
 
-	groupObjects(p_ObjectNames, p_NewName) {
-		const controlData = this[privateData];
+	groupObjects(objectNames, newName) {
+		const controlData = this.#privateData;
 		const meshes = [];
 		let newMesh = null;
-		const refreshBoundingInfo = (p_Mesh) => {
-			const children = p_Mesh.getChildren();
+		const refreshBoundingInfo = (mesh) => {
+			const children = mesh.getChildren();
 			let boundingInfo = children[0].getBoundingInfo();
 			let min = boundingInfo.boundingBox.minimumWorld;
 			let max = boundingInfo.boundingBox.maximumWorld;
@@ -910,81 +810,81 @@ export class VicowaWebgl extends webComponentBaseClass {
 				min = babylon.Vector3.Minimize(min, boundingInfo.boundingBox.minimumWorld);
 				max = babylon.Vector3.Maximize(max, boundingInfo.boundingBox.maximumWorld);
 			}
-			p_Mesh.setBoundingInfo(new babylon.BoundingInfo(min, max));
+			mesh.setBoundingInfo(new babylon.BoundingInfo(min, max));
 		};
 
-		p_ObjectNames.forEach((p_Name) => { const mesh = controlData.meshes[p_Name]; if (mesh) { meshes.push(mesh); } });
+		objectNames.forEach((name) => { const mesh = controlData.meshes[name]; if (mesh) { meshes.push(mesh); } });
 		if (meshes.length) {
-			newMesh = new babylon.Mesh(p_NewName, controlData.scene);
-			meshes.forEach((p_NewChild) => { newMesh.addChild(p_NewChild); delete controlData.meshes[p_NewChild.name]; });
-			controlData.meshes[p_NewName] = newMesh;
+			newMesh = new babylon.Mesh(newName, controlData.scene);
+			meshes.forEach((newChild) => { newMesh.addChild(newChild); delete controlData.meshes[newChild.name]; });
+			controlData.meshes[newName] = newMesh;
 			newMesh.computeWorldMatrix(true);
 			refreshBoundingInfo(newMesh);
 		}
 		return (newMesh) ? newMesh.name : null;
 	}
 
-	selectObject(p_Object) {
-		const controlData = this[privateData];
-		const mesh = getTopLevelMeshObject(controlData, p_Object);
+	selectObject(obj) {
+		const controlData = this.#privateData;
+		const mesh = getTopLevelMeshObject(controlData, obj);
 		if (mesh) {
 			const allMeshes = flattenMeshes(mesh);
-			allMeshes.forEach((p_Mesh) => {
-				p_Mesh.selected = true;
-				p_Mesh.showBoundingBox = this.selectionBoundingBox;
-				p_Mesh.notSelectMaterial = p_Mesh.material;
-				if (p_Mesh.material && p_Mesh.material.hasOwnProperty("diffuseColor")) {
-					p_Mesh.material = p_Mesh.material.clone("temp");
-					p_Mesh.material.diffuseColor = controlData.materials["selected"].diffuseColor;
-					p_Mesh.material.alpha = Math.max(0.5, p_Mesh.material.alpha);
+			allMeshes.forEach((someMesh) => {
+				someMesh.selected = true;
+				someMesh.showBoundingBox = this.selectionBoundingBox;
+				someMesh.notSelectMaterial = someMesh.material;
+				if (someMesh.material && someMesh.material.hasOwnProperty("diffuseColor")) {
+					someMesh.material = someMesh.material.clone("temp");
+					someMesh.material.diffuseColor = controlData.materials["selected"].diffuseColor;
+					someMesh.material.alpha = Math.max(0.5, someMesh.material.alpha);
 				} else {
-					p_Mesh.material = controlData.materials["selected"].clone();
+					someMesh.material = controlData.materials["selected"].clone();
 				}
 			});
 		}
 	}
 
-	unSelectObject(p_ObjectName) {
-		const controlData = this[privateData];
-		const mesh = getTopLevelMeshObject(controlData, p_ObjectName);
+	unSelectObject(objectName) {
+		const controlData = this.#privateData;
+		const mesh = getTopLevelMeshObject(controlData, objectName);
 		if (mesh) {
 			const allMeshes = flattenMeshes(mesh);
-			allMeshes.forEach((p_Mesh) => {
-				if (p_Mesh.selected) {
-					p_Mesh.selected = false;
-					p_Mesh.showBoundingBox = false;
-					p_Mesh.material.dispose();
-					p_Mesh.material = p_Mesh.notSelectMaterial;
-					delete p_Mesh.notSelectMaterial;
+			allMeshes.forEach((someMesh) => {
+				if (someMesh.selected) {
+					someMesh.selected = false;
+					someMesh.showBoundingBox = false;
+					someMesh.material.dispose();
+					someMesh.material = someMesh.notSelectMaterial;
+					delete someMesh.notSelectMaterial;
 				}
 			});
 		}
 	}
 
 	getSelectedObjects() {
-		const controlData = this[privateData];
-		return Object.keys(controlData.meshes).filter((p_Key) => getMeshObject(controlData, p_Key).selected).concat(Object.keys(controlData.instances).filter((p_Key) => getMeshObject(controlData, p_Key).selected));
+		const controlData = this.#privateData;
+		return Object.keys(controlData.meshes).filter((key) => getMeshObject(controlData, key).selected).concat(Object.keys(controlData.instances).filter((key) => getMeshObject(controlData, key).selected));
 	}
 
 	unSelectAll() {
-		const controlData = this[privateData];
-		Object.keys(controlData.meshes).forEach((p_Key) => this.unSelectObject(p_Key));
-		Object.keys(controlData.instances).forEach((p_Key) => this.unSelectObject(p_Key));
+		const controlData = this.#privateData;
+		Object.keys(controlData.meshes).forEach((key) => this.unSelectObject(key));
+		Object.keys(controlData.instances).forEach((key) => this.unSelectObject(key));
 	}
 
-	isObjectSelected(p_ObjectName) {
-		const mesh = getMeshObject(this[privateData], p_ObjectName);
+	isObjectSelected(objectName) {
+		const mesh = getMeshObject(this.#privateData, objectName);
 		return mesh && mesh.selected;
 	}
 
-	set selectColor(p_Color) { Object.assign(this[privateData].materials["selected"].diffuseColor, p_Color); }
-	get selectColor() { const color = (this[privateData].materials["selected"] || {}).diffuseColor; return { r: color.r || 1, g: color.g || 0, b: color.b || 0 }; }
+	set selectColor(color) { Object.assign(this.#privateData.materials["selected"].diffuseColor, color); }
+	get selectColor() { const color = (this.#privateData.materials["selected"] || {}).diffuseColor; return { r: color.r || 1, g: color.g || 0, b: color.b || 0 }; }
 
-	getDataUrl(p_Type, p_Quality) { return this.$.canvas.toDataURL(p_Type || "image/png", p_Quality || undefined); }
-	getBlob(p_Callback, p_Type, p_Quality) { this.$.canvas.toBlob(p_Callback, p_Type || "image/png", p_Quality || undefined); }
+	getDataUrl(type, quality) { return this.$.canvas.toDataURL(type || "image/png", quality || undefined); }
+	getBlob(callback, type, quality) { this.$.canvas.toBlob(callback, type || "image/png", quality || undefined); }
 
 	attached() {
-		const controlData = this[privateData];
+		const controlData = this.#privateData;
 		// create the engine
 		controlData.engine = new babylon.Engine(this.$.canvas, true, { preserveDrawingBuffer: true, stencil: true });
 		const createScene = () => {
@@ -1012,22 +912,22 @@ export class VicowaWebgl extends webComponentBaseClass {
 
 		createScene();
 
-		controlData.scene.onPointerObservable.add((p_Event) => {
-			if (p_Event.pickInfo.hit) {
+		controlData.scene.onPointerObservable.add((event) => {
+			if (event.pickInfo.hit) {
 				if (this.onObjectClicked) {
-					const path = [p_Event.pickInfo.pickedMesh.name];
-					let parent = p_Event.pickInfo.pickedMesh.parent;
+					const path = [event.pickInfo.pickedMesh.name];
+					let parent = event.pickInfo.pickedMesh.parent;
 					while (parent) {
 						path.unshift(parent.name);
 						parent = parent.parent;
 					}
 					this.onObjectClicked({
-						distance: p_Event.pickInfo.distance / this.unitMultiplier,
-						object: p_Event.pickInfo.pickedMesh.name,
+						distance: event.pickInfo.distance / this.unitMultiplier,
+						object: event.pickInfo.pickedMesh.name,
 						mainObject: path[0],
 						parent: path[path.length - 2] || null,
 						path,
-						location: { x: p_Event.pickInfo.pickedPoint.x / this.unitMultiplier, y: p_Event.pickInfo.pickedPoint.y / this.unitMultiplier, z: p_Event.pickInfo.pickedPoint.z / this.unitMultiplier },
+						location: { x: event.pickInfo.pickedPoint.x / this.unitMultiplier, y: event.pickInfo.pickedPoint.y / this.unitMultiplier, z: event.pickInfo.pickedPoint.z / this.unitMultiplier },
 					});
 				}
 			}
@@ -1039,11 +939,11 @@ export class VicowaWebgl extends webComponentBaseClass {
 		}, this);
 
 		// attach all extensions now
-		controlData.extensions.forEach((p_ExtensionObject) => attachExtension(this, p_ExtensionObject));
+		controlData.extensions.forEach((extensionObject) => this.#attachExtension(extensionObject));
 	}
 
 	detached() {
-		const controlData = this[privateData];
+		const controlData = this.#privateData;
 		this.stopRendering();
 		controlData.scene.dispose();
 		controlData.engine.dispose();
@@ -1058,11 +958,108 @@ export class VicowaWebgl extends webComponentBaseClass {
 		controlData.extensions = [];
 	}
 
+	#handleLoadingScreenChange() {
+		const controlData = this.#privateData;
+		if (controlData.assetsManager) {
+			controlData.assetsManager.useDefaultLoadingScreen = this.loadingScreen;
+		}
+	}
+
+	#handleSelectionBoundingBoxChange() {
+		const controlData = this.#privateData;
+		const updateBoundingBox = (key) => {
+			const mesh = getMeshObject(controlData, key);
+			if (mesh.selected) {
+				mesh.showBoundingBox = this.selectionBoundingBox;
+			}
+		};
+		Object.keys(controlData.meshes).forEach(updateBoundingBox);
+		Object.keys(controlData.instances).forEach(updateBoundingBox);
+	}
+
+	#attachExtension(extensionObject) {
+		const controlData = this.#privateData;
+		extensionObject.attach(this, {
+			// get a mesh object from the main store
+			getObject(objectNameOrPath) { return wrap(controlData, getTopLevelMeshObject(controlData, objectNameOrPath)); },
+			// object creation
+			createGroup(name) { return wrapGroup(controlData, new babylon.Mesh(ensureName(name), controlData.scene)); },
+			createSphere(settings, name) { return wrap(controlData, createSphere(controlData, settings, name)); },
+			createBox(settings, name) { return wrap(controlData, createBox(controlData, settings, name)); },
+			createPlane(settings, name) { return wrap(controlData, createPlane(controlData, settings, name)); },
+			createPolyLine(settings, name) { return wrap(controlData, createPolyLine(controlData, settings, name)); },
+			createExtrudedPolygon(settings, name) { return wrap(controlData, createExtrudedPolygon(controlData, settings, name)); },
+			createCylinder(settings, name) { return wrap(controlData, createCylinder(controlData, settings, name)); },
+			createTube(settings, name) { return wrap(controlData, createTube(controlData, settings, name)); },
+			// settings
+			applySettings(settings, obj) { applySettings(controlData, unWrap(obj), settings); },
+			// event handling
+			addPointerDownListener(callback) { addPointerDownListener(controlData, callback); },
+			addPointerUpListener(callback) { addPointerUpListener(controlData, callback); },
+			addPointerMoveListener(callback) { addPointerMoveListener(controlData, callback); },
+			addPointerClickListener(callback) { addPointerClickListener(controlData, callback); },
+			// utility
+			screenToObjectPoint(screenPoint, wrapped) { return screenToObjectPoint(controlData, screenPoint, unWrap(wrapped)); },
+			pointToScreenPoint(point) { const tmpPoint = pointToScreenPoint(controlData, point); return { x: tmpPoint.x, y: tmpPoint.y }; },
+			screenPointToBoundingProjection(screenPoint, wrapped) { return screenPointToBoundingProjection(controlData, screenPoint, unWrap(wrapped)); },
+			get pointerPos() { return { x: controlData.scene.pointerX, y: controlData.scene.pointerY }; },
+			// camera
+			detachCameraControl: () => { controlData.camera.detachControl(this.$.canvas); },
+			attachCameraControl: () => { controlData.camera.attachControl(this.$.canvas, !(controlData.preventDefault || false)); },
+		});
+	}
+	#addDefaultSettings(settings) {
+		const controlData = this.#privateData;
+		return Object.assign({
+			collisions: controlData.allObjectCollisions,
+			shadows: this.defaultShadows,
+		}, settings);
+	}
+
+	#addMesh(meshObject) {
+		if (meshObject) {
+			const controlData = this.#privateData;
+			controlData.meshes[meshObject.name] = meshObject;
+
+			Object.keys(controlData.lights).forEach((key) => {
+				if (controlData.lights[key].shadowGenerator) {
+					controlData.lights[key].shadowGenerator.recreateShadowMap();
+				}
+			});
+		}
+		return meshObject;
+	}
+
+	#addInstance(name, meshObject, settings) {
+		const controlData = this.#privateData;
+		settings = settings || {};
+		if (meshObject) {
+			if (settings.position) {
+				setPosition(meshObject, settings.position, this.unitMultiplier);
+			}
+			if (settings.rotation) {
+				setRotation(meshObject, settings.rotation);
+			}
+			if (settings.scale) {
+				setScale(meshObject, settings.scale);
+			}
+			if (settings.visible !== undefined) {
+				meshObject.isVisible = settings.visible;
+			}
+			// do shadows either if explicit shadows option is set to true in the settings or when defaultShadows is set to true and the shadows property is undefined
+			if (settings.shadows || (this.defaultShadows && settings.shadows === undefined)) {
+				addShadowCaster(controlData, meshObject);
+			}
+			applyRecursive(meshObject, "checkCollisions", (settings.collisions === undefined) ? controlData.allObjectCollisions : settings.collisions);
+			controlData.instances[name] = meshObject;
+		}
+	}
+
 	static get template() {
 		return `
-			<script src="../third_party/earcut/dist/earcut.dev.js"></script>
-			<script src="../third_party/babylonjs/babylon.max.js"></script>
-			<script src="../third_party/babylonjs-loaders/babylonjs.loaders.js"></script>
+			<script src="/third_party/earcut/dist/earcut.dev.js"></script>
+			<script src="/third_party/babylonjs/babylon.max.js"></script>
+			<script src="/third_party/babylonjs-loaders/babylonjs.loaders.js"></script>
 			<style>
 				:host {
 					display: block;
@@ -1084,4 +1081,4 @@ export class VicowaWebgl extends webComponentBaseClass {
 	}
 }
 
-window.customElements.define(componentName, VicowaWebgl);
+window.customElements.define("vicowa-webgl", VicowaWebgl);
