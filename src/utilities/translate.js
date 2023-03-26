@@ -1,7 +1,7 @@
-import exports from "./amdToModule.js";
-import "/third_party/jed/jed.js";
-import debug from "./debug.js";
-import observerFactory from "./observerFactory.js";
+import exports from './amdToModule.js';
+import '/third_party/jed/jed.js';
+import debug from './debug.js';
+import observerFactory from './observerFactory.js';
 
 function noTranslationMessage(original) {
 	debug.log(`no translation found for string ${original}`);
@@ -10,14 +10,14 @@ function noTranslationMessage(original) {
 const defaultTranslationInfo = {
 	locale_data: {
 		strings: {
-			"": {
-				domain: "strings",
-				lang: "en",
-				plural_forms: "nplurals=2; plural=(n != 1);",
+			'': {
+				domain: 'strings',
+				lang: 'en',
+				plural_forms: 'nplurals=2; plural=(n != 1);',
 			},
 		},
 	},
-	domain: "strings",
+	domain: 'strings',
 	missing_key_callback: noTranslationMessage, // This callback is called when a translation cannot be found
 	_is_default_content: true,
 };
@@ -25,26 +25,26 @@ const defaultTranslationInfo = {
 const notifiers = observerFactory();
 const locations = [];
 let jed = new exports.Jed(defaultTranslationInfo);
-let language = "";
+let language = '';
 let translator = {};
 const translationInfo = {
 	locale_data: {
 		strings: {
-			"": {
-				domain: "strings",
-				lang: "en",
-				plural_forms: "nplurals=2; plural=(n != 1);",
+			'': {
+				domain: 'strings',
+				lang: 'en',
+				plural_forms: 'nplurals=2; plural=(n != 1);',
 				translations: [],
 			},
 		},
 	},
-	domain: "strings",
+	domain: 'strings',
 	missing_key_callback: noTranslationMessage, // This callback is called when a translation cannot be found
 	_is_default_content: true,
 };
 
 function loadTranslationFiles(languageName) {
-	const languageParts = languageName.split("_");
+	const languageParts = languageName.split('_');
 	// we might have a specific locale version of a language (e.g. en_US, en_UK, en_CA etc)
 	// in this case we will try to load both the base and the specific version of the language e.g. en.json and en_CA.json
 	const locationsToLoad = [];
@@ -66,12 +66,12 @@ function loadTranslationFiles(languageName) {
 				});
 			});
 			jed = new exports.Jed(translationInfo);
-			notifiers.notify("loaded", translator);
+			notifiers.notify('loaded', translator);
 		}
 	};
 
 	locationsToLoad.forEach((location) => {
-		fetch(location.url).then((response) => ((response.ok) ? Promise.resolve(response.json()) : Promise.reject(new Error("retrieve failed")))).then((translations) => {
+		fetch(location.url).then((response) => ((response.ok) ? Promise.resolve(response.json()) : Promise.reject(new Error('retrieve failed')))).then((translations) => {
 			location.translations = translations.locale_data.strings;
 			location.finished = true;
 			applyTranslations();
@@ -124,7 +124,7 @@ translator = {
 	 * @param {object} owner Object that owns the handler, this can be used with removeTranslationUpdatedObserverOwner to remove all registered handlers for this owner
 	 */
 	addTranslationUpdatedObserver(handler, owner) {
-		notifiers.addObserver("loaded", handler, owner);
+		notifiers.addObserver('loaded', handler, owner);
 		handler(this);
 	},
 	/**
@@ -132,7 +132,7 @@ translator = {
 	 * @param {function} handler Remove the given handler function
 	 */
 	removeTranslationUpdatedObserver(handler) {
-		notifiers.removeObserver("loaded", handler);
+		notifiers.removeObserver('loaded', handler);
 	},
 	/**
 	 * Remove all handlers for the given owner

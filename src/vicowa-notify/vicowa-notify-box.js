@@ -1,9 +1,9 @@
-import { WebComponentBaseClass } from "/third_party/web-component-base-class/src/web-component-base-class.js";
+import { WebComponentBaseClass } from '/third_party/web-component-base-class/src/web-component-base-class.js';
 
 export const DEFAULT_LEVELS = Object.freeze({
-	INFO: "INFO",
-	WARNING: "WARNING",
-	ERROR: "ERROR",
+	INFO: 'INFO',
+	WARNING: 'WARNING',
+	ERROR: 'ERROR',
 });
 
 class VicowaNotifyBox extends WebComponentBaseClass {
@@ -15,7 +15,7 @@ class VicowaNotifyBox extends WebComponentBaseClass {
 
 	static get properties() {
 		return {
-			message: { type: String, value: "", reflectToAttribute: true, notify: (control) => { control.#setMessage(); } },
+			message: { type: String, value: '', reflectToAttribute: true, notify: (control) => { control.#setMessage(); } },
 			level: { type: String, value: DEFAULT_LEVELS.INFO, reflectToAttribute: true, notify: (control) => { control.#setLevel(); } },
 			duration: { type: Number, value: 2000, reflectToAttribute: true },
 		};
@@ -26,11 +26,11 @@ class VicowaNotifyBox extends WebComponentBaseClass {
 		this.#setLevel();
 		this.#privateData.timeoutId = setTimeout(() => this.#closeBox(), this.duration);
 
-		this.addAutoEventListener(this.$.close, "click", () => this.#closeBox());
-		this.addAutoEventListener(this.$.box, "transitionend", () => {
-			if (this.$.box.classList.contains("closing") && !this.$.box.classList.contains("collapsing")) {
-				this.$.box.classList.add("collapsing");
-			} else if (this.$.box.classList.contains("closing") && this.$.box.classList.contains("collapsing")) {
+		this.addAutoEventListener(this.$.close, 'click', () => this.#closeBox());
+		this.addAutoEventListener(this.$.box, 'transitionend', () => {
+			if (this.$.box.classList.contains('closing') && !this.$.box.classList.contains('collapsing')) {
+				this.$.box.classList.add('collapsing');
+			} else if (this.$.box.classList.contains('closing') && this.$.box.classList.contains('collapsing')) {
 				this.parentElement.removeChild(this);
 			}
 		});
@@ -39,7 +39,7 @@ class VicowaNotifyBox extends WebComponentBaseClass {
 	detached() { this.#closeBox(); }
 
 	#closeBox() {
-		this.$.box.classList.add("closing");
+		this.$.box.classList.add('closing');
 		clearTimeout(this.#privateData.timeoutId);
 		this.#privateData.timeoutId = undefined;
 	}
@@ -123,4 +123,4 @@ class VicowaNotifyBox extends WebComponentBaseClass {
 	}
 }
 
-window.customElements.define("vicowa-notify-box", VicowaNotifyBox);
+window.customElements.define('vicowa-notify-box', VicowaNotifyBox);

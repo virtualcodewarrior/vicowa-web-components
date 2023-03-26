@@ -1,6 +1,6 @@
-import { WebComponentBaseClass } from "/third_party/web-component-base-class/src/web-component-base-class.js";
-import "../vicowa-image-carousel/vicowa-image-carousel.js";
-import "../vicowa-modal/vicowa-modal.js";
+import { WebComponentBaseClass } from '/third_party/web-component-base-class/src/web-component-base-class.js';
+import '../vicowa-image-carousel/vicowa-image-carousel.js';
+import '../vicowa-modal/vicowa-modal.js';
 
 /**
  * Class that represents the vicowa-input custom element
@@ -46,18 +46,18 @@ class VicowaImageGallery extends WebComponentBaseClass {
 	setImageProvider(provider) {
 		this.#imageProvider = provider;
 
-		this.addAutoEventListener(this.$.images, "click", (event) => {
+		this.addAutoEventListener(this.$.images, 'click', (event) => {
 			// get the item under the mouse
-			const container = (event.target) ? event.target.closest("[carousel-index]") : null;
+			const container = (event.target) ? event.target.closest('[carousel-index]') : null;
 			if (container) {
 				this.$.modal.open = true;
-				this.$.carousel.startIndex = parseInt(container.getAttribute("carousel-index"), 10);
+				this.$.carousel.startIndex = parseInt(container.getAttribute('carousel-index'), 10);
 			}
 		});
-		this.addAutoEventListener(this.$.closeCarousel, "click", () => {
+		this.addAutoEventListener(this.$.closeCarousel, 'click', () => {
 			this.$.modal.open = false;
 		});
-		this.$.images.innerHTML = "";
+		this.$.images.innerHTML = '';
 		if (this.#imageProvider) {
 			this.#retrieveImages();
 		}
@@ -71,19 +71,19 @@ class VicowaImageGallery extends WebComponentBaseClass {
 			let tile = document.querySelector(`[carousel-index="${index}]"`);
 			let imageContainer = null;
 			if (!tile) {
-				imageContainer = (tile) ? tile.querySelector("vicowa-image-container") : null;
+				imageContainer = (tile) ? tile.querySelector('vicowa-image-container') : null;
 				if (!imageContainer) {
-					tile = imageContainer = document.createElement("vicowa-image-container");
-					tile.setAttribute("lazyload", "");
+					tile = imageContainer = document.createElement('vicowa-image-container');
+					tile.setAttribute('lazyload', '');
 				}
 				this.$.images.appendChild(tile);
 			}
 
-			tile.setAttribute("carousel-index", index);
+			tile.setAttribute('carousel-index', index);
 			imageContainer.alternates = this.#imageInfo[index].thumbNail.slice();
 			imageContainer.description = imageInfo.description;
 			imageContainer.tooltip = imageInfo.tooltip;
-			imageContainer.alt = (imageInfo.alt || imageInfo.description || imageInfo.tooltip || "").trim();
+			imageContainer.alt = (imageInfo.alt || imageInfo.description || imageInfo.tooltip || '').trim();
 		});
 
 		this.$.carousel.images = this.#imageInfo.map((info) => ({ alternates: info.fullSize.slice(), description: info.description, alt: info.alt, tooltip: info.tooltip }));
@@ -174,4 +174,4 @@ class VicowaImageGallery extends WebComponentBaseClass {
 	}
 }
 
-window.customElements.define("vicowa-image-gallery", VicowaImageGallery);
+window.customElements.define('vicowa-image-gallery', VicowaImageGallery);

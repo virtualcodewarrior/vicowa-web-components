@@ -1,9 +1,9 @@
-import { WebComponentBaseClass } from "/third_party/web-component-base-class/src/web-component-base-class.js";
-import "../vicowa-string/vicowa-string.js";
-import "../vicowa-icon/vicowa-icon.js";
-import "../vicowa-resize-detector/vicowa-resize-detector.js";
+import { WebComponentBaseClass } from '/third_party/web-component-base-class/src/web-component-base-class.js';
+import '../vicowa-string/vicowa-string.js';
+import '../vicowa-icon/vicowa-icon.js';
+import '../vicowa-resize-detector/vicowa-resize-detector.js';
 
-const itemData = Symbol("itemData");
+const itemData = Symbol('itemData');
 
 class VicowaHierarchicalPalette extends WebComponentBaseClass {
 	#privateData;
@@ -65,10 +65,10 @@ class VicowaHierarchicalPalette extends WebComponentBaseClass {
 				this.#updateScrollButtons();
 			}, 100);
 			const handleMouseUp = () => {
-				window.removeEventListener("mouseup", handleMouseUp);
+				window.removeEventListener('mouseup', handleMouseUp);
 				clearInterval(interval);
 			};
-			window.addEventListener("mouseup", handleMouseUp, true);
+			window.addEventListener('mouseup', handleMouseUp, true);
 		};
 
 		const handleMoveToEnd = () => {
@@ -86,16 +86,16 @@ class VicowaHierarchicalPalette extends WebComponentBaseClass {
 				this.#updateScrollButtons();
 			}, 100);
 			const handleMouseUp = () => {
-				window.removeEventListener("mouseup", handleMouseUp);
+				window.removeEventListener('mouseup', handleMouseUp);
 				clearInterval(interval);
 			};
-			window.addEventListener("mouseup", handleMouseUp, true);
+			window.addEventListener('mouseup', handleMouseUp, true);
 		};
 
-		this.addAutoEventListener(this.$.moveToStart, "mousedown", handleMoveToStart);
-		this.addAutoEventListener(this.$.moveToEnd, "mousedown", handleMoveToEnd);
+		this.addAutoEventListener(this.$.moveToStart, 'mousedown', handleMoveToStart);
+		this.addAutoEventListener(this.$.moveToEnd, 'mousedown', handleMoveToEnd);
 
-		this.addAutoEventListener(this.$.itemsContainer, "wheel", (event) => {
+		this.addAutoEventListener(this.$.itemsContainer, 'wheel', (event) => {
 			if (this.horizontal) {
 				this.$.itemsContainer.scrollLeft += event.deltaY;
 			} else {
@@ -104,11 +104,11 @@ class VicowaHierarchicalPalette extends WebComponentBaseClass {
 			this.#updateScrollButtons();
 		});
 
-		this.addAutoEventListener(this.$.back, "click", async() => {
-			controlData.activePaletteRoot = this.$.back.getAttribute("target");
+		this.addAutoEventListener(this.$.back, 'click', async() => {
+			controlData.activePaletteRoot = this.$.back.getAttribute('target');
 			const targetContainer = this.$.prevItemsContainer;
 			await this.#fillPaletteItems(targetContainer);
-			this.$.containersContainer.classList.add("animate");
+			this.$.containersContainer.classList.add('animate');
 			const pathItem = controlData.path.pop();
 			if (this.horizontal) {
 				targetContainer.scrollLeft = pathItem.scrollOffset;
@@ -117,14 +117,14 @@ class VicowaHierarchicalPalette extends WebComponentBaseClass {
 				targetContainer.scrollTop = pathItem.scrollOffset;
 				this.$.containersContainer.style.left = 0;
 			}
-			this.$.back.setAttribute("target", (controlData.path[controlData.path.length - 1] || { target: "" }).target);
+			this.$.back.setAttribute('target', (controlData.path[controlData.path.length - 1] || { target: '' }).target);
 		});
 
-		this.$.containersContainer.addEventListener("transitionend", () => {
-			this.$.containersContainer.classList.remove("animate");
-			this.$.itemsContainer.innerHTML = "";
+		this.$.containersContainer.addEventListener('transitionend', () => {
+			this.$.containersContainer.classList.remove('animate');
+			this.$.itemsContainer.innerHTML = '';
 			if (this.horizontal) {
-				const sourceContainer = (this.$.containersContainer.style.top === "0px") ? this.$.prevItemsContainer : this.$.nextItemsContainer;
+				const sourceContainer = (this.$.containersContainer.style.top === '0px') ? this.$.prevItemsContainer : this.$.nextItemsContainer;
 				const scrollOffset = sourceContainer.scrollLeft;
 				Array.from(sourceContainer.children).forEach((item) => {
 					this.$.itemsContainer.appendChild(item);
@@ -132,7 +132,7 @@ class VicowaHierarchicalPalette extends WebComponentBaseClass {
 				this.$.containersContainer.style.top = `${-this.paletteSize}px`;
 				this.$.itemsContainer.scrollLeft = scrollOffset;
 			} else {
-				const sourceContainer = (this.$.containersContainer.style.left === "0px") ? this.$.prevItemsContainer : this.$.nextItemsContainer;
+				const sourceContainer = (this.$.containersContainer.style.left === '0px') ? this.$.prevItemsContainer : this.$.nextItemsContainer;
 				const scrollOffset = sourceContainer.scrollTop;
 				Array.from(sourceContainer.children).forEach((item) => {
 					this.$.itemsContainer.appendChild(item);
@@ -140,8 +140,8 @@ class VicowaHierarchicalPalette extends WebComponentBaseClass {
 				this.$.containersContainer.style.left = `${-this.paletteSize}px`;
 				this.$.itemsContainer.scrollTop = scrollOffset;
 			}
-			this.$.prevItemsContainer.innerHTML = "";
-			this.$.nextItemsContainer.innerHTML = "";
+			this.$.prevItemsContainer.innerHTML = '';
+			this.$.nextItemsContainer.innerHTML = '';
 			const tester = new RegExp(`^item-slot-${controlData.fillSequenceIndex}`);
 			Array.from(this.querySelectorAll('[slot^="item-slot-"]')).filter((item) => !tester.test(item.slot)).forEach((item) => this.removeChild(item));
 			this.#updateScrollButtons();
@@ -158,9 +158,9 @@ class VicowaHierarchicalPalette extends WebComponentBaseClass {
 		const controlData = this.#privateData;
 		const size = (this.horizontal) ? this.$.container.offsetWidth : this.$.container.offsetHeight;
 		controlData.pageSize = Math.floor(size / this.itemSize);
-		this.$.moveToStart.classList.toggle("disabled", (this.horizontal) ? this.$.itemsContainer.scrollLeft === 0 : this.$.itemsContainer.scrollTop === 0);
-		this.$.moveToEnd.classList.toggle("disabled", (this.horizontal) ? this.$.itemsContainer.scrollLeft >= this.$.itemsContainer.scrollWidth - this.$.itemsContainer.offsetWidth : this.$.itemsContainer.scrollTop >= this.$.itemsContainer.scrollHeight - this.$.itemsContainer.offsetHeight);
-		this.$.back.classList.toggle("disabled", controlData.path.length === 0);
+		this.$.moveToStart.classList.toggle('disabled', (this.horizontal) ? this.$.itemsContainer.scrollLeft === 0 : this.$.itemsContainer.scrollTop === 0);
+		this.$.moveToEnd.classList.toggle('disabled', (this.horizontal) ? this.$.itemsContainer.scrollLeft >= this.$.itemsContainer.scrollWidth - this.$.itemsContainer.offsetWidth : this.$.itemsContainer.scrollTop >= this.$.itemsContainer.scrollHeight - this.$.itemsContainer.offsetHeight);
+		this.$.back.classList.toggle('disabled', controlData.path.length === 0);
 	}
 
 	async #fillPaletteItems(target) {
@@ -180,39 +180,39 @@ class VicowaHierarchicalPalette extends WebComponentBaseClass {
 			controlData.fillSequenceIndex++;
 			this.itemSize = Math.max(this.itemSize, 10); // minimal size = 10px
 			controlData.pageSize = Math.ceil(size / this.itemSize) + 6; // 3 additional on each side
-			controlData.items = await this.getData((controlData.activePaletteRoot !== "root") ? controlData.activePaletteRoot : null, 0, 100);
+			controlData.items = await this.getData((controlData.activePaletteRoot !== 'root') ? controlData.activePaletteRoot : null, 0, 100);
 			while (controlData.items.items.length < controlData.items.totalItemCount) {
-				const additionalItems = await this.getData((controlData.activePaletteRoot !== "root") ? controlData.activePaletteRoot : null, controlData.items.items.length, 100);
+				const additionalItems = await this.getData((controlData.activePaletteRoot !== 'root') ? controlData.activePaletteRoot : null, controlData.items.items.length, 100);
 				controlData.items.items = controlData.items.items.concat(additionalItems.items);
 			}
 
-			target.innerHTML = "";
+			target.innerHTML = '';
 			Array.from(this.querySelectorAll(`[slot^="item-slot-${controlData.fillSequenceIndex}-"]`)).forEach((item) => this.removeChild(item));
 			controlData.items.items.forEach((item, index) => {
 				const itemContainer = document.importNode(this.$.itemTemplate.content, true).querySelector('div[name="item-container"]');
 				itemContainer[itemData] = item;
-				itemContainer.style.width = (this.horizontal) ? `${this.itemSize}px` : "";
-				itemContainer.style.height = (this.horizontal) ? "" : `${this.itemSize}px`;
+				itemContainer.style.width = (this.horizontal) ? `${this.itemSize}px` : '';
+				itemContainer.style.height = (this.horizontal) ? '' : `${this.itemSize}px`;
 				if (item.subLevel) {
-					itemContainer.classList.add("sub-level");
+					itemContainer.classList.add('sub-level');
 				}
 				const itemContent = this.factory(item);
-				const slot = itemContainer.querySelector("slot");
+				const slot = itemContainer.querySelector('slot');
 				slot.name = `item-slot-${controlData.fillSequenceIndex}-${index}`;
 				itemContent.slot = slot.name;
 				this.appendChild(itemContent);
 				// itemContainer.appendChild(itemContent);
 				target.appendChild(itemContainer);
-				itemContainer.addEventListener("click", async() => {
+				itemContainer.addEventListener('click', async() => {
 					if (item.subLevel) {
-						this.$.back.setAttribute("target", controlData.activePaletteRoot || "root");
+						this.$.back.setAttribute('target', controlData.activePaletteRoot || 'root');
 						controlData.path.push({
-							target: controlData.activePaletteRoot || "root",
+							target: controlData.activePaletteRoot || 'root',
 							scrollOffset: (this.horizontal) ? this.$.itemsContainer.scrollLeft : this.$.itemsContainer.scrollTop,
 						});
 						controlData.activePaletteRoot = item.path;
 						await this.#fillPaletteItems(this.$.nextItemsContainer);
-						this.$.containersContainer.classList.add("animate");
+						this.$.containersContainer.classList.add('animate');
 						this.$.nextItemsContainer.scrollLeft = this.$.nextItemsContainer.scrollTop = 0;
 
 						if (this.horizontal) {
@@ -372,4 +372,4 @@ class VicowaHierarchicalPalette extends WebComponentBaseClass {
 	}
 }
 
-window.customElements.define("vicowa-hierarchical-palette", VicowaHierarchicalPalette);
+window.customElements.define('vicowa-hierarchical-palette', VicowaHierarchicalPalette);

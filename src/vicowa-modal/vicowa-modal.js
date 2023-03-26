@@ -1,4 +1,4 @@
-import { WebComponentBaseClass } from "/third_party/web-component-base-class/src/web-component-base-class.js";
+import { WebComponentBaseClass } from '/third_party/web-component-base-class/src/web-component-base-class.js';
 
 /**
  * Class to represent the vicowa-icon custom element
@@ -28,12 +28,12 @@ class VicowaModal extends WebComponentBaseClass {
 	}
 
 	attached() {
-		this.addAutoEventListener(this, "click", () => {
+		this.addAutoEventListener(this, 'click', () => {
 			if (this.outsideCloses) {
 				this.open = false;
 			}
 		});
-		this.addAutoEventListener(this.$.modalBox, "click", (p_Event) => {
+		this.addAutoEventListener(this.$.modalBox, 'click', (p_Event) => {
 			p_Event.cancelBubble = true;
 		});
 	}
@@ -84,4 +84,4 @@ class VicowaModal extends WebComponentBaseClass {
 	}
 }
 
-window.customElements.define("vicowa-modal", VicowaModal);
+window.customElements.define('vicowa-modal', VicowaModal);

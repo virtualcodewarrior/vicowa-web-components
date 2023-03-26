@@ -1,6 +1,6 @@
 /* eslint-disable */
 // disable eslint while this code is not done
-import { WebComponentBaseClass } from "/third_party/web-component-base-class/src/web-component-base-class.js";
+import { WebComponentBaseClass } from '/third_party/web-component-base-class/src/web-component-base-class.js';
 
 class VicowaP2pfiletransfer extends WebComponentBaseClass {
 	#privateData;
@@ -14,7 +14,7 @@ class VicowaP2pfiletransfer extends WebComponentBaseClass {
 		return {
 			signalingServer: {
 				type: String,
-				value: "",
+				value: '',
 				reflectToAttribute: true,
 				observer: (control) => control.#handleSignalingChange(),
 			},
@@ -40,4 +40,4 @@ class VicowaP2pfiletransfer extends WebComponentBaseClass {
 	}
 }
 
-window.customElements.define("vicowa-p2pfiletransfer", VicowaP2pfiletransfer);
+window.customElements.define('vicowa-p2pfiletransfer', VicowaP2pfiletransfer);

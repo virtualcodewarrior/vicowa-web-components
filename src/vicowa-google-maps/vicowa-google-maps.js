@@ -1,7 +1,7 @@
-import { WebComponentBaseClass } from "/third_party/web-component-base-class/src/web-component-base-class.js";
-import "../vicowa-string/vicowa-string.js";
-import "../vicowa-icon/vicowa-icon.js";
-import translator from "../utilities/translate.js";
+import { WebComponentBaseClass } from '/third_party/web-component-base-class/src/web-component-base-class.js';
+import '../vicowa-string/vicowa-string.js';
+import '../vicowa-icon/vicowa-icon.js';
+import translator from '../utilities/translate.js';
 
 const mapQueue = [];
 
@@ -11,7 +11,7 @@ const mapQueue = [];
  * @property {number} latitude Latitude of the map location to show
  * @property {number} longitude Longitude of the map location to show
  * @property {number} zoom The zoom level onto the map, bigger numbers mean more zoomed in
- * @property {string} marker Put a marker on the map withe the given text, the marker will be in the center of the map
+ * @property {string} marker Put a marker on the map with the given text, the marker will be in the center of the map
  * @property {string} info More information to put in the marker
  * @property {string} apiKey The API key to use for the displayed maps(get this from google)
  * @property {string} type The type of the map to show, can be one of hybrid, roadmap, satellite, terrain
@@ -50,25 +50,25 @@ class VicowaGoogleMaps extends WebComponentBaseClass {
 			},
 			marker: {
 				type: String,
-				value: "",
+				value: '',
 				reflectToAttribute: true,
 				observer: (control) => control.#locationUpdated(),
 			},
 			info: {
 				type: String,
-				value: "",
+				value: '',
 				reflectToAttribute: true,
 				observer: (control) => control.#locationUpdated(),
 			},
 			type: {
 				type: String,
-				value: "roadmap",
+				value: 'roadmap',
 				reflectToAttribute: true,
 				observer: (control) => control.#mapTypeUpdated(),
 			},
 			apiKey: {
 				type: String,
-				value: "",
+				value: '',
 				reflectToAttribute: false,
 				observer: (control) => control.#loadMapAPI(),
 			},
@@ -100,7 +100,7 @@ class VicowaGoogleMaps extends WebComponentBaseClass {
 				content,
 			});
 			this.updateTranslation();
-			if (infoWindow && typeof latitudeOrMarker !== "number") {
+			if (infoWindow && typeof latitudeOrMarker !== 'number') {
 				infoWindow.open(map, latitudeOrMarker);
 			} else if (latitudeOrMarker && longitude) {
 				infoWindow.setPosition(new window.google.maps.LatLng(latitudeOrMarker, longitude));
@@ -153,7 +153,7 @@ class VicowaGoogleMaps extends WebComponentBaseClass {
 					}
 				}
 			};
-			if ("google" in window && window.google.maps && window.google.maps.LatLng) {
+			if ('google' in window && window.google.maps && window.google.maps.LatLng) {
 				doMap();
 			} else {
 				mapQueue.push(() => {
@@ -188,14 +188,14 @@ class VicowaGoogleMaps extends WebComponentBaseClass {
 
 	#mapTypeUpdated() {
 		this.#initializeMap((map) => {
-			if (map && this.type in ["roadmap", "satellite", "hybrid", "terrain"]) {
+			if (map && this.type in ['roadmap', 'satellite', 'hybrid', 'terrain']) {
 				map.setMapTypeId(this.type);
 			}
 		});
 	}
 
 	#loadMapAPI() {
-		if (!("google" in window)) {
+		if (!('google' in window)) {
 			let googleAPI = document.querySelector('head script[src*="https://maps.googleapis.com"]');
 			mapQueue.push(() => { this.#locationUpdated(); });
 			if (this.apiKey && !googleAPI) {
@@ -205,11 +205,11 @@ class VicowaGoogleMaps extends WebComponentBaseClass {
 					});
 				};
 
-				if (!("google" in window)) {
+				if (!('google' in window)) {
 					if (!googleAPI) {
-						googleAPI = document.createElement("script");
+						googleAPI = document.createElement('script');
 						googleAPI.src = `https://maps.googleapis.com/maps/api/js?key=${this.apiKey}`;
-						document.querySelector("head").appendChild(googleAPI);
+						document.querySelector('head').appendChild(googleAPI);
 						googleAPI.onload = () => {
 							googleAPI.notifyList.forEach((callback) => { callback(); });
 						};
@@ -243,4 +243,4 @@ class VicowaGoogleMaps extends WebComponentBaseClass {
 	}
 }
 
-window.customElements.define("vicowa-google-maps", VicowaGoogleMaps);
+window.customElements.define('vicowa-google-maps', VicowaGoogleMaps);

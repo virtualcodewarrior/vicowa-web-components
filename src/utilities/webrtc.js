@@ -1,8 +1,8 @@
 /* eslint-disable */
 // disable eslint while this code is not done
-import observerFactory from "./observerFactory.js";
+import observerFactory from './observerFactory.js';
 
-const privateData = Symbol("privateData");
+const privateData = Symbol('privateData');
 
 const MAX_CHUNK_SIZE = 262144;
 
@@ -13,9 +13,9 @@ function sendIceCandidate(p_WebRTC, p_Client, p_Candidate) {
 
 function handleSignalingMessage(p_WebRTC, p_Event) {
 	switch (p_Event.command) {
-		case "candidate": break;
-		case "offer": break;
-		case "answer": break;
+		case 'candidate': break;
+		case 'offer': break;
+		case 'answer': break;
 	}
 }
 
@@ -36,9 +36,9 @@ function addChannelHandlers(p_WebRTC, p_Channel) {
 function handleReceiveDataChannel(p_WebRTC, p_Channel) {
 	if (p_Channel) {
 		const classData = p_WebRTC[privateData];
-		if (p_Channel.label === "mainDataChannel") {
+		if (p_Channel.label === 'mainDataChannel') {
 			classData.mainDataChannel = p_Channel;
-		} else if (p_Channel.label === "controlChannel") {
+		} else if (p_Channel.label === 'controlChannel') {
 			classData.controlChannel = p_Channel;
 		}
 
@@ -52,18 +52,18 @@ function handleReceiveDataChannel(p_WebRTC, p_Channel) {
  * @enum {string}
  */
 export const SIGNALING_EVENTS = Object.freeze({
-	MESSAGE: "MESSAGE",
-	CLOSE: "CLOSE",
-	ERROR: "ERROR",
-	PEER_LIST: "PEER_LIST",
-	PEER_UPDATE: "PEER_UPDATE",
+	MESSAGE: 'MESSAGE',
+	CLOSE: 'CLOSE',
+	ERROR: 'ERROR',
+	PEER_LIST: 'PEER_LIST',
+	PEER_UPDATE: 'PEER_UPDATE',
 });
 
 export const COMMANDS = Object.freeze({
-	peerList: "peerList",
-	peerUpdate: "peerUpdate",
-	inviteChannel: "inviteChannel",
-	requestChannelAccess: "requestChannelAccess",
+	peerList: 'peerList',
+	peerUpdate: 'peerUpdate',
+	inviteChannel: 'inviteChannel',
+	requestChannelAccess: 'requestChannelAccess',
 });
 
 export class SignalingBase {
@@ -80,12 +80,12 @@ export class SignalingBase {
 
 	connectChannel(p_ChannelName) {
 		this.send({
-			command: "channelConnect",
+			command: 'channelConnect',
 			id: p_ChannelName,
 		});
 	}
 
-	getPeerList() { this.send({ command: "peerList" }); }
+	getPeerList() { this.send({ command: 'peerList' }); }
 	send(p_Message) {
 		this[privateData].comObject.send(p_Message);
 	}
@@ -174,8 +174,8 @@ export class WebRTCHandler {
 	openDataChannel(p_ChannelID, p_Options) {
 		const classData = this[privateData];
 		const options = Object.assign({ ordered: true }, p_Options);
-		classData.mainDataChannel = classData.localPeer.createDataChannel("mainChannel", options);
-		classData.controlChannel = classData.localPeer.createDataChannel("controlChannel", { ordered: true });
+		classData.mainDataChannel = classData.localPeer.createDataChannel('mainChannel', options);
+		classData.controlChannel = classData.localPeer.createDataChannel('controlChannel', { ordered: true });
 
 		const handleChannelOpen = (p_Channel) => {
 
@@ -185,11 +185,11 @@ export class WebRTCHandler {
 
 		};
 
-		classData.mainDataChannel.addEventListener("open", () => { handleChannelOpen(classData.mainDataChannel); });
-		classData.mainDataChannel.addEventListener("close", () => { handleChannelClose(classData.mainDataChannel); });
+		classData.mainDataChannel.addEventListener('open', () => { handleChannelOpen(classData.mainDataChannel); });
+		classData.mainDataChannel.addEventListener('close', () => { handleChannelClose(classData.mainDataChannel); });
 
-		classData.controlChannel.addEventListener("open", () => { handleChannelOpen(classData.mainDataChannel); });
-		classData.controlChannel.addEventListener("close", () => { handleChannelClose(classData.mainDataChannel); });
+		classData.controlChannel.addEventListener('open', () => { handleChannelOpen(classData.mainDataChannel); });
+		classData.controlChannel.addEventListener('close', () => { handleChannelClose(classData.mainDataChannel); });
 	}
 
 	sendData(p_Channel, p_Data) {

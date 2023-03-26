@@ -76,7 +76,7 @@ function observerFactory() {
 					}
 				});
 			} else {
-				throw new Error("no notification or handler specified");
+				throw new Error('no notification or handler specified');
 			}
 			return wasRemoved;
 		},

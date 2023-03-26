@@ -1,6 +1,6 @@
-import { WebComponentBaseClass } from "/third_party/web-component-base-class/src/web-component-base-class.js";
-import "../vicowa-string/vicowa-string.js";
-import "../vicowa-icon/vicowa-icon.js";
+import { WebComponentBaseClass } from '/third_party/web-component-base-class/src/web-component-base-class.js';
+import '../vicowa-string/vicowa-string.js';
+import '../vicowa-icon/vicowa-icon.js';
 
 /**
  * @extends WebComponentBaseClass
@@ -16,15 +16,15 @@ class VicowaPanel extends WebComponentBaseClass {
 
 	static get properties() {
 		return {
-			header: { type: String, value: "", reflectToAttribute: true, observer: (inst) => { inst.$.title = inst.header; } },
+			header: { type: String, value: '', reflectToAttribute: true, observer: (inst) => { inst.$.title = inst.header; } },
 			collapsible: { type: Boolean, value: false, reflectToAttribute: true },
 			expanded: { type: Boolean, value: true, reflectToAttribute: true },
-			expandControlAnimation: { type: String, value: "rotate", reflectToAttribute: true },
+			expandControlAnimation: { type: String, value: 'rotate', reflectToAttribute: true },
 		};
 	}
 
 	attached() {
-		this.addAutoEventListener(this.$.collapseControl, "click", () => {
+		this.addAutoEventListener(this.$.collapseControl, 'click', () => {
 			this.expanded = !this.expanded;
 		});
 	}
@@ -151,4 +151,4 @@ class VicowaPanel extends WebComponentBaseClass {
 	}
 }
 
-window.customElements.define("vicowa-panel", VicowaPanel);
+window.customElements.define('vicowa-panel', VicowaPanel);

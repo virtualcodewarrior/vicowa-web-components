@@ -1,17 +1,17 @@
 /* eslint new-cap: ["off"] */
 /* switching this off for this file because babylon uses almost all uppercase starting function names */
-import "/third_party/earcut/dist/earcut.dev.js";
-import "/third_party/babylonjs/babylon.max.js";
-import "/third_party/babylonjs-loaders/babylonjs.loaders.js";
-import { WebComponentBaseClass } from "/third_party/web-component-base-class/src/web-component-base-class.js";
-import "../vicowa-resize-detector/vicowa-resize-detector.js";
-import { CAMERA_TYPES, CAP_TYPES } from "./vicowa-webgl-definitions.js";
-import { intersectRayAndTriangle, toDegrees, toRadians, vectorLength } from "../utilities/mathHelpers.js";
-import debug from "../utilities/debug.js";
+import '/third_party/earcut/dist/earcut.dev.js';
+import '/third_party/babylonjs/babylon.max.js';
+import '/third_party/babylonjs-loaders/babylonjs.loaders.js';
+import { WebComponentBaseClass } from '/third_party/web-component-base-class/src/web-component-base-class.js';
+import '../vicowa-resize-detector/vicowa-resize-detector.js';
+import { CAMERA_TYPES, CAP_TYPES } from './vicowa-webgl-definitions.js';
+import { intersectRayAndTriangle, toDegrees, toRadians, vectorLength } from '../utilities/mathHelpers.js';
+import debug from '../utilities/debug.js';
 
-const meshContainer = Symbol("meshContainer");
-const wrapReference = Symbol("wrapReference");
-const originalDispose = Symbol("originalDispose");
+const meshContainer = Symbol('meshContainer');
+const wrapReference = Symbol('wrapReference');
+const originalDispose = Symbol('originalDispose');
 
 function unWrap(wrapped) { return wrapped[meshContainer]; }
 
@@ -29,7 +29,7 @@ function multiplyObject(obj, multiplier, keysToMultiply) {
 	return obj;
 }
 
-function multiplyVector(vector, multiplier) { return multiplyObject(vector, multiplier, ["x", "y", "z"]); }
+function multiplyVector(vector, multiplier) { return multiplyObject(vector, multiplier, ['x', 'y', 'z']); }
 function convertToVectorObject(vector) { return (Array.isArray(vector)) ? { x: vector[0], y: vector[1], z: vector[2] } : vector; }
 function convertToVector3(vector) { return new babylon.Vector3(vector.x, vector.y, vector.z); }
 function flattenMeshes(mesh) { return [mesh].concat(mesh.getChildMeshes(false)); }
@@ -44,7 +44,7 @@ function getMeshObject(controlData, meshNamePathOrObject) {
 				mesh = mesh.getChildMeshes(true, (childMesh) => childMesh.name === name)[0];
 			}
 		});
-	} else if (typeof meshNamePathOrObject === "string") {
+	} else if (typeof meshNamePathOrObject === 'string') {
 		mesh = controlData.meshes[meshNamePathOrObject] || controlData.instances[meshNamePathOrObject];
 	} else {
 		mesh = unWrap(meshNamePathOrObject);
@@ -176,13 +176,13 @@ function applySettings(controlData, meshObject, settings) {
 			setScale(meshObject, settings.scale);
 		}
 		if (settings.visible !== undefined) {
-			applyRecursive(meshObject, "isVisible", settings.visible);
+			applyRecursive(meshObject, 'isVisible', settings.visible);
 		}
 		if (settings.collisions !== undefined) {
-			applyRecursive(meshObject, "checkCollisions", settings.collisions);
+			applyRecursive(meshObject, 'checkCollisions', settings.collisions);
 		}
 		if (settings.material) {
-			if (typeof settings.material === "string") {
+			if (typeof settings.material === 'string') {
 				const material = controlData.materials[settings.material];
 				if (material) {
 					meshObject.material = material;
@@ -279,7 +279,7 @@ function wrap(controlData, mesh) {
 	if (!wrapped && mesh) {
 		wrapped = {
 			get visible() { return this[meshContainer].isVisible; },
-			set visible(visible) { applyRecursive(this[meshContainer], "isVisible", visible); },
+			set visible(visible) { applyRecursive(this[meshContainer], 'isVisible', visible); },
 			get parent() { return wrap(controlData, this[meshContainer].parent); },
 			get center() { const bounding = this[meshContainer].getBoundingInfo(); const center = (bounding && bounding.boundingBox) ? bounding.boundingBox.centerWorld : null; return { x: center.x / controlData.multiplier, y: center.y / controlData.multiplier, z: center.z / controlData.multiplier }; },
 			get maximum() { const bounding = this[meshContainer].getBoundingInfo(); const maximum = (bounding && bounding.boundingBox) ? bounding.boundingBox.maximumWorld : null; return { x: maximum.x / controlData.multiplier, y: maximum.y / controlData.multiplier, z: maximum.z / controlData.multiplier }; },
@@ -426,7 +426,7 @@ export class VicowaWebgl extends WebComponentBaseClass {
 
 	async addObjectResource(name, objectName, fileName, settings) {
 		const controlData = this.#privateData;
-		const meshTask = controlData.assetsManager.addMeshTask(name, objectName, `${fileName.split("/").slice(0, -1).join("/")}/`, fileName.split("/").slice(-1)[0]);
+		const meshTask = controlData.assetsManager.addMeshTask(name, objectName, `${fileName.split('/').slice(0, -1).join('/')}/`, fileName.split('/').slice(-1)[0]);
 		return await new Promise((resolve, reject) => {
 			meshTask.onSuccess = (task) => {
 				let newMesh = null;
@@ -461,8 +461,8 @@ export class VicowaWebgl extends WebComponentBaseClass {
 	createSkyBox(skyBoxImageDirectory) {
 		const controlData = this.#privateData;
 		// using the "old" way of creating a sky box, because the helper function makes it very very slow
-		const skyBox = babylon.MeshBuilder.CreateBox("skyBox", { size: 10000.0, sideOrientation: babylon.Mesh.BACKSIDE }, controlData.scene);
-		const skyBoxMaterial = new babylon.StandardMaterial("skyBox", controlData.scene);
+		const skyBox = babylon.MeshBuilder.CreateBox('skyBox', { size: 10000.0, sideOrientation: babylon.Mesh.BACKSIDE }, controlData.scene);
+		const skyBoxMaterial = new babylon.StandardMaterial('skyBox', controlData.scene);
 		skyBoxMaterial.backFaceCulling = true;
 		skyBoxMaterial.reflectionTexture = new babylon.CubeTexture(skyBoxImageDirectory, controlData.scene);
 		skyBoxMaterial.reflectionTexture.coordinatesMode = babylon.Texture.SKYBOX_MODE;
@@ -605,7 +605,7 @@ export class VicowaWebgl extends WebComponentBaseClass {
 
 	setObjectMaterial(objects, objMaterial) {
 		const controlData = this.#privateData;
-		if (typeof objMaterial === "string") {
+		if (typeof objMaterial === 'string') {
 			const meshNames = Array.isArray(objects) ? objects : [objects];
 			meshNames.forEach((meshName) => {
 				const mesh = getMeshObject(controlData, meshName);
@@ -633,7 +633,7 @@ export class VicowaWebgl extends WebComponentBaseClass {
 	setObjectVisibility(object, visible) {
 		const mesh = getMeshObject(this.#privateData, object);
 		if (mesh) {
-			applyRecursive(mesh, "isVisible", visible || false);
+			applyRecursive(mesh, 'isVisible', visible || false);
 		}
 	}
 
@@ -653,29 +653,29 @@ export class VicowaWebgl extends WebComponentBaseClass {
 				Object.assign(controlData.camera.ellipsoidOffset, multiplyVector(settings.eyeOffset || {}, this.unitMultiplier));
 			}
 		} else {
-			throw new Error("make sure to set a camera before calling this function");
+			throw new Error('make sure to set a camera before calling this function');
 		}
 	}
 
 	enableAllObjectCollisions(excluded) {
 		const controlData = this.#privateData;
 		controlData.allObjectCollisions = true;
-		applyAllMeshes(controlData.meshes, excluded || [], "checkCollisions", true);
-		applyAllMeshes(controlData.instances, excluded || [], "checkCollisions", true);
+		applyAllMeshes(controlData.meshes, excluded || [], 'checkCollisions', true);
+		applyAllMeshes(controlData.instances, excluded || [], 'checkCollisions', true);
 	}
 
 	disableAllObjectCollisions(excluded) {
 		const controlData = this.#privateData;
 		controlData.allObjectCollisions = false;
-		applyAllMeshes(controlData.meshes, excluded || [], "checkCollisions", false);
-		applyAllMeshes(controlData.instances, excluded || [], "checkCollisions", false);
+		applyAllMeshes(controlData.meshes, excluded || [], 'checkCollisions', false);
+		applyAllMeshes(controlData.instances, excluded || [], 'checkCollisions', false);
 	}
 
 	setCheckCollisionForObject(obj, enabled) {
 		const controlData = this.#privateData;
 		const mesh = getMeshObject(controlData, obj);
 		if (mesh) {
-			applyRecursive(mesh, "checkCollisions", enabled);
+			applyRecursive(mesh, 'checkCollisions', enabled);
 		}
 	}
 
@@ -715,7 +715,7 @@ export class VicowaWebgl extends WebComponentBaseClass {
 				// if no positions are specified, the camera will be positioned at a distance of 10 a longitude of 0 and a latitude of 45 degrees and point at 0, 0, 0
 				const position = Object.assign({}, { longitude: 0, latitude: 45, distance: 10 }, settings.position);
 				const target = Object.assign({}, { x: 0, y: 0, z: 0 }, settings.target || {});
-				controlData.camera = new babylon[(settings.vrEnabled) ? "VRDeviceOrientationArcRotateCamera" : "ArcRotateCamera"]("camera", toRadians(position.longitude), toRadians(position.latitude), position.distance * this.unitMultiplier, new babylon.Vector3(target.x * this.unitMultiplier, target.y * this.unitMultiplier, target.z * this.unitMultiplier), controlData.scene);
+				controlData.camera = new babylon[(settings.vrEnabled) ? 'VRDeviceOrientationArcRotateCamera' : 'ArcRotateCamera']('camera', toRadians(position.longitude), toRadians(position.latitude), position.distance * this.unitMultiplier, new babylon.Vector3(target.x * this.unitMultiplier, target.y * this.unitMultiplier, target.z * this.unitMultiplier), controlData.scene);
 				controlData.camera.attachControl(this.$.canvas, !(controlData.preventDefault || false));
 				if (settings.minLongitude) {
 					controlData.camera.lowerAlphaLimit = toRadians(settings.minLongitude);
@@ -744,7 +744,7 @@ export class VicowaWebgl extends WebComponentBaseClass {
 				// if no positions are specified, the camera will be positioned at 0 0 -10 and will be pointing at 0, 0, 0
 				const position = Object.assign({}, { x: 0, y: 0, z: -10 }, settings.position || {});
 				const target = Object.assign({}, { x: 0, y: 0, z: 0 }, settings.target || {});
-				controlData.camera = new babylon[(settings.vrEnabled) ? ((settings.mobile) ? "VRDeviceOrientationFreeCamera" : "WebVRFreeCamera") : "UniversalCamera"]("camera", new babylon.Vector3(position.x * this.unitMultiplier, position.y * this.unitMultiplier, position.z * this.unitMultiplier), controlData.scene, false);
+				controlData.camera = new babylon[(settings.vrEnabled) ? ((settings.mobile) ? 'VRDeviceOrientationFreeCamera' : 'WebVRFreeCamera') : 'UniversalCamera']('camera', new babylon.Vector3(position.x * this.unitMultiplier, position.y * this.unitMultiplier, position.z * this.unitMultiplier), controlData.scene, false);
 				controlData.camera.attachControl(this.$.canvas, !(controlData.preventDefault || false));
 				controlData.camera.setTarget(new babylon.Vector3(target.x * this.unitMultiplier, target.y * this.unitMultiplier, target.z * this.unitMultiplier));
 				break;
@@ -752,7 +752,7 @@ export class VicowaWebgl extends WebComponentBaseClass {
 			case CAMERA_TYPES.FOLLOW: {
 				const position = Object.assign({}, { x: 0, y: 0, z: -10 }, settings.position || {});
 				// if no positions are specified, the camera will be positioned at 0 0 -10 and will be pointing at 0, 0, 0
-				controlData.camera = new babylon.FollowCamera("camera", new babylon.Vector3(position.x * this.unitMultiplier, position.y * this.unitMultiplier, position.z * this.unitMultiplier), controlData.scene);
+				controlData.camera = new babylon.FollowCamera('camera', new babylon.Vector3(position.x * this.unitMultiplier, position.y * this.unitMultiplier, position.z * this.unitMultiplier), controlData.scene);
 				controlData.camera.attachControl(this.$.canvas, !(controlData.preventDefault || false));
 				if (settings.targetMesh) {
 					controlData.camera.lockedTarget = settings.targetMesh;
@@ -763,7 +763,7 @@ export class VicowaWebgl extends WebComponentBaseClass {
 					rotation: controlData.camera.rotationOffset,
 					acceleration: controlData.camera.cameraAcceleration,
 					maxSpeed: controlData.camera.maxCameraSpeed,
-				}, multiplyObject(settings.follow, this.unitMultiplier, ["radius", "heightAbove"]));
+				}, multiplyObject(settings.follow, this.unitMultiplier, ['radius', 'heightAbove']));
 				controlData.camera.radius = follow.radius;
 				controlData.camera.heightOffset = follow.heightAbove;
 				controlData.camera.rotationOffset = toRadians(follow.rotation);
@@ -785,7 +785,7 @@ export class VicowaWebgl extends WebComponentBaseClass {
 
 	unGroupObject(obj) {
 		const controlData = this.#privateData;
-		const mesh = (typeof obj === "string") ? controlData.meshes[obj] : unWrap(obj);
+		const mesh = (typeof obj === 'string') ? controlData.meshes[obj] : unWrap(obj);
 		const newObjects = [];
 		const childMeshes = (mesh) ? mesh.getChildMeshes(true) : [];
 		childMeshes.forEach((childMesh) => {
@@ -833,12 +833,12 @@ export class VicowaWebgl extends WebComponentBaseClass {
 				someMesh.selected = true;
 				someMesh.showBoundingBox = this.selectionBoundingBox;
 				someMesh.notSelectMaterial = someMesh.material;
-				if (someMesh.material && someMesh.material.hasOwnProperty("diffuseColor")) {
-					someMesh.material = someMesh.material.clone("temp");
-					someMesh.material.diffuseColor = controlData.materials["selected"].diffuseColor;
+				if (someMesh.material && someMesh.material.hasOwnProperty('diffuseColor')) {
+					someMesh.material = someMesh.material.clone('temp');
+					someMesh.material.diffuseColor = controlData.materials['selected'].diffuseColor;
 					someMesh.material.alpha = Math.max(0.5, someMesh.material.alpha);
 				} else {
-					someMesh.material = controlData.materials["selected"].clone();
+					someMesh.material = controlData.materials['selected'].clone();
 				}
 			});
 		}
@@ -877,11 +877,11 @@ export class VicowaWebgl extends WebComponentBaseClass {
 		return mesh && mesh.selected;
 	}
 
-	set selectColor(color) { Object.assign(this.#privateData.materials["selected"].diffuseColor, color); }
-	get selectColor() { const color = (this.#privateData.materials["selected"] || {}).diffuseColor; return { r: color.r || 1, g: color.g || 0, b: color.b || 0 }; }
+	set selectColor(color) { Object.assign(this.#privateData.materials['selected'].diffuseColor, color); }
+	get selectColor() { const color = (this.#privateData.materials['selected'] || {}).diffuseColor; return { r: color.r || 1, g: color.g || 0, b: color.b || 0 }; }
 
-	getDataUrl(type, quality) { return this.$.canvas.toDataURL(type || "image/png", quality || undefined); }
-	getBlob(callback, type, quality) { this.$.canvas.toBlob(callback, type || "image/png", quality || undefined); }
+	getDataUrl(type, quality) { return this.$.canvas.toDataURL(type || 'image/png', quality || undefined); }
+	getBlob(callback, type, quality) { this.$.canvas.toBlob(callback, type || 'image/png', quality || undefined); }
 
 	attached() {
 		const controlData = this.#privateData;
@@ -893,7 +893,7 @@ export class VicowaWebgl extends WebComponentBaseClass {
 			controlData.scene.collisionsEnabled = true;
 			controlData.scene.workerCollisions = true; // use web workers for collisions
 
-			this.addMaterial("selected", { diffuse: { r: 1, g: 0, b: 0 } });
+			this.addMaterial('selected', { diffuse: { r: 1, g: 0, b: 0 } });
 
 			controlData.assetsManager = new babylon.AssetsManager(controlData.scene);
 			controlData.assetsManager.useDefaultLoadingScreen = this.loadingScreen;
@@ -1050,7 +1050,7 @@ export class VicowaWebgl extends WebComponentBaseClass {
 			if (settings.shadows || (this.defaultShadows && settings.shadows === undefined)) {
 				addShadowCaster(controlData, meshObject);
 			}
-			applyRecursive(meshObject, "checkCollisions", (settings.collisions === undefined) ? controlData.allObjectCollisions : settings.collisions);
+			applyRecursive(meshObject, 'checkCollisions', (settings.collisions === undefined) ? controlData.allObjectCollisions : settings.collisions);
 			controlData.instances[name] = meshObject;
 		}
 	}
@@ -1081,4 +1081,4 @@ export class VicowaWebgl extends WebComponentBaseClass {
 	}
 }
 
-window.customElements.define("vicowa-webgl", VicowaWebgl);
+window.customElements.define('vicowa-webgl', VicowaWebgl);

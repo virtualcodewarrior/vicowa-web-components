@@ -1,6 +1,6 @@
-import { VicowaInputBaseClass, validate } from "../vicowa-input-base/vicowa-input-base.js";
-import "../vicowa-string/vicowa-string.js";
-import translator from "../utilities/translate.js";
+import { VicowaInputBaseClass, validate } from '../vicowa-input-base/vicowa-input-base.js';
+import '../vicowa-string/vicowa-string.js';
+import translator from '../utilities/translate.js';
 
 /**
  * Class that represents the vicowa-input custom element
@@ -28,7 +28,7 @@ class VicowaInput extends VicowaInputBaseClass {
 		return Object.assign({}, super.properties, {
 			placeholder: {
 				type: String,
-				value: "",
+				value: '',
 				reflectToAttribute: true,
 				observer: (control) => control.#placeholderChanged(),
 			},
@@ -52,9 +52,9 @@ class VicowaInput extends VicowaInputBaseClass {
 			validate(this, this.value, false);
 		};
 
-		this.addAutoEventListener(this.$.input, "blur", validateAndSet); // loosing focus
-		this.addAutoEventListener(this.$.input, "change", validateAndSet); // applying the value
-		this.addAutoEventListener(this.$.input, "input", validateAndSetNoErrorMessage); // inputting text
+		this.addAutoEventListener(this.$.input, 'blur', validateAndSet); // loosing focus
+		this.addAutoEventListener(this.$.input, 'change', validateAndSet); // applying the value
+		this.addAutoEventListener(this.$.input, 'input', validateAndSetNoErrorMessage); // inputting text
 
 		this.$.input.placeholder = this.placeholder;
 		translator.addTranslationUpdatedObserver((translatorInstance) => {
@@ -176,4 +176,4 @@ class VicowaInput extends VicowaInputBaseClass {
 	}
 }
 
-window.customElements.define("vicowa-input", VicowaInput);
+window.customElements.define('vicowa-input', VicowaInput);
