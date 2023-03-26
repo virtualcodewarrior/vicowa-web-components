@@ -1,8 +1,8 @@
-const privateData = Symbol("privateData");
+const privateData = Symbol('privateData');
 
 function createRoute(p_Route, p_Callbacks) {
-	p_Route = p_Route.replace(/[/]+/g, "/");
-	const pathParts = p_Route.split("/");
+	p_Route = p_Route.replace(/[/]+/g, '/');
+	const pathParts = p_Route.split('/');
 	const destinations = pathParts.map((part) => {
 		const props = {};
 		if (/^:/.test(part)) {
@@ -20,7 +20,7 @@ function createRoute(p_Route, p_Callbacks) {
 				props.all = true;
 			} else {
 				props.wildcard = true;
-				props.regExp = new RegExp(`^${part.replace(/\./g, "\\.").replace("*", ".*")}$`);
+				props.regExp = new RegExp(`^${part.replace(/\./g, '\\.').replace('*', '.*')}$`);
 			}
 		} else if (!part) {
 			props.slash = true;
@@ -48,14 +48,14 @@ function handleChangeLocation(p_RouterData, p_TargetWindow) {
 function handleRoute(p_RouterData, p_Url, p_CustomData) {
 	const { routes, notFoundHandler, targetWindow } = p_RouterData;
 	const regExp = new RegExp(`^${document.location.origin}`);
-	p_Url = p_Url.replace(regExp, "").replace(/[/]+/g, "/");
-	const queryParts = p_Url.split("?");
-	const urlParts = queryParts[0].split("/");
+	p_Url = p_Url.replace(regExp, '').replace(/[/]+/g, '/');
+	const queryParts = p_Url.split('?');
+	const urlParts = queryParts[0].split('/');
 	let query;
 	const route = routes.find((testRoute) => testRoute.destinations.every((destination, index, destArray) => {
 		let result = false;
 		if (destination.slash) {
-			result = urlParts[index] === "";
+			result = urlParts[index] === '';
 		} else if (destination.regExp) {
 			result = destination.regExp.test(urlParts[index]);
 		} else if (destination.optional) {
@@ -72,9 +72,9 @@ function handleRoute(p_RouterData, p_Url, p_CustomData) {
 	}));
 
 	if (queryParts.length > 1) {
-		const parts = queryParts[1].split("&");
+		const parts = queryParts[1].split('&');
 		query = parts.reduce((previous, current) => {
-			const subParts = current.split("=").map((subPart) => subPart.trim());
+			const subParts = current.split('=').map((subPart) => subPart.trim());
 			previous[subParts[0]] = subParts[1];
 			return previous;
 		}, {});
@@ -89,7 +89,7 @@ function handleRoute(p_RouterData, p_Url, p_CustomData) {
 						previous.params[routePart.name] = value;
 					}
 				} else {
-					previous.params[routePart.name || 0] = urlParts.join("/");
+					previous.params[routePart.name || 0] = urlParts.join('/');
 				}
 			}
 
@@ -155,10 +155,10 @@ class Router {
 		};
 
 		handleLoadState(p_TargetWindow.history.state);
-		p_TargetWindow.addEventListener("popstate", (p_Event) => {
+		p_TargetWindow.addEventListener('popstate', (p_Event) => {
 			handleLoadState(p_Event.state);
 		});
-		p_TargetWindow.addEventListener("load", () => {
+		p_TargetWindow.addEventListener('load', () => {
 			this.goTo(document.location.href);
 		});
 	}

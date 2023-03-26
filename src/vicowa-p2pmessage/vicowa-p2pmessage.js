@@ -1,7 +1,7 @@
 /* eslint-disable */
 // disable eslint while this code is not done
-import { WebComponentBaseClass } from "/third_party/web-component-base-class/src/web-component-base-class.js";
-import { WebRTCHandler } from "../utilities/webrtc.js";
+import { WebComponentBaseClass } from '/third_party/web-component-base-class/src/web-component-base-class.js';
+import { WebRTCHandler } from '../utilities/webrtc.js';
 
 class VicowaP2PMessage extends WebComponentBaseClass {
 	#privateData;
@@ -16,7 +16,7 @@ class VicowaP2PMessage extends WebComponentBaseClass {
 		return {
 			signalingServer: {
 				type: String,
-				value: "",
+				value: '',
 				reflectToAttribute: true,
 				observer: (control) => control.#handleSignalingChange(),
 			},
@@ -49,4 +49,4 @@ class VicowaP2PMessage extends WebComponentBaseClass {
 	}
 }
 
-window.customElements.define("vicowa-p2pmessage", VicowaP2PMessage);
+window.customElements.define('vicowa-p2pmessage', VicowaP2PMessage);

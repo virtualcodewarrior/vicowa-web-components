@@ -1,5 +1,5 @@
-import { WebComponentBaseClass } from "/third_party/web-component-base-class/src/web-component-base-class.js";
-import translator from "../utilities/translate.js";
+import { WebComponentBaseClass } from '/third_party/web-component-base-class/src/web-component-base-class.js';
+import translator from '../utilities/translate.js';
 
 /**
  * Class to represent the vicowa-translate custom element
@@ -19,7 +19,7 @@ class VicowaTranslate extends WebComponentBaseClass {
 		return {
 			translationLocation: {
 				type: String,
-				value: "",
+				value: '',
 				reflectToAttribute: true,
 				observer: (inst) => {
 					translator.addTranslationLocation(inst.translationLocation);
@@ -33,8 +33,8 @@ class VicowaTranslate extends WebComponentBaseClass {
 	}
 
 	static get template() {
-		return "";
+		return '';
 	}
 }
 
-window.customElements.define("vicowa-translate", VicowaTranslate);
+window.customElements.define('vicowa-translate', VicowaTranslate);

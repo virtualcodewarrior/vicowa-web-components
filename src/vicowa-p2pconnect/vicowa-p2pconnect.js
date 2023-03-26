@@ -1,9 +1,9 @@
 /* eslint-disable */
 // disable eslint while this code is not done
-import { WebComponentBaseClass } from "/third_party/web-component-base-class/src/web-component-base-class.js";
+import { WebComponentBaseClass } from '/third_party/web-component-base-class/src/web-component-base-class.js';
 import { COMMANDS, SIGNALING_EVENTS, WebRTCHandler } from "../utilities/webrtc.js";
-import { uuidv4 } from "../utilities/utilities.js";
-import { createQuickAccess } from "../../node_modules/web-component-base-class/src/tools.js";
+import { uuidv4 } from '../utilities/utilities.js';
+import { createQuickAccess } from 'web-component-base-class/src/tools.js';
 
 class VicowaP2PConnect extends WebComponentBaseClass {
 	#privateData;
@@ -20,13 +20,13 @@ class VicowaP2PConnect extends WebComponentBaseClass {
 		return {
 			signalingServer: {
 				type: String,
-				value: "",
+				value: '',
 				reflectToAttribute: true,
 				observer: handleSignalingChange,
 			},
 			peerId: {
 				type: String,
-				value: "",
+				value: '',
 				reflectToAttribute: true,
 				observer: handleIdChange,
 			},
@@ -42,8 +42,8 @@ class VicowaP2PConnect extends WebComponentBaseClass {
 		});
 		handler.addObserver(SIGNALING_EVENTS.PEER_UPDATE, (update) => {
 			switch (update.update) {
-				case "add": createPeer(this, update.data); break;
-				case "remove": removePeer(this, update.data.id); break;
+				case 'add': createPeer(this, update.data); break;
+				case 'remove': removePeer(this, update.data.id); break;
 			}
 		});
 		this.#privateData.signaling = handler;
@@ -55,7 +55,7 @@ class VicowaP2PConnect extends WebComponentBaseClass {
 
 	attached() {
 		const controlData = this.#privateData;
-		this.addAutoEventListener(this.$.connect, "click", () => {
+		this.addAutoEventListener(this.$.connect, 'click', () => {
 			controlData.channelGuid = uuidv4();
 			controlData.signaling.send({ command: COMMANDS.inviteChannel, channel: controlData.channelGuid, peers: [] });
 		});
@@ -71,10 +71,10 @@ class VicowaP2PConnect extends WebComponentBaseClass {
 
 	#createPeer(peerInfo) {
 		if (!Array.from(this.$.peers.children).find((child) => child.peerId === peerInfo.id)) {
-			const wrapper = document.createElement("div");
-			wrapper.classList.add("peer");
+			const wrapper = document.createElement('div');
+			wrapper.classList.add('peer');
 			const newElement = (this.$.peerTemplate.assignedNodes().length ? this.$.peerTemplate.assignedNodes() : this.$.peerTemplate.children)[0].content.cloneNode(true);
-			const controls = createQuickAccess(newElement, "name");
+			const controls = createQuickAccess(newElement, 'name');
 			controls.peer.textContent = peerInfo.displayName;
 			wrapper.appendChild(newElement);
 			this.$.peers.appendChild(wrapper);
@@ -109,4 +109,4 @@ class VicowaP2PConnect extends WebComponentBaseClass {
 	}
 }
 
-window.customElements.define("vicowa-p2pconnect", VicowaP2PConnect);
+window.customElements.define('vicowa-p2pconnect', VicowaP2PConnect);

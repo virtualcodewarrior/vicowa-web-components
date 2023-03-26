@@ -1,12 +1,12 @@
-import { WebComponentBaseClass } from "/third_party/web-component-base-class/src/web-component-base-class.js";
-import "../vicowa-string/vicowa-string.js";
-import "../vicowa-button/vicowa-button.js";
-import { DEFAULT_LEVELS } from "./vicowa-notify-box.js";
+import { WebComponentBaseClass } from '/third_party/web-component-base-class/src/web-component-base-class.js';
+import '../vicowa-string/vicowa-string.js';
+import '../vicowa-button/vicowa-button.js';
+import { DEFAULT_LEVELS } from './vicowa-notify-box.js';
 
 export const DEFAULT_LOCATIONS = Object.freeze({
-	START: "START",
-	CENTER: "CENTER",
-	END: "END",
+	START: 'START',
+	CENTER: 'CENTER',
+	END: 'END',
 });
 
 class VicowaNotify extends WebComponentBaseClass {
@@ -23,18 +23,18 @@ class VicowaNotify extends WebComponentBaseClass {
 		};
 	}
 
-	info(properties) { this.#doMessage({ duration: 2000, ...(typeof properties === "string" ? { message: properties } : properties) }, DEFAULT_LEVELS.INFO); }
-	warning(properties) { this.#doMessage({ duration: 3500, ...(typeof properties === "string" ? { message: properties } : properties) }, DEFAULT_LEVELS.WARNING); }
-	error(properties) { this.#doMessage({ duration: 5000, ...(typeof properties === "string" ? { message: properties } : properties) }, DEFAULT_LEVELS.ERROR); }
+	info(properties) { this.#doMessage({ duration: 2000, ...(typeof properties === 'string' ? { message: properties } : properties) }, DEFAULT_LEVELS.INFO); }
+	warning(properties) { this.#doMessage({ duration: 3500, ...(typeof properties === 'string' ? { message: properties } : properties) }, DEFAULT_LEVELS.WARNING); }
+	error(properties) { this.#doMessage({ duration: 5000, ...(typeof properties === 'string' ? { message: properties } : properties) }, DEFAULT_LEVELS.ERROR); }
 
 	#doMessage(properties, level) {
-		if (typeof properties === "string") {
+		if (typeof properties === 'string') {
 			properties = { message: properties };
 		}
 
 		properties = { ...{ level }, ...properties };
 
-		const newNotification = document.createElement("vicowa-notify-box");
+		const newNotification = document.createElement('vicowa-notify-box');
 		newNotification.message = properties.message;
 		newNotification.level = properties.level;
 		newNotification.duration = properties.duration;
@@ -47,17 +47,17 @@ class VicowaNotify extends WebComponentBaseClass {
 			const rect = this.alignControl.getBoundingClientRect();
 			this.$.container.style.left = `${rect.left}px`;
 			this.$.container.style.top = `${rect.top + rect.height}px`;
-			this.$.container.style.position = "absolute";
+			this.$.container.style.position = 'absolute';
 		} else {
-			this.$.container.style.left = "";
-			this.$.container.style.top = "";
-			this.$.container.style.position = "relative";
+			this.$.container.style.left = '';
+			this.$.container.style.top = '';
+			this.$.container.style.position = 'relative';
 			if (!Object.values(DEFAULT_LOCATIONS).includes(this.locationX)) {
 				this.$.container.style.left = `${this.locationX}px`;
-				this.$.container.style.position = "absolute";
+				this.$.container.style.position = 'absolute';
 			} if (!Object.values(DEFAULT_LOCATIONS).includes(this.locationY)) {
 				this.$.container.style.top = `${this.locationY}px`;
-				this.$.container.style.position = "absolute";
+				this.$.container.style.position = 'absolute';
 			}
 		}
 	}
@@ -100,4 +100,4 @@ class VicowaNotify extends WebComponentBaseClass {
 	}
 }
 
-window.customElements.define("vicowa-notify", VicowaNotify);
+window.customElements.define('vicowa-notify', VicowaNotify);

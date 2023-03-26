@@ -1,5 +1,5 @@
-import { WebComponentBaseClass } from "/third_party/web-component-base-class/src/web-component-base-class.js";
-import "../vicowa-resize-detector/vicowa-resize-detector.js";
+import { WebComponentBaseClass } from '/third_party/web-component-base-class/src/web-component-base-class.js';
+import '../vicowa-resize-detector/vicowa-resize-detector.js';
 
 export function nestedArrayToDataInfo(data) {
 	return {
@@ -104,8 +104,8 @@ class VicowaDataGrid extends WebComponentBaseClass {
 		this.$.resizeDetector.addObserver((resizeResult) => {
 			this.#updateSizes(resizeResult.newRect);
 		}, this);
-		this.addAutoEventListener(this.$.vscrollarea, "scroll", () => { this.#updateVScroll(this.$.vscrollarea); });
-		this.addAutoEventListener(this.$.hscrollarea, "scroll", () => { this.#updateHScroll(this.$.hscrollarea); });
+		this.addAutoEventListener(this.$.vscrollarea, 'scroll', () => { this.#updateVScroll(this.$.vscrollarea); });
+		this.addAutoEventListener(this.$.hscrollarea, 'scroll', () => { this.#updateHScroll(this.$.hscrollarea); });
 	}
 
 	detached() {
@@ -114,7 +114,7 @@ class VicowaDataGrid extends WebComponentBaseClass {
 
 	#dataChanged() {
 		const controlRect = this.$.verMain.getBoundingClientRect();
-		this.$.rows.innerHTML = "";
+		this.$.rows.innerHTML = '';
 
 		this.#dataInfo = this.data.map(this.dataToDataInfo);
 		let totalHeight = 0;
@@ -124,8 +124,8 @@ class VicowaDataGrid extends WebComponentBaseClass {
 		for (let index = 0; index < this.#dataInfo.length && totalHeight < controlRect.height; index++) {
 			const rowInfo = this.#dataInfo[index];
 			const rowTemplate = document.importNode(this.$.row.content, true);
-			const row = rowTemplate.querySelector(".row");
-			const forceHeight = rowTemplate.querySelector(".force-height");
+			const row = rowTemplate.querySelector('.row');
+			const forceHeight = rowTemplate.querySelector('.force-height');
 			const height = rowInfo.height || this.defaultHeight;
 			totalHeight += height;
 			forceHeight.style.minHeight = forceHeight.style.maxHeight = `${height}px`;
@@ -133,7 +133,7 @@ class VicowaDataGrid extends WebComponentBaseClass {
 			for (let columnIndex = 0; columnIndex < rowInfo.subData.length && ((!first && columnIndex <= maxColumns) || (first && totalWidth < controlRect.width + this.defaultWidth)); columnIndex++) { /* eslint-disable-line */
 				const cellInfo = rowInfo.subData[columnIndex];
 				const cellTemplate = document.importNode(this.$.cell.content, true);
-				const cell = cellTemplate.querySelector(".cell");
+				const cell = cellTemplate.querySelector('.cell');
 
 				if (first) {
 					const width = cellInfo.width || this.defaultWidth;
@@ -165,22 +165,22 @@ class VicowaDataGrid extends WebComponentBaseClass {
 			const hScrollActive = this.$.hscrollcontent.getBoundingClientRect().width > rect.width;
 			const vScrollActive = this.$.vscrollcontent.getBoundingClientRect().height > rect.height;
 
-			this.$.hscrollarea.style.flexBasis = (hScrollActive) ? "10px" : "0";
-			this.$.vscrollarea.style.flexBasis = (vScrollActive) ? "15px" : "0";
+			this.$.hscrollarea.style.flexBasis = (hScrollActive) ? '10px' : '0';
+			this.$.vscrollarea.style.flexBasis = (vScrollActive) ? '15px' : '0';
 		}
 	}
 
 	#updateData(startRow, startColumn) {
-		const rows = this.$$$("#rows > .row");
+		const rows = this.$$$('#rows > .row');
 		rows.forEach((row, rowIndex) => {
 			const rowOffset = (rowIndex < this.fixedHeaderRows) ? 0 : startRow;
 			const data = this.#dataInfo[Math.min(rowIndex + rowOffset, this.#dataInfo.length - 1)];
-			row.querySelector(".force-height").style.maxHeight = row.style.minHeight = `${data.height | this.defaultHeight}px`;
-			row.classList.toggle("fixed", rowIndex < this.fixedHeaderRows);
-			Array.from(row.querySelectorAll(".cell")).forEach((cell, cellIndex) => {
+			row.querySelector('.force-height').style.maxHeight = row.style.minHeight = `${data.height | this.defaultHeight}px`;
+			row.classList.toggle('fixed', rowIndex < this.fixedHeaderRows);
+			Array.from(row.querySelectorAll('.cell')).forEach((cell, cellIndex) => {
 				const columnOffset = (cellIndex < this.fixedStartColumns) ? 0 : startColumn;
-				cell.querySelector(".cell-content").innerHTML = data.subData[Math.min(cellIndex + columnOffset, data.subData.length - 1)].value;
-				cell.classList.toggle("fixed", cellIndex < this.fixedStartColumns);
+				cell.querySelector('.cell-content').innerHTML = data.subData[Math.min(cellIndex + columnOffset, data.subData.length - 1)].value;
+				cell.classList.toggle('fixed', cellIndex < this.fixedStartColumns);
 				if (rowIndex === 0) {
 					cell.style.minWidth = cell.style.maxWidth = `${this.#dataInfo[0].subData[cellIndex].width || this.defaultWidth}px`;
 				}
@@ -204,7 +204,7 @@ class VicowaDataGrid extends WebComponentBaseClass {
 
 		this.#updateData(startIndex, this.#startColumnIndex);
 
-		this.$.contentMain.style.top = (this.snapToCellBoundaries) ? "0" : `-${(dist) ? scrollArea.scrollTop % dist : scrollArea.scrollTop}px`;
+		this.$.contentMain.style.top = (this.snapToCellBoundaries) ? '0' : `-${(dist) ? scrollArea.scrollTop % dist : scrollArea.scrollTop}px`;
 	}
 
 	#updateHScroll(scrollArea) {
@@ -221,7 +221,7 @@ class VicowaDataGrid extends WebComponentBaseClass {
 
 		this.#updateData(this.#startRowIndex, startIndex);
 
-		this.$.contentMain.style.left = (this.snapToCellBoundaries) ? "0" : `-${(dist) ? scrollArea.scrollLeft % dist : scrollArea.scrollLeft}px`;
+		this.$.contentMain.style.left = (this.snapToCellBoundaries) ? '0' : `-${(dist) ? scrollArea.scrollLeft % dist : scrollArea.scrollLeft}px`;
 	}
 
 	static get template() {
@@ -374,4 +374,4 @@ class VicowaDataGrid extends WebComponentBaseClass {
 	}
 }
 
-window.customElements.define("vicowa-data-grid", VicowaDataGrid);
+window.customElements.define('vicowa-data-grid', VicowaDataGrid);

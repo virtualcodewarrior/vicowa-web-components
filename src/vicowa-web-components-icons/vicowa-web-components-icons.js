@@ -1,4 +1,4 @@
-import { WebComponentBaseClass } from "/third_party/web-component-base-class/src/web-component-base-class.js";
+import { WebComponentBaseClass } from '/third_party/web-component-base-class/src/web-component-base-class.js';
 
 class VicowaWebComponentsIcons extends WebComponentBaseClass {
 	constructor() { super(); }
@@ -16,4 +16,4 @@ class VicowaWebComponentsIcons extends WebComponentBaseClass {
 	}
 }
 
-window.customElements.define("vicowa-web-components-icons", VicowaWebComponentsIcons);
+window.customElements.define('vicowa-web-components-icons', VicowaWebComponentsIcons);

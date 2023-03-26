@@ -1,7 +1,7 @@
-import { WebComponentBaseClass } from "/third_party/web-component-base-class/src/web-component-base-class.js";
-import "../vicowa-icon/vicowa-icon.js";
-import "../vicowa-string/vicowa-string.js";
-import translator from "../utilities/translate.js";
+import { WebComponentBaseClass } from '/third_party/web-component-base-class/src/web-component-base-class.js';
+import '../vicowa-icon/vicowa-icon.js';
+import '../vicowa-string/vicowa-string.js';
+import translator from '../utilities/translate.js';
 
 /**
  * Class that represents the vicowa-button custom element
@@ -25,28 +25,28 @@ class VicowaButton extends WebComponentBaseClass {
 
 	static get properties() {
 		return {
-			string: { type: String, value: "", observer: (inst) => { inst.$.string.string = inst.string; } },
+			string: { type: String, value: '', observer: (inst) => { inst.$.string.string = inst.string; } },
 			parameters: { type: Array, value: [], observer: (inst) => { inst.$.string.parameters = inst.parameters; } },
 			pluralNumber: { type: Number, value: 1, observer: (inst) => { inst.$.string.pluralNumber = inst.pluralNumber; } },
-			icon: { type: String, value: "", observer: (inst) => { inst.$.icon.icon = inst.icon; } },
-			ariaLabel: { type: String, value: "", observer: (inst) => { inst.$.button.setAttribute("aria-label", inst.ariaLabel); } },
+			icon: { type: String, value: '', observer: (inst) => { inst.$.icon.icon = inst.icon; } },
+			ariaLabel: { type: String, value: '', observer: (inst) => { inst.$.button.setAttribute('aria-label', inst.ariaLabel); } },
 			disabled: { type: Boolean, value: false, reflectToAttribute: true },
-			tooltip: { type: String, value: "", reflectToAttribute: true, observer: (inst) => { inst.$.button.setAttribute("title", inst.tooltip); inst.updateTranslation(); } },
+			tooltip: { type: String, value: '', reflectToAttribute: true, observer: (inst) => { inst.$.button.setAttribute('title', inst.tooltip); inst.updateTranslation(); } },
 		};
 	}
 
 	updateTranslation() {
 		const controlData = this.#privateData;
-		this.$.button.setAttribute("title", (controlData.activeTranslator && this.tooltip) ? controlData.activeTranslator.translate(this.tooltip).fetch() : this.tooltip);
+		this.$.button.setAttribute('title', (controlData.activeTranslator && this.tooltip) ? controlData.activeTranslator.translate(this.tooltip).fetch() : this.tooltip);
 	}
 
 	attached() {
 		this.$.string.onTranslationUpdated = (text) => {
 			if (!this.ariaLabel) {
-				this.$.button.setAttribute("aria-label", text);
+				this.$.button.setAttribute('aria-label', text);
 			}
 		};
-		this.$.button.setAttribute("aria-label", this.$.string.displayString);
+		this.$.button.setAttribute('aria-label', this.$.string.displayString);
 
 		translator.addTranslationUpdatedObserver((translatorInstance) => {
 			this.#privateData.activeTranslator = translatorInstance;
@@ -143,4 +143,4 @@ class VicowaButton extends WebComponentBaseClass {
 	}
 }
 
-window.customElements.define("vicowa-button", VicowaButton);
+window.customElements.define('vicowa-button', VicowaButton);

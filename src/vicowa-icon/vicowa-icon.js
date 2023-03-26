@@ -1,5 +1,5 @@
-import { WebComponentBaseClass } from "/third_party/web-component-base-class/src/web-component-base-class.js";
-import "../vicowa-icon-set/vicowa-icon-set.js";
+import { WebComponentBaseClass } from '/third_party/web-component-base-class/src/web-component-base-class.js';
+import '../vicowa-icon-set/vicowa-icon-set.js';
 
 /**
  * Class to represent the vicowa-icon custom element
@@ -18,7 +18,7 @@ class VicowaIcon extends WebComponentBaseClass {
 			icon: {
 				type: String,
 				reflectToAttribute: true,
-				value: "",
+				value: '',
 				observer: (control) => control.#iconChanged(),
 			},
 		};
@@ -29,10 +29,10 @@ class VicowaIcon extends WebComponentBaseClass {
 	}
 
 	#iconChanged() {
-		this.$.iconContainer.innerHTML = "";
+		this.$.iconContainer.innerHTML = '';
 		this.$.iconSource.onAttached = () => {
 			this.$.iconSource.constructor.getIcon(this, this.icon, (icon) => {
-				this.$.iconContainer.innerHTML = "";
+				this.$.iconContainer.innerHTML = '';
 				if (icon) {
 					this.$.iconContainer.appendChild(icon.cloneNode(true));
 				}
@@ -71,4 +71,4 @@ class VicowaIcon extends WebComponentBaseClass {
 	}
 }
 
-window.customElements.define("vicowa-icon", VicowaIcon);
+window.customElements.define('vicowa-icon', VicowaIcon);

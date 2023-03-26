@@ -1,13 +1,13 @@
 // vicowa-editable-list.js
 // ////////////////////////////////////////////////////////////
 // this web component will show a list of editable items
-import { WebComponentBaseClass } from "/third_party/web-component-base-class/src/web-component-base-class.js";
-import "../vicowa-string/vicowa-string.js";
-import "../vicowa-input/vicowa-input.js";
-import "/third_party/lodash/lodash.js";
-import debug from "../utilities/debug.js";
+import { WebComponentBaseClass } from '/third_party/web-component-base-class/src/web-component-base-class.js';
+import '../vicowa-string/vicowa-string.js';
+import '../vicowa-input/vicowa-input.js';
+import '/third_party/lodash/lodash.js';
+import debug from '../utilities/debug.js';
 
-const originalItem = Symbol("originalItem");
+const originalItem = Symbol('originalItem');
 
 class VicowaEditableList extends WebComponentBaseClass {
 	#privateData;
@@ -108,10 +108,10 @@ class VicowaEditableList extends WebComponentBaseClass {
 	}
 
 	attached() {
-		this.addAutoEventListener(this.$.add, "click", () => {
+		this.addAutoEventListener(this.$.add, 'click', () => {
 			this.#createItem((item, editArea) => {
 				this.itemInterface.startEdit(item);
-				editArea.classList.add("editing");
+				editArea.classList.add('editing');
 			});
 		});
 
@@ -119,26 +119,26 @@ class VicowaEditableList extends WebComponentBaseClass {
 			this.#updateJumpButton();
 		};
 
-		this.addAutoEventListener(this.$.jump, "click", () => {
+		this.addAutoEventListener(this.$.jump, 'click', () => {
 			const value = parseInt(this.$.jumpTo.value, 10);
 			this.#fillList((value - 1) * this.maxPageItems, this.maxPageItems, this.$.filter.value);
 		});
 
-		this.addAutoEventListener(this.$.items, "click", (event) => {
+		this.addAutoEventListener(this.$.items, 'click', (event) => {
 			if (this.select) {
-				const item = event.target.closest(".edit-area");
+				const item = event.target.closest('.edit-area');
 				if (item) {
 					if (this.single) {
-						this.$$$("#items .edit-area").forEach((element) => {
-							element.classList.remove("selected");
+						this.$$$('#items .edit-area').forEach((element) => {
+							element.classList.remove('selected');
 						});
-						item.classList.add("selected");
+						item.classList.add('selected');
 					} else if (this.multi) {
-						item.classList.toggle("selected");
+						item.classList.toggle('selected');
 					}
 				}
 				if (this.onSelect) {
-					this.onSelect(this.$$$("#items .edit-area").filter((element) => element.classList.contains("selected")).map((element) => this.itemInterface.getItemData(element.item)));
+					this.onSelect(this.$$$('#items .edit-area').filter((element) => element.classList.contains('selected')).map((element) => this.itemInterface.getItemData(element.item)));
 				}
 			}
 		});
@@ -176,8 +176,8 @@ class VicowaEditableList extends WebComponentBaseClass {
 	 * get valid // getter to see if the data is valid
 	 */
 	initialize(itemInterface) {
-		const required = ["setItemData", "getItemData", "startEdit", "stopEdit", "doSave", "doCancel", "hasData", "setReadyHandler", "setChangeHandler", "isValid"];
-		debug.assert(!itemInterface || required.every((key) => typeof itemInterface[key] === "function"), "setItemData, startEdit, stopEdit, doSave, doCancel, hasData, setReadyHandler, setChangeHandler and isValid should be functions");
+		const required = ['setItemData', 'getItemData', 'startEdit', 'stopEdit', 'doSave', 'doCancel', 'hasData', 'setReadyHandler', 'setChangeHandler', 'isValid'];
+		debug.assert(!itemInterface || required.every((key) => typeof itemInterface[key] === 'function'), 'setItemData, startEdit, stopEdit, doSave, doCancel, hasData, setReadyHandler, setChangeHandler and isValid should be functions');
 
 		this.$.filter.onChange = window._.debounce(() => { this.#fillList(0, this.maxPageItems, this.$.filter.value); }, 250);
 		this.itemInterface = itemInterface || this.itemInterface;
@@ -186,7 +186,7 @@ class VicowaEditableList extends WebComponentBaseClass {
 
 	reloadData() {
 		const listData = this.#privateData;
-		this.#fillList(listData.startItem, this.maxPageItems, this.$.filter.value || "");
+		this.#fillList(listData.startItem, this.maxPageItems, this.$.filter.value || '');
 	}
 
 	#createItem(done) {
@@ -194,12 +194,12 @@ class VicowaEditableList extends WebComponentBaseClass {
 			const listData = this.#privateData;
 			const itemClone = document.importNode(this.$.item.content, true);
 			const item = this.factory();
-			const editArea = itemClone.querySelector(".edit-area");
+			const editArea = itemClone.querySelector('.edit-area');
 			editArea.item = item;
-			const save = itemClone.querySelector("[name=\"save\"]");
+			const save = itemClone.querySelector('[name="save"]');
 			const listUpdate = () => {
 				// create new work list for items
-				const newWorkList = Array.from(this.$.items.querySelectorAll(".edit-area")).map((element) => this.itemInterface.getItemData(element.item));
+				const newWorkList = Array.from(this.$.items.querySelectorAll('.edit-area')).map((element) => this.itemInterface.getItemData(element.item));
 				// compare work list with real list
 				if (!window._.isEqual(newWorkList, listData.workList)) {
 					const oldItems = listData.retrievedData.items;
@@ -216,29 +216,29 @@ class VicowaEditableList extends WebComponentBaseClass {
 			};
 			const applyActions = {
 				startEditing() {
-					editArea.classList.add("editing");
+					editArea.classList.add('editing');
 				},
 				update() { listUpdate(); },
 				stopEditing() {
-					editArea.classList.remove("editing");
+					editArea.classList.remove('editing');
 				},
 				removeEditArea() { editArea.parentElement.removeChild(editArea); },
 			};
 
-			itemClone.querySelector("[name=\"editable-item\"]").appendChild(item);
+			itemClone.querySelector('[name="editable-item"]').appendChild(item);
 			item.applyActions = applyActions;
-			this.addAutoEventListener(itemClone.querySelector("[name=\"edit\"]"), "click", () => {
+			this.addAutoEventListener(itemClone.querySelector('[name="edit"]'), 'click', () => {
 				this.itemInterface.startEdit(item);
 				applyActions.startEditing();
 			});
-			this.addAutoEventListener(save, "click", () => {
+			this.addAutoEventListener(save, 'click', () => {
 				if (this.itemInterface.doSave(item)) {
 					this.itemInterface.stopEdit(item);
 					applyActions.stopEditing();
 					applyActions.update();
 				}
 			});
-			this.addAutoEventListener(itemClone.querySelector("[name=\"cancel\"]"), "click", () => {
+			this.addAutoEventListener(itemClone.querySelector('[name="cancel"]'), 'click', () => {
 				this.itemInterface.doCancel(item);
 				this.itemInterface.stopEdit(item);
 				applyActions.stopEditing();
@@ -246,7 +246,7 @@ class VicowaEditableList extends WebComponentBaseClass {
 					applyActions.removeEditArea();
 				}
 			});
-			this.addAutoEventListener(itemClone.querySelector("[name=\"delete\"]"), "click", async() => {
+			this.addAutoEventListener(itemClone.querySelector('[name="delete"]'), 'click', async() => {
 				const continueDelete = await this.continueDelete(editArea.item);
 				if (continueDelete) {
 					applyActions.removeEditArea();
@@ -258,7 +258,7 @@ class VicowaEditableList extends WebComponentBaseClass {
 
 			this.$.items.appendChild(itemClone);
 		} else {
-			throw new Error("a factory function should be specified");
+			throw new Error('a factory function should be specified');
 		}
 	}
 
@@ -276,9 +276,9 @@ class VicowaEditableList extends WebComponentBaseClass {
 			item[originalItem] = index;
 			return item;
 		});
-		this.classList.toggle("pages", listData.retrievedData.totalItemCount > this.maxPageItems);
+		this.classList.toggle('pages', listData.retrievedData.totalItemCount > this.maxPageItems);
 		const pageContainer = this.$.pageLinks;
-		pageContainer.innerHTML = "";
+		pageContainer.innerHTML = '';
 
 		if (listData.retrievedData.totalItemCount > this.maxPageItems) {
 			const currentPage = Math.ceil(start / this.maxPageItems);
@@ -288,40 +288,40 @@ class VicowaEditableList extends WebComponentBaseClass {
 
 			if (pages > 10) {
 				if (currentPage > 4) {
-					const firstButton = document.createElement("button");
-					firstButton.addEventListener("click", () => {
+					const firstButton = document.createElement('button');
+					firstButton.addEventListener('click', () => {
 						this.#fillList(0, this.maxPageItems, filter);
 					});
-					firstButton.textContent = "1";
+					firstButton.textContent = '1';
 					pageContainer.appendChild(firstButton);
 					if (currentPage > 5) {
-						const spacerBefore = document.createElement("span");
-						spacerBefore.textContent = "...";
+						const spacerBefore = document.createElement('span');
+						spacerBefore.textContent = '...';
 						pageContainer.appendChild(spacerBefore);
 					}
 				}
 				const startIndex = Math.min(pages - 8, Math.max(currentPage - 4, 0));
 				const end = Math.min(startIndex + 8, pages);
 				for (let index = startIndex; index < end; index++) {
-					const button = document.createElement("button");
-					button.addEventListener("click", () => {
+					const button = document.createElement('button');
+					button.addEventListener('click', () => {
 						this.#fillList(index * this.maxPageItems, this.maxPageItems, filter);
 					});
 					button.textContent = index + 1;
 					if (index === currentPage) {
 						button.disabled = true;
-						button.classList.add("active");
+						button.classList.add('active');
 					}
 					pageContainer.appendChild(button);
 				}
 				if (pages - currentPage > 4) {
 					if (pages - currentPage > 5) {
-						const spacerAfter = document.createElement("span");
-						spacerAfter.textContent = "...";
+						const spacerAfter = document.createElement('span');
+						spacerAfter.textContent = '...';
 						pageContainer.appendChild(spacerAfter);
 					}
-					const lastButton = document.createElement("button");
-					lastButton.addEventListener("click", () => {
+					const lastButton = document.createElement('button');
+					lastButton.addEventListener('click', () => {
 						this.#fillList((pages - 1) * this.maxPageItems, this.maxPageItems, filter);
 					});
 					lastButton.textContent = pages;
@@ -329,14 +329,14 @@ class VicowaEditableList extends WebComponentBaseClass {
 				}
 			} else {
 				for (let index = 0; index < pages; index++) {
-					const button = document.createElement("button");
-					button.addEventListener("click", () => {
+					const button = document.createElement('button');
+					button.addEventListener('click', () => {
 						this.#fillList(index * this.maxPageItems, this.maxPageItems, filter);
 					});
 					button.textContent = index + 1;
 					if (index === currentPage) {
 						button.disabled = true;
-						button.classList.add("active");
+						button.classList.add('active');
 					}
 					pageContainer.appendChild(button);
 				}
@@ -361,7 +361,7 @@ class VicowaEditableList extends WebComponentBaseClass {
 				}
 			});
 		} else {
-			this.$.items.innerHTML = "";
+			this.$.items.innerHTML = '';
 		}
 	}
 
@@ -497,4 +497,4 @@ class VicowaEditableList extends WebComponentBaseClass {
 	}
 }
 
-window.customElements.define("vicowa-editable-list", VicowaEditableList);
+window.customElements.define('vicowa-editable-list', VicowaEditableList);

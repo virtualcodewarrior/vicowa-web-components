@@ -1,6 +1,6 @@
-import { VicowaInputBaseClass } from "../vicowa-input-base/vicowa-input-base.js";
-import "../vicowa-string/vicowa-string.js";
-import { createQuickAccess } from "/third_party/web-component-base-class/src/tools.js";
+import { VicowaInputBaseClass } from '../vicowa-input-base/vicowa-input-base.js';
+import '../vicowa-string/vicowa-string.js';
+import { createQuickAccess } from '/third_party/web-component-base-class/src/tools.js';
 
 /**
  * Class to represent the vicowa-single-selection custom element
@@ -20,7 +20,7 @@ class VicowaSingleSelection extends VicowaInputBaseClass {
 			},
 			type: {
 				type: String,
-				value: "radio",
+				value: 'radio',
 				reflectToAttribute: true,
 				observer: (control) => control.#optionsChanged(),
 			},
@@ -42,7 +42,7 @@ class VicowaSingleSelection extends VicowaInputBaseClass {
 	}
 
 	attached() {
-		this.addAutoEventListener(this.$.dropdownControl, "click", (event) => {
+		this.addAutoEventListener(this.$.dropdownControl, 'click', (event) => {
 			this.opened = !this.opened;
 			if (this.opened) {
 				this.$.selectOptionContainer.style.width = `${this.$.dropdownControl.offsetWidth}px`;
@@ -51,32 +51,32 @@ class VicowaSingleSelection extends VicowaInputBaseClass {
 			event.cancelBubble = true;
 			const handleOutsideClick = () => {
 				this.opened = false;
-				this.removeAutoEventListener(window, "click", handleOutsideClick);
+				this.removeAutoEventListener(window, 'click', handleOutsideClick);
 			};
-			this.addAutoEventListener(window, "click", handleOutsideClick);
+			this.addAutoEventListener(window, 'click', handleOutsideClick);
 		});
 	}
 
 	_handleValueChange() {
 		if (this.type) {
 			switch (this.type) {
-				case "radio":
+				case 'radio':
 					this.$$$('[name="option-container"] input').forEach((radioOption) => {
 						radioOption.checked = this.value === radioOption.id;
 						if (this.value === radioOption.id) {
-							radioOption.parentNode.setAttribute("checked", "");
+							radioOption.parentNode.setAttribute('checked', '');
 						} else {
-							radioOption.parentNode.removeAttribute("checked");
+							radioOption.parentNode.removeAttribute('checked');
 						}
 					});
 					break;
-				case "select":
+				case 'select':
 					this.$$$('[name="option-container"]').forEach((optionContainer) => {
-						if (this.value === optionContainer.id) { optionContainer.setAttribute("checked", ""); } else { optionContainer.removeAttribute("checked"); }
+						if (this.value === optionContainer.id) { optionContainer.setAttribute('checked', ''); } else { optionContainer.removeAttribute('checked'); }
 					});
 					break;
 				default:
-					throw new Error("Invalid type specified");
+					throw new Error('Invalid type specified');
 			}
 		}
 	}
@@ -86,27 +86,27 @@ class VicowaSingleSelection extends VicowaInputBaseClass {
 	}
 
 	#optionsChanged() {
-		this.$.radioOptionContainer.innerHTML = "";
-		this.$.selectOptionContainer.innerHTML = "";
+		this.$.radioOptionContainer.innerHTML = '';
+		this.$.selectOptionContainer.innerHTML = '';
 		if (this.type) {
 			switch (this.type) {
-				case "radio":
+				case 'radio':
 					(this.options || []).forEach((option) => {
 						const item = document.importNode(this.$.radioOption.content, true);
-						const itemAccess = createQuickAccess(item, "name");
-						itemAccess.optionLabelString.setAttribute("string", option.displayText || "");
-						itemAccess.optionLabel.setAttribute("for", option.value);
+						const itemAccess = createQuickAccess(item, 'name');
+						itemAccess.optionLabelString.setAttribute('string', option.displayText || '');
+						itemAccess.optionLabel.setAttribute('for', option.value);
 						itemAccess.vicowaSelectionOption.id = option.value;
-						if (this.value === option.value) { itemAccess.optionContainer.setAttribute("checked", ""); } else { itemAccess.optionContainer.removeAttribute("checked"); }
+						if (this.value === option.value) { itemAccess.optionContainer.setAttribute('checked', ''); } else { itemAccess.optionContainer.removeAttribute('checked'); }
 						itemAccess.vicowaSelectionOption.checked = this.value === option.value;
-						itemAccess.vicowaSelectionOption.addEventListener("change", () => {
+						itemAccess.vicowaSelectionOption.addEventListener('change', () => {
 							this.#handleSelectionChange(itemAccess.vicowaSelectionOption);
 							this.$$$('[name="option-container"] input').forEach((radioOption) => {
 								radioOption.checked = this.value === radioOption.id;
 								if (this.value === radioOption.id) {
-									radioOption.parentNode.setAttribute("checked", "");
+									radioOption.parentNode.setAttribute('checked', '');
 								} else {
-									radioOption.parentNode.removeAttribute("checked");
+									radioOption.parentNode.removeAttribute('checked');
 								}
 							});
 						});
@@ -120,17 +120,17 @@ class VicowaSingleSelection extends VicowaInputBaseClass {
 						}
 					});
 					break;
-				case "select":
+				case 'select':
 					(this.options || []).forEach((option) => {
 						const item = document.importNode(this.$.selectOption.content, true);
-						const itemAccess = createQuickAccess(item, "name");
-						itemAccess.optionLabelString.setAttribute("string", option.displayText || "");
+						const itemAccess = createQuickAccess(item, 'name');
+						itemAccess.optionLabelString.setAttribute('string', option.displayText || '');
 						itemAccess.optionContainer.id = option.value;
-						if (this.value === option.value) { itemAccess.optionContainer.setAttribute("checked", ""); } else { itemAccess.optionContainer.removeAttribute("checked"); }
-						itemAccess.optionContainer.addEventListener("click", () => {
+						if (this.value === option.value) { itemAccess.optionContainer.setAttribute('checked', ''); } else { itemAccess.optionContainer.removeAttribute('checked'); }
+						itemAccess.optionContainer.addEventListener('click', () => {
 							this.#handleSelectionChange(itemAccess.optionContainer);
 							this.$$$('[name="option-container"]').forEach((optionContainer) => {
-								if (this.value === optionContainer.id) { optionContainer.setAttribute("checked", ""); } else { optionContainer.removeAttribute("checked"); }
+								if (this.value === optionContainer.id) { optionContainer.setAttribute('checked', ''); } else { optionContainer.removeAttribute('checked'); }
 							});
 						});
 						const childElement = (option.childElementName) ? document.createElement(option.childElementName) : (option.childElement || null);
@@ -144,7 +144,7 @@ class VicowaSingleSelection extends VicowaInputBaseClass {
 					});
 					break;
 				default:
-					throw new Error("Invalid type specified");
+					throw new Error('Invalid type specified');
 			}
 		}
 	}
@@ -293,4 +293,4 @@ class VicowaSingleSelection extends VicowaInputBaseClass {
 	}
 }
 
-window.customElements.define("vicowa-single-selection", VicowaSingleSelection);
+window.customElements.define('vicowa-single-selection', VicowaSingleSelection);

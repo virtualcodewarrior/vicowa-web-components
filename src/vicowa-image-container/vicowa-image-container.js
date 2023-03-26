@@ -1,7 +1,7 @@
-import { WebComponentBaseClass } from "/third_party/web-component-base-class/src/web-component-base-class.js";
-import translator from "../utilities/translate.js";
-import "../vicowa-string/vicowa-string.js";
-import "/third_party/intersection-observer/intersection-observer.js";
+import { WebComponentBaseClass } from '/third_party/web-component-base-class/src/web-component-base-class.js';
+import translator from '../utilities/translate.js';
+import '../vicowa-string/vicowa-string.js';
+import '/third_party/intersection-observer/intersection-observer.js';
 
 /**
  * Class that represents the vicowa-input custom element
@@ -24,31 +24,31 @@ class VicowaImageContainer extends WebComponentBaseClass {
 		return Object.assign({}, super.properties, {
 			tooltip: {
 				type: String,
-				value: "",
+				value: '',
 				reflectToAttribute: true,
 				observer: (control) => control.#tooltipChanged(),
 			},
 			alt: {
 				type: String,
-				value: "",
+				value: '',
 				reflectToAttribute: true,
 				observer: (control) => control.#altChanged(),
 			},
 			description: {
 				type: String,
-				value: "",
+				value: '',
 				reflectToAttribute: true,
 				observer: (control) => control.#descriptionChanged(),
 			},
 			src: {
 				type: String,
-				value: "",
+				value: '',
 				reflectToAttribute: true,
 				observer: (control) => control.#srcChanged(),
 			},
 			galleryGroup: {
 				type: String,
-				value: "",
+				value: '',
 				reflectToAttribute: true,
 			},
 			alternates: {
@@ -89,7 +89,7 @@ class VicowaImageContainer extends WebComponentBaseClass {
 			this.$.image.title = this.tooltip;
 			this.updateTranslation();
 		} else {
-			this.$.image.removeAttribute("title");
+			this.$.image.removeAttribute('title');
 		}
 	}
 
@@ -98,7 +98,7 @@ class VicowaImageContainer extends WebComponentBaseClass {
 			this.$.image.alt = this.alt;
 			this.updateTranslation();
 		} else {
-			this.$.image.removeAttribute("alt");
+			this.$.image.removeAttribute('alt');
 		}
 	}
 
@@ -108,22 +108,22 @@ class VicowaImageContainer extends WebComponentBaseClass {
 	}
 
 	#alternatesChanged() {
-		if (!this.hasAttribute("lazyload") || this.#visible) {
+		if (!this.hasAttribute('lazyload') || this.#visible) {
 			const alternates = (this.alternates || []).slice();
-			this.$$$("picture source").forEach((source) => { source.parentNode.removeChild(source); });
+			this.$$$('picture source').forEach((source) => { source.parentNode.removeChild(source); });
 			if (alternates.length || this.src) {
 				if ((!alternates.length || alternates[alternates.length - 1] !== this.src) && this.src) {
 					alternates.push(this.src);
 				}
 				alternates.slice(0, -1).forEach((alternate) => {
-					const source = document.createElement("source");
-					source.setAttribute("srcset", alternate.replace(/ /g, "%20"));
+					const source = document.createElement('source');
+					source.setAttribute('srcset', alternate.replace(/ /g, '%20'));
 					if (/\./.test(alternate)) {
-						source.setAttribute("type", `image/${alternate.split(".").slice(-1)[0]}`);
+						source.setAttribute('type', `image/${alternate.split('.').slice(-1)[0]}`);
 					}
 					this.$.picture.insertBefore(source, this.$.image);
 				});
-				this.$.image.src = alternates.slice(-1)[0].replace(/ /g, "%20");
+				this.$.image.src = alternates.slice(-1)[0].replace(/ /g, '%20');
 			}
 		}
 	}
@@ -220,4 +220,4 @@ class VicowaImageContainer extends WebComponentBaseClass {
 	}
 }
 
-window.customElements.define("vicowa-image-container", VicowaImageContainer);
+window.customElements.define('vicowa-image-container', VicowaImageContainer);
