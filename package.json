@@ -28,7 +28,13 @@
     "coverage": "node ./node_modules/karma/bin/karma start karma.conf.cjs coverage --single-run",
     "test": "npm run lint && npm run unittest",
     "third_party": "node ./node_modules/dependency-relocator/dependency-relocator.js ./src/third_party",
-    "prepare": "npm run build -- --npm"
+    "prepare": "npm run build -- --npm",
+    "pre-commit": "lint-staged"
+  },
+  "lint-staged": {
+    "*.{js,cjs,mjs}": [
+      "eslint -c ./.eslintrc.cjs"
+    ]
   },
   "repository": {
     "type": "git",
@@ -66,6 +72,7 @@
     "babylonjs": "5.52.0",
     "babylonjs-loaders": "5.52.0",
     "earcut": "2.2.4",
+    "husky": "^8.0.3",
     "intersection-observer": "0.12.2",
     "jed": "1.1.1",
     "lodash": "4.17.21",
