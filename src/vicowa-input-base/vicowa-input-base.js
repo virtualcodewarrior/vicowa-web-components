@@ -1,6 +1,6 @@
-import { WebComponentBaseClass } from "/third_party/web-component-base-class/src/web-component-base-class.js";
-import translator from "../utilities/translate.js";
-import validators from "../utilities/validators.js";
+import { WebComponentBaseClass } from '/third_party/web-component-base-class/src/web-component-base-class.js';
+import translator from '../utilities/translate.js';
+import validators from '../utilities/validators.js';
 
 /**
  * Validate the value for the given input element
@@ -11,8 +11,8 @@ import validators from "../utilities/validators.js";
  */
 export function validate(inputControl, value, showMessage) {
 	const validation = (validators[inputControl.validatorName] || inputControl.validator || (() => ({ valid: true })))(value);
-	inputControl.$.error.string = (!validation.valid && showMessage) ? validation.error || "something is wrong" : "";
-	inputControl.classList.toggle("invalid", !validation.valid && showMessage);
+	inputControl.$.error.string = (!validation.valid && showMessage) ? validation.error || 'something is wrong' : '';
+	inputControl.classList.toggle('invalid', !validation.valid && showMessage);
 	return validation;
 }
 
@@ -44,23 +44,23 @@ export class VicowaInputBaseClass extends WebComponentBaseClass {
 		return {
 			validatorName: {
 				type: String,
-				value: "",
+				value: '',
 			},
 			type: {
 				type: String,
-				value: "text",
+				value: 'text',
 				reflectToAttribute: true,
 				observer: (control) => control.#typeChanged(),
 			},
 			value: {
 				type: String,
-				value: "",
+				value: '',
 				reflectToAttribute: true,
 				observer: (control, newValue, oldValue) => control.#valueChanged(newValue, oldValue),
 			},
 			label: {
 				type: String,
-				value: "",
+				value: '',
 				reflectToAttribute: true,
 				observer: (control) => control.#labelChanged(),
 			},
@@ -82,7 +82,7 @@ export class VicowaInputBaseClass extends WebComponentBaseClass {
 			},
 			tooltip: {
 				type: String,
-				value: "",
+				value: '',
 				reflectToAttribute: true,
 				observer: (control) => control.#tooltipChanged(),
 			},
@@ -99,7 +99,7 @@ export class VicowaInputBaseClass extends WebComponentBaseClass {
 			},
 			ariaLabel: {
 				type: String,
-				value: "",
+				value: '',
 				observer: (control) => control.#ariaLabelChanged(),
 			},
 			autocomplete: {
@@ -117,10 +117,10 @@ export class VicowaInputBaseClass extends WebComponentBaseClass {
 	attached() {
 		this.$.label.onTranslationUpdated = (string) => {
 			if (!this.ariaLabel) {
-				this.$.input.setAttribute("aria-label", string);
+				this.$.input.setAttribute('aria-label', string);
 			}
 		};
-		this.$.input.setAttribute("aria-label", this.$.label.displayString);
+		this.$.input.setAttribute('aria-label', this.$.label.displayString);
 
 		const validateAndSet = () => {
 			validate(this, this.value, true);
@@ -132,9 +132,9 @@ export class VicowaInputBaseClass extends WebComponentBaseClass {
 			validate(this, this.value, false);
 		};
 
-		this.addAutoEventListener(this.$.input, "blur", validateAndSet); // loosing focus
-		this.addAutoEventListener(this.$.input, "change", validateAndSetNoErrorMessage); // applying the value
-		this.addAutoEventListener(this.$.input, "input", validateAndSetNoErrorMessage); // inputting text
+		this.addAutoEventListener(this.$.input, 'blur', validateAndSet); // loosing focus
+		this.addAutoEventListener(this.$.input, 'change', validateAndSetNoErrorMessage); // applying the value
+		this.addAutoEventListener(this.$.input, 'input', validateAndSetNoErrorMessage); // inputting text
 
 		this.$.input.placeholder = this.placeholder;
 		translator.addTranslationUpdatedObserver((translatorInstance) => {
@@ -147,11 +147,11 @@ export class VicowaInputBaseClass extends WebComponentBaseClass {
 	get valid() { return validate(this, this.value, false).valid; }
 
 	#ariaLabelChanged() {
-		this.$.input.setAttribute("aria-label", this.ariaLabel);
+		this.$.input.setAttribute('aria-label', this.ariaLabel);
 	}
 
 	#autocompleteChanged() {
-		this.$.input.setAttribute("autocomplete", this.autocomplete);
+		this.$.input.setAttribute('autocomplete', this.autocomplete);
 	}
 
 	#staticChanged() {
@@ -164,8 +164,8 @@ export class VicowaInputBaseClass extends WebComponentBaseClass {
 	}
 
 	#typeChanged() {
-		if (["text", "password", "email", "number", "search", "url"].indexOf(this.type) === -1) {
-			this.type = "text";
+		if (['text', 'password', 'email', 'number', 'search', 'url'].indexOf(this.type) === -1) {
+			this.type = 'text';
 		}
 		this.$.input.type = this.type;
 	}

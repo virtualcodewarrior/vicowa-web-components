@@ -1,6 +1,6 @@
-import { WebComponentBaseClass } from "/third_party/web-component-base-class/src/web-component-base-class.js";
-import "../vicowa-image-container/vicowa-image-container.js";
-import "../vicowa-button/vicowa-button.js";
+import { WebComponentBaseClass } from '/third_party/web-component-base-class/src/web-component-base-class.js';
+import '../vicowa-image-container/vicowa-image-container.js';
+import '../vicowa-button/vicowa-button.js';
 
 /**
  * Class that represents the vicowa-input custom element
@@ -47,42 +47,42 @@ class VicowaImageCarousel extends WebComponentBaseClass {
 	}
 
 	attached() {
-		this.addAutoEventListener(this.$.previous, "click", () => {
+		this.addAutoEventListener(this.$.previous, 'click', () => {
 			this.goToPrevious();
 		});
-		this.addAutoEventListener(this.$.next, "click", () => {
+		this.addAutoEventListener(this.$.next, 'click', () => {
 			this.goToNext();
 		});
 	}
 
 	goToNext() {
-		this.classList.toggle("transitioning", true);
-		this.classList.toggle("next", true);
+		this.classList.toggle('transitioning', true);
+		this.classList.toggle('next', true);
 		this.#autoTimer = 0;
 		const handleNextEnd = () => {
 			this.#activeImage = (this.#activeImage < this.images.length - 1) ? this.#activeImage + 1 : 0;
-			this.classList.toggle("transitioning", false);
-			this.classList.toggle("next", false);
+			this.classList.toggle('transitioning', false);
+			this.classList.toggle('next', false);
 			this.#updateActiveImages();
-			this.removeAutoEventListener(this.$.pictures, "transitionend", handleNextEnd);
+			this.removeAutoEventListener(this.$.pictures, 'transitionend', handleNextEnd);
 			if (this.auto) {
 				this.#autoTimer = setTimeout(() => { this.goToNext(); }, this.auto);
 			}
 		};
-		this.addAutoEventListener(this.$.pictures, "transitionend", handleNextEnd);
+		this.addAutoEventListener(this.$.pictures, 'transitionend', handleNextEnd);
 	}
 
 	goToPrevious() {
-		this.classList.toggle("transitioning", true);
-		this.classList.toggle("previous", true);
+		this.classList.toggle('transitioning', true);
+		this.classList.toggle('previous', true);
 		const handlePreviousEnd = () => {
 			this.#activeImage = (this.#activeImage > 0) ? this.#activeImage - 1 : this.images.length - 1;
-			this.classList.toggle("transitioning", false);
-			this.classList.toggle("previous", false);
+			this.classList.toggle('transitioning', false);
+			this.classList.toggle('previous', false);
 			this.#updateActiveImages();
-			this.removeAutoEventListener(this.$.pictures, "transitionend", handlePreviousEnd);
+			this.removeAutoEventListener(this.$.pictures, 'transitionend', handlePreviousEnd);
 		};
-		this.addAutoEventListener(this.$.pictures, "transitionend", handlePreviousEnd);
+		this.addAutoEventListener(this.$.pictures, 'transitionend', handlePreviousEnd);
 	}
 
 	goToIndex(index) {
@@ -92,8 +92,8 @@ class VicowaImageCarousel extends WebComponentBaseClass {
 	}
 
 	#updateControls() {
-		this.classList.toggle("start", this.#activeImage === 0);
-		this.classList.toggle("end", this.#activeImage === this.images.length - 1);
+		this.classList.toggle('start', this.#activeImage === 0);
+		this.classList.toggle('end', this.#activeImage === this.images.length - 1);
 	}
 
 	#updateActiveImages() {
@@ -102,24 +102,24 @@ class VicowaImageCarousel extends WebComponentBaseClass {
 			const active = this.images[this.#activeImage];
 			if (active) {
 				this.$.currentImage.alternates = active.alternates;
-				this.$.currentImage.description = active.description || "";
-				this.$.currentImage.alt = (active.alt || active.description || active.tooltip || "").trim();
-				this.$.currentImage.tooltip = active.tooltip || "";
+				this.$.currentImage.description = active.description || '';
+				this.$.currentImage.alt = (active.alt || active.description || active.tooltip || '').trim();
+				this.$.currentImage.tooltip = active.tooltip || '';
 			}
 			const previous = (this.#activeImage > 0) ? this.images[this.#activeImage - 1] : this.images[this.images.length - 1];
 			if (previous) {
 				this.$.previousImage.alternates = previous.alternates;
-				this.$.previousImage.description = previous.description || "";
-				this.$.previousImage.alt = (previous.alt || previous.description || previous.tooltip || "").trim();
-				this.$.previousImage.tooltip = previous.tooltip || "";
+				this.$.previousImage.description = previous.description || '';
+				this.$.previousImage.alt = (previous.alt || previous.description || previous.tooltip || '').trim();
+				this.$.previousImage.tooltip = previous.tooltip || '';
 			}
 
 			const next = (this.#activeImage < this.images.length - 1) ? this.images[this.#activeImage + 1] : this.images[0];
 			if (next) {
 				this.$.nextImage.alternates = next.alternates;
-				this.$.nextImage.description = next.description || "";
-				this.$.nextImage.alt = (next.alt || next.description || next.tooltip || "").trim();
-				this.$.nextImage.tooltip = next.tooltip || "";
+				this.$.nextImage.description = next.description || '';
+				this.$.nextImage.alt = (next.alt || next.description || next.tooltip || '').trim();
+				this.$.nextImage.tooltip = next.tooltip || '';
 			}
 		}
 	}
@@ -275,4 +275,4 @@ class VicowaImageCarousel extends WebComponentBaseClass {
 	}
 }
 
-window.customElements.define("vicowa-image-carousel", VicowaImageCarousel);
+window.customElements.define('vicowa-image-carousel', VicowaImageCarousel);

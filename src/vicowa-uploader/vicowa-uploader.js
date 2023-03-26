@@ -1,4 +1,4 @@
-import { WebComponentBaseClass } from "/third_party/web-component-base-class/src/web-component-base-class.js";
+import { WebComponentBaseClass } from '/third_party/web-component-base-class/src/web-component-base-class.js';
 
 class VicowaUploader extends WebComponentBaseClass {
 	constructor() {
@@ -20,7 +20,7 @@ class VicowaUploader extends WebComponentBaseClass {
 			},
 			accept: {
 				type: String,
-				value: "",
+				value: '',
 				reflectToAttribute: true,
 				observer: (control) => control.#acceptChanged(),
 			},
@@ -31,7 +31,7 @@ class VicowaUploader extends WebComponentBaseClass {
 			},
 			target: {
 				type: String,
-				value: "",
+				value: '',
 				reflectToAttribute: true,
 			},
 			imagePreview: {
@@ -48,49 +48,49 @@ class VicowaUploader extends WebComponentBaseClass {
 	}
 
 	attached() {
-		this.addAutoEventListener(this.$.file, "change", () => {
+		this.addAutoEventListener(this.$.file, 'change', () => {
 			this.#handleFiles(Array.from(this.$.file.files));
 		});
 
 		const handleOver = (event) => {
 			event.preventDefault();
 			event.stopPropagation();
-			this.$.container.classList.add("drop-focus");
+			this.$.container.classList.add('drop-focus');
 		};
 		const handleOut = (event) => {
 			event.preventDefault();
 			event.stopPropagation();
-			this.$.container.classList.remove("drop-focus");
+			this.$.container.classList.remove('drop-focus');
 		};
 
-		this.addAutoEventListener(this.$.container, "dragover", handleOver);
-		this.addAutoEventListener(this.$.container, "dragenter", handleOver);
-		this.addAutoEventListener(this.$.container, "dragleave", handleOut);
-		this.addAutoEventListener(this.$.container, "dragend", handleOut);
+		this.addAutoEventListener(this.$.container, 'dragover', handleOver);
+		this.addAutoEventListener(this.$.container, 'dragenter', handleOver);
+		this.addAutoEventListener(this.$.container, 'dragleave', handleOut);
+		this.addAutoEventListener(this.$.container, 'dragend', handleOut);
 
-		this.addAutoEventListener(this.$.container, "drop", (event) => {
+		this.addAutoEventListener(this.$.container, 'drop', (event) => {
 			handleOut(event);
 			this.#handleFiles(Array.from(event.dataTransfer.files));
 		});
 
-		this.addAutoEventListener(this.$.upload, "click", () => { this.#uploadFiles(this.files); });
-		this.addAutoEventListener(this.$.more, "click", () => { this.$.container.classList.remove("success"); });
-		this.addAutoEventListener(this.$.retry, "click", () => { this.$.container.classList.remove("error"); this.#uploadFiles(this.files); });
+		this.addAutoEventListener(this.$.upload, 'click', () => { this.#uploadFiles(this.files); });
+		this.addAutoEventListener(this.$.more, 'click', () => { this.$.container.classList.remove('success'); });
+		this.addAutoEventListener(this.$.retry, 'click', () => { this.$.container.classList.remove('error'); this.#uploadFiles(this.files); });
 	}
 
 	#multipleChanged() {
 		if (this.multiple) {
-			this.$.file.setAttribute("multiple", "");
+			this.$.file.setAttribute('multiple', '');
 		} else {
-			this.$.file.removeAttribute("multiple");
+			this.$.file.removeAttribute('multiple');
 		}
 	}
 
 	#acceptChanged() {
 		if (this.accept) {
-			this.$.file.setAttribute("accept", this.accept);
+			this.$.file.setAttribute('accept', this.accept);
 		} else {
-			this.$.file.removeAttribute("accept");
+			this.$.file.removeAttribute('accept');
 		}
 	}
 
@@ -98,9 +98,9 @@ class VicowaUploader extends WebComponentBaseClass {
 		const reader = new FileReader();
 		reader.readAsDataURL(file);
 		reader.onloadend = () => {
-			const img = document.createElement("img");
+			const img = document.createElement('img');
 			img.src = reader.result;
-			img.setAttribute("name", file.name);
+			img.setAttribute('name', file.name);
 			this.$.todo.appendChild(img);
 		};
 	}
@@ -111,7 +111,7 @@ class VicowaUploader extends WebComponentBaseClass {
 	}
 
 	async #uploadFiles(files) {
-		this.$.container.classList.add("upload-active");
+		this.$.container.classList.add('upload-active');
 		if (this.imagePreview) {
 			files.forEach((file) => { this.#previewFile(file); });
 		}
@@ -121,7 +121,7 @@ class VicowaUploader extends WebComponentBaseClass {
 			this.$.progress.value = 0;
 			await Promise.all(files.map((file, fileIndex) => {
 				const formData = new FormData();
-				formData.append("file", file);
+				formData.append('file', file);
 				return new Promise((resolve, reject) => {
 					if (this.uploadHandler) {
 						this.uploadHandler(file, (response) => {
@@ -135,7 +135,7 @@ class VicowaUploader extends WebComponentBaseClass {
 							reject(reason);
 						}, files.length, fileIndex);
 					} else {
-						fetch(this.target, { method: "POST", body: formData }).then((response) => {
+						fetch(this.target, { method: 'POST', body: formData }).then((response) => {
 							if (!response.ok) {
 								throw response;
 							}
@@ -149,9 +149,9 @@ class VicowaUploader extends WebComponentBaseClass {
 					}
 				});
 			}));
-			this.$.container.classList.remove("has-files");
-			this.$.container.classList.remove("upload-active");
-			this.$.container.classList.add("success");
+			this.$.container.classList.remove('has-files');
+			this.$.container.classList.remove('upload-active');
+			this.$.container.classList.add('success');
 			if (this.onSuccess) {
 				this.onSuccess(successFullFiles.map((file) => file.name));
 			}
@@ -163,9 +163,9 @@ class VicowaUploader extends WebComponentBaseClass {
 				}
 			});
 
-			this.$.container.classList.remove("has-files");
-			this.$.container.classList.remove("upload-active");
-			this.$.container.classList.add("error");
+			this.$.container.classList.remove('has-files');
+			this.$.container.classList.remove('upload-active');
+			this.$.container.classList.add('error');
 			if (this.onError) {
 				this.onError(error, successFullFiles.map((file) => file.name));
 			}
@@ -174,15 +174,15 @@ class VicowaUploader extends WebComponentBaseClass {
 
 	#handleFiles(files) {
 		if (files.length) {
-			this.$.container.classList.add("has-files");
+			this.$.container.classList.add('has-files');
 			this.files = files;
 
 			if (this.manualUpload) {
 				if (files.length === 1) {
-					this.$.uploadText.string = "Upload %1s";
+					this.$.uploadText.string = 'Upload %1s';
 					this.$.uploadText.parameters = [files[0].name];
 				} else {
-					this.$.uploadText.string = "Upload %1d files";
+					this.$.uploadText.string = 'Upload %1d files';
 					this.$.uploadText.parameters = [files.length];
 				}
 			} else {
@@ -364,4 +364,4 @@ class VicowaUploader extends WebComponentBaseClass {
 	}
 }
 
-window.customElements.define("vicowa-uploader", VicowaUploader);
+window.customElements.define('vicowa-uploader', VicowaUploader);

@@ -1,33 +1,33 @@
-import { CAP_TYPES } from "./vicowa-webgl-definitions.js";
-import { vectorLength, angleToPoint, pointToAngle, vectorSubtract, vectorAdd, toRadians } from "../utilities/mathHelpers.js";
+import { CAP_TYPES } from './vicowa-webgl-definitions.js';
+import { vectorLength, angleToPoint, pointToAngle, vectorSubtract, vectorAdd, toRadians } from '../utilities/mathHelpers.js';
 
 const MANIPULATOR_GROUP_TYPES = Object.freeze({
-	MOVE: "MOVE",
-	SCALE: "SCALE",
-	ROTATE: "ROTATE",
+	MOVE: 'MOVE',
+	SCALE: 'SCALE',
+	ROTATE: 'ROTATE',
 });
 
 export const MANIPULATOR_TYPES = Object.freeze({
-	MOVE_X: "MOVE_X",
-	MOVE_Y: "MOVE_Y",
-	MOVE_Z: "MOVE_Z",
-	MOVE_PLANE: "MOVE_PLANE",
-	SCALE: "SCALE",
-	SCALE_X: "SCALE_X",
-	SCALE_Y: "SCALE_Y",
-	SCALE_Z: "SCALE_Z",
-	ROTATE_X: "ROTATE_X",
-	ROTATE_Y: "ROTATE_Y",
-	ROTATE_Z: "ROTATE_Z",
+	MOVE_X: 'MOVE_X',
+	MOVE_Y: 'MOVE_Y',
+	MOVE_Z: 'MOVE_Z',
+	MOVE_PLANE: 'MOVE_PLANE',
+	SCALE: 'SCALE',
+	SCALE_X: 'SCALE_X',
+	SCALE_Y: 'SCALE_Y',
+	SCALE_Z: 'SCALE_Z',
+	ROTATE_X: 'ROTATE_X',
+	ROTATE_Y: 'ROTATE_Y',
+	ROTATE_Z: 'ROTATE_Z',
 });
 
-const privateData = Symbol("privateData");
-const manipulation = Symbol("manipulation");
+const privateData = Symbol('privateData');
+const manipulation = Symbol('manipulation');
 const manipulatorRenderingGroup = 1;
 
 function createMoveObject(name, extensionData) {
 	const moveObject = extensionData.webglIF.createGroup(name);
-	moveObject.addChild(extensionData.webglIF.createSphere({ diameter: 0.2, rotation: { x: 90, y: 0, z: 0 }, material: "move-manipulator-unselected", renderingGroupId: manipulatorRenderingGroup }));
+	moveObject.addChild(extensionData.webglIF.createSphere({ diameter: 0.2, rotation: { x: 90, y: 0, z: 0 }, material: 'move-manipulator-unselected', renderingGroupId: manipulatorRenderingGroup }));
 	moveObject.addChild(extensionData.webglIF.createCylinder({ diameter: 0.05, height: 0.15, position: { y: -0.2 }, renderingGroupId: manipulatorRenderingGroup }));
 	moveObject.addChild(extensionData.webglIF.createCylinder({ diameterTop: 0, diameterBottom: 0.1, height: 0.1, position: { y: -0.3 }, rotation: { x: 0, y: 0, z: 180 }, renderingGroupId: manipulatorRenderingGroup }));
 	moveObject.addChild(extensionData.webglIF.createCylinder({ diameter: 0.05, height: 0.15, position: { y: 0.2 }, renderingGroupId: manipulatorRenderingGroup }));
@@ -39,7 +39,7 @@ function createMoveObject(name, extensionData) {
 
 function createPlaneMoveObject(name, extensionData) {
 	const moveObject = extensionData.webglIF.createGroup(name);
-	moveObject.addChild(extensionData.webglIF.createSphere({ diameter: 0.2, rotation: { x: 90, y: 0, z: 0 }, material: "move-manipulator-unselected", renderingGroupId: manipulatorRenderingGroup }));
+	moveObject.addChild(extensionData.webglIF.createSphere({ diameter: 0.2, rotation: { x: 90, y: 0, z: 0 }, material: 'move-manipulator-unselected', renderingGroupId: manipulatorRenderingGroup }));
 	moveObject.addChild(extensionData.webglIF.createCylinder({ diameter: 0.05, height: 0.15, position: { y: -0.2 }, renderingGroupId: manipulatorRenderingGroup }));
 	moveObject.addChild(extensionData.webglIF.createCylinder({ diameterTop: 0, diameterBottom: 0.1, height: 0.1, position: { y: -0.3 }, rotation: { z: 180 }, renderingGroupId: manipulatorRenderingGroup }));
 	moveObject.addChild(extensionData.webglIF.createCylinder({ diameter: 0.05, height: 0.15, position: { y: 0.2 }, renderingGroupId: manipulatorRenderingGroup }));
@@ -56,7 +56,7 @@ function createPlaneMoveObject(name, extensionData) {
 
 function createScaleObject(name, extensionData) {
 	const scaleObject = extensionData.webglIF.createGroup(name);
-	scaleObject.addChild(extensionData.webglIF.createSphere({ diameter: 0.15, diameterZ: 0.3, rotation: { x: 90, y: 0, z: 0 }, material: "scale-manipulator-unselected", renderingGroupId: manipulatorRenderingGroup }));
+	scaleObject.addChild(extensionData.webglIF.createSphere({ diameter: 0.15, diameterZ: 0.3, rotation: { x: 90, y: 0, z: 0 }, material: 'scale-manipulator-unselected', renderingGroupId: manipulatorRenderingGroup }));
 	scaleObject.addChild(extensionData.webglIF.createCylinder({ diameterTop: 0, diameterBottom: 0.1, height: 0.1, position: { y: -0.3 }, rotation: { x: 0, y: 0, z: 180 }, renderingGroupId: manipulatorRenderingGroup }));
 	scaleObject.addChild(extensionData.webglIF.createCylinder({ diameter: 0.05, height: 0.6, renderingGroupId: manipulatorRenderingGroup }));
 	scaleObject.addChild(extensionData.webglIF.createCylinder({ diameterTop: 0, diameterBottom: 0.1, height: 0.1, position: { y: 0.3 }, renderingGroupId: manipulatorRenderingGroup }));
@@ -67,7 +67,7 @@ function createScaleObject(name, extensionData) {
 
 function createRotateObject(name, extensionData) {
 	const rotateObject = extensionData.webglIF.createGroup(name);
-	rotateObject.addChild(extensionData.webglIF.createSphere({ diameter: 0.2, rotation: { x: 90, y: 0, z: 0 }, material: "rotate-manipulator-unselected", renderingGroupId: manipulatorRenderingGroup }));
+	rotateObject.addChild(extensionData.webglIF.createSphere({ diameter: 0.2, rotation: { x: 90, y: 0, z: 0 }, material: 'rotate-manipulator-unselected', renderingGroupId: manipulatorRenderingGroup }));
 	const path = [];
 	const arc = toRadians(270);
 	const startAngle = toRadians(0);
@@ -85,10 +85,10 @@ function createRotateObject(name, extensionData) {
 
 function createManipulatorTemplates(extension) {
 	const extensionData = extension[privateData];
-	extensionData.manipulators[MANIPULATOR_TYPES.MOVE_X] = extensionData.manipulators[MANIPULATOR_TYPES.MOVE_Y] = extensionData.manipulators[MANIPULATOR_TYPES.MOVE_Z] = createMoveObject("move-manipulator", extensionData);
-	extensionData.manipulators[MANIPULATOR_TYPES.MOVE_PLANE] = createPlaneMoveObject("move-manipulator", extensionData);
-	extensionData.manipulators[MANIPULATOR_TYPES.SCALE_X] = extensionData.manipulators[MANIPULATOR_TYPES.SCALE_Y] = extensionData.manipulators[MANIPULATOR_TYPES.SCALE_Z] = extensionData.manipulators[MANIPULATOR_TYPES.SCALE] = createScaleObject("scale-manipulator", extensionData);
-	extensionData.manipulators[MANIPULATOR_TYPES.ROTATE_X] = extensionData.manipulators[MANIPULATOR_TYPES.ROTATE_Y] = extensionData.manipulators[MANIPULATOR_TYPES.ROTATE_Z] = createRotateObject("rotate-manipulator", extensionData);
+	extensionData.manipulators[MANIPULATOR_TYPES.MOVE_X] = extensionData.manipulators[MANIPULATOR_TYPES.MOVE_Y] = extensionData.manipulators[MANIPULATOR_TYPES.MOVE_Z] = createMoveObject('move-manipulator', extensionData);
+	extensionData.manipulators[MANIPULATOR_TYPES.MOVE_PLANE] = createPlaneMoveObject('move-manipulator', extensionData);
+	extensionData.manipulators[MANIPULATOR_TYPES.SCALE_X] = extensionData.manipulators[MANIPULATOR_TYPES.SCALE_Y] = extensionData.manipulators[MANIPULATOR_TYPES.SCALE_Z] = extensionData.manipulators[MANIPULATOR_TYPES.SCALE] = createScaleObject('scale-manipulator', extensionData);
+	extensionData.manipulators[MANIPULATOR_TYPES.ROTATE_X] = extensionData.manipulators[MANIPULATOR_TYPES.ROTATE_Y] = extensionData.manipulators[MANIPULATOR_TYPES.ROTATE_Z] = createRotateObject('rotate-manipulator', extensionData);
 }
 
 function createAndAttachManipulatorInstance(manipulatorName, extension, obj, settings) {
@@ -300,12 +300,12 @@ export default class VicowaWebGLManipulationExtension {
 		extensionData.webgl = webGL;
 		extensionData.webglIF = webglInterface;
 
-		extensionData.webgl.addMaterial("move-manipulator-unselected", { diffuse: { r: 0.6, g: 0.6, b: 1 } });
-		extensionData.webgl.addMaterial("move-manipulator-selected", { diffuse: { r: 0, g: 0, b: 1 } });
-		extensionData.webgl.addMaterial("scale-manipulator-unselected", { diffuse: { r: 0.6, g: 1, b: 1 } });
-		extensionData.webgl.addMaterial("scale-manipulator-selected", { diffuse: { r: 0, g: 1, b: 1 } });
-		extensionData.webgl.addMaterial("rotate-manipulator-unselected", { diffuse: { r: 1, g: 0.6, b: 1 } });
-		extensionData.webgl.addMaterial("rotate-manipulator-selected", { diffuse: { r: 1, g: 0, b: 1 } });
+		extensionData.webgl.addMaterial('move-manipulator-unselected', { diffuse: { r: 0.6, g: 0.6, b: 1 } });
+		extensionData.webgl.addMaterial('move-manipulator-selected', { diffuse: { r: 0, g: 0, b: 1 } });
+		extensionData.webgl.addMaterial('scale-manipulator-unselected', { diffuse: { r: 0.6, g: 1, b: 1 } });
+		extensionData.webgl.addMaterial('scale-manipulator-selected', { diffuse: { r: 0, g: 1, b: 1 } });
+		extensionData.webgl.addMaterial('rotate-manipulator-unselected', { diffuse: { r: 1, g: 0.6, b: 1 } });
+		extensionData.webgl.addMaterial('rotate-manipulator-selected', { diffuse: { r: 1, g: 0, b: 1 } });
 
 		const getPlanePosition = () => ((extensionData.draggingManipulator && extensionData.draggingManipulator.manipulatorPlane) ? extensionData.webglIF.screenToObjectPoint(extensionData.webglIF.pointerPos, extensionData.draggingManipulator.manipulatorPlane) : null);
 
@@ -418,7 +418,7 @@ export default class VicowaWebGLManipulationExtension {
 					extensionData.draggingManipulator.startRotation = objectManipulator.manipulatedObject.rotation;
 					if (extensionData.draggingManipulator.startPoint) {
 						extensionData.draggingManipulator.manipulatorsObject = objectManipulator;
-						extensionData.draggingManipulator.activeManipulator.getChildren()[0].applySettings({ material: (extensionData.draggingManipulator.activeManipulator.activeGroup === MANIPULATOR_GROUP_TYPES.SCALE) ? "scale-manipulator-selected" : (extensionData.draggingManipulator.activeManipulator.activeGroup === MANIPULATOR_GROUP_TYPES.ROTATE) ? "rotate-manipulator-selected" : "move-manipulator-selected" });
+						extensionData.draggingManipulator.activeManipulator.getChildren()[0].applySettings({ material: (extensionData.draggingManipulator.activeManipulator.activeGroup === MANIPULATOR_GROUP_TYPES.SCALE) ? 'scale-manipulator-selected' : (extensionData.draggingManipulator.activeManipulator.activeGroup === MANIPULATOR_GROUP_TYPES.ROTATE) ? 'rotate-manipulator-selected' : 'move-manipulator-selected' });
 						extensionData.webglIF.detachCameraControl();
 					} else {
 						if (extensionData.draggingManipulator.manipulatorType !== MANIPULATOR_TYPES.MOVE_PLANE) {
@@ -439,7 +439,7 @@ export default class VicowaWebGLManipulationExtension {
 					extensionData.draggingManipulator.manipulatorPlane.remove();
 				}
 				if (!extensionData.draggingManipulator.activeManipulator.isRemoved()) {
-					extensionData.draggingManipulator.activeManipulator.getChildren()[0].applySettings({ material: (extensionData.draggingManipulator.activeManipulator.activeGroup === MANIPULATOR_GROUP_TYPES.SCALE) ? "scale-manipulator-unselected" : (extensionData.draggingManipulator.activeManipulator.activeGroup === MANIPULATOR_GROUP_TYPES.ROTATE) ? "rotate-manipulator-unselected" : "move-manipulator-unselected" });
+					extensionData.draggingManipulator.activeManipulator.getChildren()[0].applySettings({ material: (extensionData.draggingManipulator.activeManipulator.activeGroup === MANIPULATOR_GROUP_TYPES.SCALE) ? 'scale-manipulator-unselected' : (extensionData.draggingManipulator.activeManipulator.activeGroup === MANIPULATOR_GROUP_TYPES.ROTATE) ? 'rotate-manipulator-unselected' : 'move-manipulator-unselected' });
 				}
 			}
 			extensionData.draggingManipulator = null;

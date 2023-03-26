@@ -1,6 +1,6 @@
-import { WebComponentBaseClass } from "/third_party/web-component-base-class/src/web-component-base-class.js";
-import "../vicowa-translate/vicowa-translate.js";
-import translator from "../utilities/translate.js";
+import { WebComponentBaseClass } from '/third_party/web-component-base-class/src/web-component-base-class.js';
+import '../vicowa-translate/vicowa-translate.js';
+import translator from '../utilities/translate.js';
 
 /**
  * Class to represent the vicowa-string custom element
@@ -20,7 +20,7 @@ class VicowaString extends WebComponentBaseClass {
 
 	static get properties() {
 		return {
-			string: { type: String, value: "", reflectToAttribute: true, observer: (control, oldValue, newValue) => control.#updateString(oldValue, newValue) },
+			string: { type: String, value: '', reflectToAttribute: true, observer: (control, oldValue, newValue) => control.#updateString(oldValue, newValue) },
 			parameters: { type: Array, value: [], observer: (control, oldValue, newValue) => control.#updateParameters(oldValue, newValue) },
 			pluralNumber: { type: Number, value: 1, observer: (control, oldValue, newValue) => control.#updatePluralNumber(oldValue, newValue) },
 		};
@@ -77,4 +77,4 @@ class VicowaString extends WebComponentBaseClass {
 	}
 }
 
-window.customElements.define("vicowa-string", VicowaString);
+window.customElements.define('vicowa-string', VicowaString);

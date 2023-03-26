@@ -1,5 +1,5 @@
-import { WebComponentBaseClass } from "/third_party/web-component-base-class/src/web-component-base-class.js";
-import "../vicowa-input/vicowa-input.js";
+import { WebComponentBaseClass } from '/third_party/web-component-base-class/src/web-component-base-class.js';
+import '../vicowa-input/vicowa-input.js';
 
 class VicowaMoveBetweenLists extends WebComponentBaseClass {
 	constructor() { super(); }
@@ -7,13 +7,13 @@ class VicowaMoveBetweenLists extends WebComponentBaseClass {
 		return {
 			firstTitle: {
 				type: String,
-				value: "",
+				value: '',
 				reflectToAttribute: true,
 				observer: (control) => control.#titleUpdated(),
 			},
 			secondTitle: {
 				type: String,
-				value: "",
+				value: '',
 				reflectToAttribute: true,
 				observer: (control) => control.#titleUpdated(),
 			},
@@ -35,16 +35,16 @@ class VicowaMoveBetweenLists extends WebComponentBaseClass {
 		this.$.secondFilter.onChange = () => { this.#updateSecond(); };
 
 		const updateStates = () => {
-			this.$.secondToFirst.classList.toggle("disabled", !this.$.secondList.selectedOptions.length);
-			this.$.firstToSecond.classList.toggle("disabled", !this.$.firstList.selectedOptions.length);
+			this.$.secondToFirst.classList.toggle('disabled', !this.$.secondList.selectedOptions.length);
+			this.$.firstToSecond.classList.toggle('disabled', !this.$.firstList.selectedOptions.length);
 		};
 
-		this.addAutoEventListener(this.$.secondList, "change", updateStates);
-		this.addAutoEventListener(this.$.firstList, "change", updateStates);
+		this.addAutoEventListener(this.$.secondList, 'change', updateStates);
+		this.addAutoEventListener(this.$.firstList, 'change', updateStates);
 
 		updateStates();
 
-		this.addAutoEventListener(this.$.firstToSecond, "click", () => {
+		this.addAutoEventListener(this.$.firstToSecond, 'click', () => {
 			const selected = Array.from(this.$.firstList.selectedOptions);
 			this.second = this.second.concat(selected.map((option) => option.item));
 			this.first = this.first.filter((item) => !selected.find((option) => option.item === item));
@@ -54,7 +54,7 @@ class VicowaMoveBetweenLists extends WebComponentBaseClass {
 				this.onChange();
 			}
 		});
-		this.addAutoEventListener(this.$.secondToFirst, "click", () => {
+		this.addAutoEventListener(this.$.secondToFirst, 'click', () => {
 			const selected = Array.from(this.$.secondList.selectedOptions);
 			this.first = this.first.concat(selected.map((option) => option.item));
 			this.second = this.second.filter((item) => !selected.find((option) => option.item === item));
@@ -68,9 +68,9 @@ class VicowaMoveBetweenLists extends WebComponentBaseClass {
 
 	#updateFirst() {
 		const regExp = (this.$.firstFilter.value.trim()) ? new RegExp(this.$.firstFilter.value.trim()) : null;
-		this.$.firstList.innerHTML = "";
+		this.$.firstList.innerHTML = '';
 		this.first.filter((item) => !regExp || regExp.test(item.displayName)).sort().forEach((item) => {
-			const option = document.createElement("option");
+			const option = document.createElement('option');
 			option.item = item;
 			option.textContent = item.displayName;
 			this.$.firstList.appendChild(option);
@@ -78,9 +78,9 @@ class VicowaMoveBetweenLists extends WebComponentBaseClass {
 	}
 	#updateSecond() {
 		const regExp = (this.$.secondFilter.value.trim()) ? new RegExp(this.$.secondFilter.value.trim()) : null;
-		this.$.secondList.innerHTML = "";
+		this.$.secondList.innerHTML = '';
 		this.second.filter((item) => !regExp || regExp.test(item.displayName)).sort().forEach((item) => {
-			const option = document.createElement("option");
+			const option = document.createElement('option');
 			option.item = item;
 			option.textContent = item.displayName;
 			this.$.secondList.appendChild(option);
@@ -158,4 +158,4 @@ class VicowaMoveBetweenLists extends WebComponentBaseClass {
 	}
 }
 
-window.customElements.define("vicowa-move-between-lists", VicowaMoveBetweenLists);
+window.customElements.define('vicowa-move-between-lists', VicowaMoveBetweenLists);
