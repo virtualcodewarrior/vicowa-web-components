@@ -25,7 +25,7 @@ var isCrossDomain = false;
 
 try {
 	isCrossDomain = window.top.location.hostname !== document.location.hostname;
-} catch (p_Error) {
+} catch {
 	// when we are cross domain the above code will throw
 	isCrossDomain = true;
 }
