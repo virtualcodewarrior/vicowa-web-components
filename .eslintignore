@@ -1,8 +1,0 @@
-#ignore the third_party libraries
-src/third_party/*
-#ignore build output
-dist/*
-#ignore coverage test results
-coverage/*
-#ignore node modules
-node_modules/*
