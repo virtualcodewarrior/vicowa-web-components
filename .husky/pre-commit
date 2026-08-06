@@ -1,0 +1,2 @@
+#!/bin/sh
+npx karma start karma.conf.cjs --single-run --browsers ChromeHeadless
