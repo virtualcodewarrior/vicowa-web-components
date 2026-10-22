@@ -24,7 +24,7 @@
     "doc": "node ./node_modules/jsdoc/jsdoc.js src -r -d doc -c jsdoc.conf.cjs",
     "lint": "node ./node_modules/eslint/bin/eslint.js src/**/*.js test/**/*.js",
     "unittest": "node ./node_modules/karma/bin/karma start karma.conf.cjs --single-run",
-    "unittest-headless": "node ./node_modules/karma/bin/karma start karma.conf.cjs --single-run --browsers FirefoxHeadless,ChromiumHeadless",
+    "unittest-headless": "node ./node_modules/karma/bin/karma start karma.conf.cjs --single-run --browsers FirefoxHeadless,ChromeHeadlessNoSandbox",
     "watch-test": "node ./node_modules/karma/bin/karma start karma.conf.cjs --watch --browsers Chrome",
     "coverage": "node ./node_modules/karma/bin/karma start karma.conf.cjs coverage --single-run",
     "test": "npm run lint && npm run unittest",
