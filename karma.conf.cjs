@@ -99,6 +99,21 @@ module.exports = function(config) {
 		// first browser launchers: https://npmjs.org/browse/keyword/karma-launcher
 		browsers: ['ChromeHeadless', 'FirefoxHeadless'],
 
+		// GitHub-hosted runners block the unprivileged user namespaces Chrome's
+		// zygote needs, which aborts the plain ChromeHeadless launcher before any
+		// test runs. The sandbox is only there to protect the host from the page,
+		// so dropping it on an ephemeral CI runner costs nothing.
+		customLaunchers: {
+			ChromeHeadlessNoSandbox: {
+				base: 'ChromeHeadless',
+				flags: [
+					'--no-sandbox',
+					'--disable-setuid-sandbox',
+					'--disable-dev-shm-usage',
+				],
+			},
+		},
+
 		// Concurrency level
 		// how many browser should be started simultaneous
 		concurrency: Infinity,
